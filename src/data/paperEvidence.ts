@@ -15,9 +15,12 @@ export const PAPER = {
   dataset: 'CICIDS2017',
   repoUrl: 'https://github.com/myeongjundev/explainsoc-research',
   pdfUrl: 'https://github.com/myeongjundev/explainsoc-research/blob/main/output/pdf/T10-research-paper.pdf',
-  /** 원고 참고문헌 [1] — 데이터셋 인용 */
+  /**
+   * 원고 참고문헌 [1] — 데이터셋 인용. 제출물에 본인 외 다른 사람의 실명을 넣지 않는다는 과제 기준
+   * (BRB-C12)에 따라 저자 이름은 빼고, 논문을 하나로 가리키는 제목·학회·쪽·연도·DOI만 둔다.
+   */
   datasetCitation:
-    'I. Sharafaldin, A. H. Lashkari, and A. A. Ghorbani, “Toward Generating a New Intrusion Detection Dataset and Intrusion Traffic Characterization,” Proc. ICISSP, pp. 108–116, 2018. doi: 10.5220/0006639801080116.',
+    '“Toward Generating a New Intrusion Detection Dataset and Intrusion Traffic Characterization,” Proc. ICISSP, pp. 108–116, 2018. doi: 10.5220/0006639801080116. 저자를 포함한 전체 인용은 논문 참고문헌 [1]에 있습니다.',
 } as const
 
 /** 원고 IV-3 — 날짜 기반 분할의 학습 공격과 시험 공격. 두 집합은 겹치지 않는다. */

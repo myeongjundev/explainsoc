@@ -1,6 +1,7 @@
 // @vitest-environment node
 import {
   EVIDENCE,
+  PAPER,
   TEST_ATTACKS,
   TRAIN_ATTACKS,
   UNSEEN_TEST_COMPOSITION,
@@ -17,6 +18,12 @@ describe('논문 근거 데이터', () => {
     for (const e of Object.values(EVIDENCE)) {
       if (e.quotes.length === 0) expect(e.note, e.id).toBeTruthy()
     }
+  })
+
+  it('데이터셋 인용은 DOI로 논문을 가리키고 저자 실명을 담지 않는다 (BRB-C12)', () => {
+    expect(PAPER.datasetCitation).toContain('doi: 10.5220/0006639801080116')
+    // "I. Sharafaldin", "A. H. Lashkari"처럼 이니셜 뒤에 성이 오는 표기가 없어야 한다
+    expect(PAPER.datasetCitation).not.toMatch(/\b[A-Z]\.(\s?[A-Z]\.)*\s[A-Z][a-z]+/)
   })
 
   it('분할 그림의 공격은 학습 9종, 시험 3종이고 겹치지 않는다 (P01)', () => {

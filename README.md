@@ -118,8 +118,10 @@ LIVE_URL=https://myeongjundev.github.io/explainsoc/ npm run test:e2e
 
 - 논문: [ExplainSOC Research](https://github.com/myeongjundev/explainsoc-research) ·
   [논문 PDF](https://github.com/myeongjundev/explainsoc-research/blob/main/output/pdf/T10-research-paper.pdf)
-- 데이터셋: I. Sharafaldin, A. H. Lashkari, and A. A. Ghorbani, “Toward Generating a New Intrusion
-  Detection Dataset and Intrusion Traffic Characterization,” Proc. ICISSP, pp. 108–116, 2018.
+- 데이터셋: CICIDS2017 — “Toward Generating a New Intrusion Detection Dataset and Intrusion Traffic
+  Characterization,” Proc. ICISSP, pp. 108–116, 2018. doi: 10.5220/0006639801080116. 제출물에 본인 외
+  다른 사람의 실명을 넣지 않는다는 과제 기준에 따라 저자 이름은 뺐습니다. 저자를 포함한 전체 인용은
+  논문 PDF의 참고문헌 [1]에 있습니다.
 - 앱에 들어 있는 데이터는 이 공개 데이터셋을 쓴 논문의 집계 숫자뿐입니다. 원자료, IP, 사용자 이름,
   실제 조직 자료, 회사·제품 이름은 없습니다.
 
