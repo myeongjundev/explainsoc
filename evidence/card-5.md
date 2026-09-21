@@ -101,7 +101,7 @@
 | 제출물 | 본 방법 | 결과 |
 |---|---|---|
 | 공개 주소의 배포본 5개 파일(HTML·JS·CSS·아이콘·라이선스 고지) | 공개 서버에서 받아 비밀값·이메일·휴대전화·주민번호·데이터셋 저자 이름을 찾음 | 0건 |
-| 실행 묶음 `explainsoc-2e00f55.zip` 52개 파일 | 풀어서 `npm run check`(폴더 탐색) + 저자 이름·PC 경로 검색 | 11개 PASS · 0건 |
+| 실행 묶음 `explainsoc-9d71d39.zip` 52개 파일 | 풀어서 `npm run check`(폴더 탐색) + 저자 이름·PC 경로 검색 | 11개 PASS · 0건 |
 | 공개 저장소의 모든 파일(과제 기록·증거 포함) | `npm run check` + `git grep`으로 저자 이름, 이니셜+성 표기, 호칭(님·씨 등) 검색 | PASS · 0건 |
 | 12번 사이트의 13번 카드 | 문장·그림·링크 확인, 12번 `validate_release` | 다른 사람 이름 없음 · PASS |
 | 제출문 초안(이 문서 아래) | 직접 확인 | 다른 사람 이름 없음 |
@@ -124,7 +124,7 @@
 
 ```text
 결과물: https://myeongjundev.github.io/explainsoc/ (로그인 없음)
-실행 묶음: explainsoc-2e00f55.zip — README.md "실행"대로 npm ci → npm run build → npm run preview 후
+실행 묶음: explainsoc-9d71d39.zip — README.md "실행"대로 npm ci → npm run build → npm run preview 후
   http://127.0.0.1:4173/explainsoc/ (Node.js 24.15 이상)
 
 어디에 무엇이
@@ -150,15 +150,16 @@
 | 무엇 | 값 |
 |---|---|
 | 결과물 URL | https://myeongjundev.github.io/explainsoc/ |
-| 실행 묶음 | `explainsoc-2e00f55.zip` · 104,748 bytes · SHA-256 `f3131e37b70e15458a3481f266c24cde8f0247291a8758fde9f61ee7403fa082` · 원본 커밋 `2e00f5501c47da248cf13b13bf4d92c7f37d1d2d` · 로컬 저장소 `release/` |
+| 실행 묶음 | `explainsoc-9d71d39.zip` · 104,812 bytes · SHA-256 `cb6cf56631ee50da28b581ec26c64f78405b84770e370fea7326bc3bca752c4a` · 원본 커밋 `9d71d39fd4ad9a9f15a17bd379c39aa53c834060` · 로컬 저장소 `release/` |
 | 라이선스 | MIT (`LICENSE`, 2026-09-22 사용자 결정). GitHub도 저장소를 MIT로 인식한다 |
 | 짧은 확인 방법 | 위 BRB-C13 |
 | 제출문 세 줄 | 아래 BRB-C14 — ②는 사용자가 쓴다 |
 
-카드 4의 묶음(`explainsoc-25d68ce.zip`)은 이 카드에서 두 번 바뀌었다. 데이터셋 인용 수정(`2e7bd73`, SHA-256
-`a3e65702…42557d2`)과 MIT 라이선스 추가(`2e00f55`)다. **제출할 묶음은 `explainsoc-2e00f55.zip`이다.**
-같은 커밋에서 두 번 만들어 같은 SHA-256이 나왔다. 라이선스 추가는 배포본을 바꾸지 않아 공개 주소의 자산은
-그대로다.
+카드 4의 묶음(`explainsoc-25d68ce.zip`)은 이 카드에서 세 번 바뀌었다. 데이터셋 인용 수정(`2e7bd73`, SHA-256
+`a3e65702…42557d2`), MIT 라이선스 추가(`2e00f55`, `f3131e37…7403fa082`), README에 트러블슈팅 기록 링크
+추가(`9d71d39`)다. **제출할 묶음은 `explainsoc-9d71d39.zip`이다.** 같은 커밋에서 두 번 만들어 같은 SHA-256이
+나왔다. 뒤의 두 변경은 배포본을 바꾸지 않아 공개 주소의 자산은 그대로다. 학원 PC에서 다시 만드는 방법은
+`planning/HANDOFF-2026-09-22.md` 1-0에 있다.
 
 ### 제출할 수 있는 URL — 모두 로그인 없이
 
@@ -178,22 +179,23 @@
 ### 최종 묶음의 새 임시 폴더 실행
 
 카드 4와 같은 방법(세션 임시 폴더 아래 빈 폴더, PowerShell `Expand-Archive`)으로 되풀이했다. 인용을 고친
-`2e7bd73` 묶음에서 한 번, 라이선스를 넣은 `2e00f55` 묶음에서 한 번 했고 결과가 같았다. 아래는 마지막 묶음이다.
+`2e7bd73`, 라이선스를 넣은 `2e00f55`, 트러블슈팅 링크를 넣은 `9d71d39` 묶음에서 한 번씩 했고 결과가 같았다.
+아래는 마지막 묶음이다.
 
 ```text
-<새 임시 폴더>\explainsoc-2e00f55> npm ci
-added 113 packages, and audited 114 packages in 3s
+<새 임시 폴더>\explainsoc-9d71d39> npm ci
+added 113 packages, and audited 114 packages in 2s
 found 0 vulnerabilities
 
-<새 임시 폴더>\explainsoc-2e00f55> npm run build
+<새 임시 폴더>\explainsoc-9d71d39> npm run build
 ✓ 41 modules transformed.
 dist/index.html                   1.22 kB │ gzip:  0.75 kB
 dist/third-party-licenses.md      3.42 kB
 dist/assets/index-B84lP8u3.css   17.00 kB │ gzip:  4.38 kB
 dist/assets/index-Rf7vZX1d.js   269.61 kB │ gzip: 83.58 kB
-✓ built in 293ms
+✓ built in 497ms
 
-<새 임시 폴더>\explainsoc-2e00f55> npm run preview
+<새 임시 폴더>\explainsoc-9d71d39> npm run preview
   ➜  Local:   http://127.0.0.1:4173/explainsoc/
 ```
 
@@ -249,6 +251,8 @@ dist/assets/index-Rf7vZX1d.js   269.61 kB │ gzip: 83.58 kB
 | explainsoc | `src/data/paperEvidence.ts`, `README.md` | 데이터셋 인용에서 저자 실명을 빼고 DOI로 가리킨다 |
 | explainsoc | `tests/unit/evidence.test.ts` | 인용에 DOI가 있고 저자 표기가 없는지 본다(단위·컴포넌트 74 → 75개) |
 | explainsoc | `LICENSE`, `package.json`, `README.md`, `scripts/make-release-zip.mjs` | MIT 라이선스, 묶음 허용 목록에 LICENSE (`2e00f55`) |
+| explainsoc | `TROUBLESHOOTING.md`, `README.md` | 포트폴리오용 트러블슈팅 기록과 README 첫머리 링크 (`9d71d39`) |
+| explainsoc | `planning/HANDOFF-2026-09-22.md` | 학원 PC에서 이어 갈 인계 문서 |
 | explainsoc | `evidence/card-5.md`, `evidence/screenshots/t12-*.png` | 이 문서와 12번 화면 세 장 |
 | about (12번) | `content/approved.json`, `docs/index.html`, `docs/assets/t13-claim-flip.webp` | 13번 공개 카드 |
 | about (12번) | `device/test_device.py`, `planning/STATUS.md` | 사례 노트 수 검사, 제출 뒤 갱신 기록 |

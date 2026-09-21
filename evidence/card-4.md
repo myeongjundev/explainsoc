@@ -113,8 +113,8 @@ Claude 데스크톱 앱의 내장 브라우저에서 공개 주소를 열었다.
 ## 실행 묶음(ZIP) — BRB-C08 · BRB-C22
 
 > **제출할 최종 묶음은 카드 5에서 바뀌었다.** 전체 제출물 실명 검사(BRB-C12)로 데이터셋 인용을 고쳐
-> `explainsoc-2e7bd73.zip`이 됐고, MIT 라이선스를 넣어 `explainsoc-2e00f55.zip`이 됐다. 최종 묶음의 해시와
-> 새 임시 폴더 기록은 `evidence/card-5.md`에 있다.
+> `explainsoc-2e7bd73.zip`, MIT 라이선스를 넣어 `explainsoc-2e00f55.zip`, README에 트러블슈팅 기록 링크를 넣어
+> `explainsoc-9d71d39.zip`이 됐다. 최종 묶음의 해시와 새 임시 폴더 기록은 `evidence/card-5.md`에 있다.
 > 아래는 카드 4 시점의 기록이다.
 
 | 항목 | 값 |
