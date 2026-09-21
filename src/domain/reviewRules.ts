@@ -7,7 +7,7 @@
  *   (구현 체크리스트 1절 해석 1).
  */
 
-import type { EvidenceId } from '../data/paperEvidence'
+import { XGB_UNSEEN, type EvidenceId } from '../data/paperEvidence'
 import type { FindingStatus, ReviewInput } from './types'
 
 export type RuleId = 'R01' | 'R02' | 'R03' | 'R04' | 'R05' | 'R06' | 'R07' | 'R08' | 'R09' | 'R10'
@@ -68,8 +68,8 @@ export const REVIEW_RULES: readonly ReviewRule[] = [
     status: 'caution',
     title: '공격 Recall 없는 오탐률',
     guidance: '낮아 보이는 오탐률만으로 공격 탐지 능력을 알 수 없습니다.',
-    guidanceForPaperExample:
-      '매우 낮은 FPR 0.0002는 좋은 결과처럼 보이지만, 논문에서 이 숫자는 모델이 거의 모든 흐름을 정상으로 예측한 결과였습니다. 공격 Recall과 함께 읽어야 합니다.',
+    // 원고 V-2 원문의 표현을 빌린다. 숫자는 근거 데이터에서 가져온다.
+    guidanceForPaperExample: `매우 낮은 FPR ${XGB_UNSEEN.reported.fpr}는 좋은 결과처럼 보이지만, 논문에서 이 숫자는 모델이 거의 모든 흐름을 정상으로 예측한 결과였습니다. 공격 Recall과 함께 읽어야 합니다.`,
     question: '같은 시험에서 공격 Recall은 얼마입니까?',
     evidenceIds: ['P03'],
     applies: (i) => has(i, 'fpr') && !has(i, 'attackRecall'),

@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import { UNSEEN_TEST_COMPOSITION, XGB_RANDOM, XGB_UNSEEN } from '../data/paperEvidence'
+import { PAPER, UNSEEN_TEST_COMPOSITION, XGB_RANDOM, XGB_UNSEEN } from '../data/paperEvidence'
 import { computeMetrics } from '../domain/metrics'
 import { formatComputed, formatCount, formatRatio, METRIC_SHORT } from '../domain/format'
 import { METRIC_KINDS, type ConfusionMatrix, type InputSource, type ReviewInput } from '../domain/types'
@@ -47,9 +47,9 @@ export function ClaimReveal({ matrix, claim, source }: Props) {
   const baseline = m.alwaysNormalAccuracy.kind === 'value' ? m.alwaysNormalAccuracy.value : null
 
   const scope = isA
-    ? `이 비교는 CICIDS2017 ${XGB_UNSEEN.splitLabel}의 시험 구성에 한정됩니다.`
+    ? `이 비교는 ${PAPER.dataset} ${XGB_UNSEEN.splitLabel}의 시험 구성에 한정됩니다.`
     : isB
-      ? `이 비교는 CICIDS2017 ${XGB_RANDOM.splitLabel}의 시험 구성에 한정됩니다.`
+      ? `이 비교는 ${PAPER.dataset} ${XGB_RANDOM.splitLabel}의 시험 구성에 한정됩니다.`
       : '입력한 혼동행렬로 계산했습니다. 이 입력에 한정된 비교입니다.'
 
   return (

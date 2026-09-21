@@ -25,7 +25,7 @@ const SOURCE_NOTE: Record<FormState['source'], string | null> = {
 
 /**
  * 한 페이지 안의 단계형 작업대. 입력은 이 컴포넌트의 메모리에만 있다 —
- * URL, 쿠키, localStorage에 넣지 않고, 새로 고치면 사라진다.
+ * URL, 쿠키, 브라우저 저장소에 넣지 않고, 새로 고치면 사라진다. (scripts/check-safety.mjs가 검사한다)
  */
 export function App() {
   const [form, setForm] = useState<FormState>(emptyForm)
