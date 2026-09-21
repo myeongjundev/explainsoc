@@ -18,22 +18,38 @@ SKT ALEPH **마지막 과제 B(13번)** 다. 10번 과제 논문의 결과를 **
 
 ## 1. 순서대로 읽을 것
 
-1. `planning/T13-ASSIGNMENT.md` — **과제 원문.** 통과 기준 BRB-C01~C15, C22. C16~C21은 원문에 없다.
-2. `planning/CLAUDE-OPINION.md` — Claude의 의견. **결정이 아니라 참고다.** 논문 원문 문장 S1~S6과
+1. `planning/T13-ASSIGNMENT.md` — **과제 원문. 처음부터 끝까지 읽는다.** 통과 기준 번호(BRB-C01~C15,
+   C22)만 보고 넘어가지 않는다. 기준 번호 말고도 설계를 가르는 문장이 원문 곳곳에 있다.
+   - **과제 개요** — 논문 종류별 앱 예시 세 가지, "처음 온 사람이 1분 안에" 조건
+   - **완주 체크리스트** 여섯 줄 — 제출 전에 하나씩 지운다
+   - **증거 보관 기준** — "기술의 난이도는 보지 않습니다"로 시작한다. 채점이 무엇을 보고 무엇을 안
+     보는지 적혀 있다
+   - 카드마다 **막히는 지점** — 예: "화면이 자꾸 커집니다 → 사용자가 할 일 하나로 줄여 첫 판을
+     만들고", "결과가 논문과 다릅니다 → 논문의 계산이나 규칙을 요청에 그대로 옮겨 적습니다"
+   - 카드마다 **남길 것** — 제출할 때 증거로 낼 것들이다
+   - C16~C21은 원문에 없다. 추정하지 않는다
+2. `planning/CLAUDE-OPINION.md` — Claude의 첫 의견. **결정이 아니라 참고다.** 논문 원문 문장 S1~S6과
    위치, 후보 A·B·C, 판독 항목 다섯, 해석 경계가 정리돼 있다.
-3. `explainsoc-research/paper/MANUSCRIPT-KO.md` — 논문 원고. 적어도 V(결과)·VI(논의)·VII(결론)는
+3. `planning/CLAUDE-CARD1-REVIEW.md`와 `planning/CLAUDE-CARD1-ANSWER.md` — Codex가 낸 두 후보
+   (Evidence Gate · SplitLens)와 그에 대한 Claude의 답. 답의 4절에 **예시 숫자에서 실제로 걸린 것**
+   (혼동행렬 역산 금지, 분할 이름)이 있다. 설계 전에 꼭 본다.
+4. `explainsoc-research/paper/MANUSCRIPT-KO.md` — 논문 원고. 적어도 V(결과)·VI(논의)·VII(결론)는
    직접 읽는다. 숫자는 여기서만 가져온다.
-4. `explainsoc-research/docs/DECISIONS.md`의 **D-003** — 10번에서 만든 대시보드를 이 과제로 넘긴 기록.
-5. `explainsoc-research/docs/DAY-4-REPORT.md`와 `frontend/` — 넘겨받은 대시보드(React 19 · Vite 7 ·
+5. `explainsoc-research/docs/DECISIONS.md`의 **D-003** — 10번에서 만든 대시보드를 이 과제로 넘긴 기록.
+6. `explainsoc-research/docs/DAY-4-REPORT.md`와 `frontend/` — 넘겨받은 대시보드(React 19 · Vite 7 ·
    TypeScript, FastAPI 백엔드). 결과를 **열람하는** 화면 넷이다.
+7. `explainsoc-research/docs/DAY-2-REPORT.md` — 모델 여섯 개의 **정확한 혼동행렬**. 예시 숫자는
+   원고의 반올림된 비율에서 역산하지 말고 여기서 가져온다.
 
 ## 2. 할 일
 
 ### 2-1. 카드 1 문장을 사용자와 확정한다 — 대신 고르지 않는다
 
 카드 1은 "○○인 사람이 △△할 때 이 앱이 □□을 해 준다" 한 문장과 사용자가 할 일 세 가지다
-(BRB-C01·C02). **이건 사용자가 고른다.** `CLAUDE-OPINION.md` 3절의 후보를 보여 주고, 다른 안이
-있으면 함께 내되, 사용자가 고른 문장으로 설계한다. 사용자가 아직 안 골랐으면 그것부터 묻는다.
+(BRB-C01·C02). **이건 사용자가 고른다.** 후보는 지금 세 곳에 있다 — `CLAUDE-OPINION.md` 3절,
+`CLAUDE-CARD1-REVIEW.md`(Evidence Gate · SplitLens), `CLAUDE-CARD1-ANSWER.md` 6~8절(문장·할 일·첫 화면
+문구). 이것들을 보여 주고, 다른 안이 있으면 함께 내되, 사용자가 고른 문장으로 설계한다. 사용자가
+아직 안 골랐으면 그것부터 묻는다.
 
 과제 원문이 이 문장을 "이 과제의 핵심"이라고 한다. 설계 전체가 이 문장에서 나온다.
 
@@ -55,6 +71,8 @@ SKT ALEPH **마지막 과제 B(13번)** 다. 10번 과제 논문의 결과를 **
 | 해석 경계를 화면 문구에 어떻게 반영하는지 | C04 |
 | 기술 선택과 이유 | — |
 | **검증 계획** — C01~C15·C22 각각을 무엇으로 확인하는지 | 전부 |
+| **완주 체크리스트** 여섯 줄을 각각 무엇으로 지우는지 | 원문 |
+| 카드마다 **남길 것**을 어디에 어떻게 남기는지 | 원문 |
 
 ### 2-3. 멈추고 보고한다
 
