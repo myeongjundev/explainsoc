@@ -22,7 +22,7 @@ describe('논문 근거 데이터', () => {
 
   it('데이터셋 인용은 DOI로 논문을 가리키고 저자 실명을 담지 않는다 (BRB-C12)', () => {
     expect(PAPER.datasetCitation).toContain('doi: 10.5220/0006639801080116')
-    // "I. Sharafaldin", "A. H. Lashkari"처럼 이니셜 뒤에 성이 오는 표기가 없어야 한다
+    // "A. B. Surname"처럼 이니셜 뒤에 성이 오는 저자 표기가 없어야 한다
     expect(PAPER.datasetCitation).not.toMatch(/\b[A-Z]\.(\s?[A-Z]\.)*\s[A-Z][a-z]+/)
   })
 
