@@ -9,6 +9,7 @@
 
 - 공개 주소: https://myeongjundev.github.io/explainsoc/ — 로그인 없이 열립니다
 - 입력한 성능 자료는 이 브라우저 안에서만 계산되며 저장하거나 전송하지 않습니다.
+- 만들며 부딪힌 문제와 해결: [트러블슈팅 기록](https://github.com/myeongjundev/explainsoc/blob/main/TROUBLESHOOTING.md)
 
 ---
 
