@@ -101,7 +101,7 @@
 | 제출물 | 본 방법 | 결과 |
 |---|---|---|
 | 공개 주소의 배포본 5개 파일(HTML·JS·CSS·아이콘·라이선스 고지) | 공개 서버에서 받아 비밀값·이메일·휴대전화·주민번호·데이터셋 저자 이름을 찾음 | 0건 |
-| 실행 묶음 `explainsoc-2e7bd73.zip` 51개 파일 | 풀어서 `npm run check`(폴더 탐색) + 저자 이름·PC 경로 검색 | 11개 PASS · 0건 |
+| 실행 묶음 `explainsoc-2e00f55.zip` 52개 파일 | 풀어서 `npm run check`(폴더 탐색) + 저자 이름·PC 경로 검색 | 11개 PASS · 0건 |
 | 공개 저장소의 모든 파일(과제 기록·증거 포함) | `npm run check` + `git grep`으로 저자 이름, 이니셜+성 표기, 호칭(님·씨 등) 검색 | PASS · 0건 |
 | 12번 사이트의 13번 카드 | 문장·그림·링크 확인, 12번 `validate_release` | 다른 사람 이름 없음 · PASS |
 | 제출문 초안(이 문서 아래) | 직접 확인 | 다른 사람 이름 없음 |
@@ -124,7 +124,7 @@
 
 ```text
 결과물: https://myeongjundev.github.io/explainsoc/ (로그인 없음)
-실행 묶음: explainsoc-2e7bd73.zip — README.md "실행"대로 npm ci → npm run build → npm run preview 후
+실행 묶음: explainsoc-2e00f55.zip — README.md "실행"대로 npm ci → npm run build → npm run preview 후
   http://127.0.0.1:4173/explainsoc/ (Node.js 24.15 이상)
 
 어디에 무엇이
@@ -150,12 +150,15 @@
 | 무엇 | 값 |
 |---|---|
 | 결과물 URL | https://myeongjundev.github.io/explainsoc/ |
-| 실행 묶음 | `explainsoc-2e7bd73.zip` · 103,975 bytes · SHA-256 `a3e657026855215dc7674cc85b805958968a3725b87b49f1eefe35a9142557d2` · 원본 커밋 `2e7bd73a45947717e0c6949d3402ffb6662b40ed` · 로컬 저장소 `release/` |
+| 실행 묶음 | `explainsoc-2e00f55.zip` · 104,748 bytes · SHA-256 `f3131e37b70e15458a3481f266c24cde8f0247291a8758fde9f61ee7403fa082` · 원본 커밋 `2e00f5501c47da248cf13b13bf4d92c7f37d1d2d` · 로컬 저장소 `release/` |
+| 라이선스 | MIT (`LICENSE`, 2026-09-22 사용자 결정). GitHub도 저장소를 MIT로 인식한다 |
 | 짧은 확인 방법 | 위 BRB-C13 |
 | 제출문 세 줄 | 아래 BRB-C14 — ②는 사용자가 쓴다 |
 
-카드 4의 묶음(`explainsoc-25d68ce.zip`)은 이 카드의 인용 수정으로 바뀌었다. **제출할 묶음은
-`explainsoc-2e7bd73.zip`이다.** 같은 커밋에서 두 번 만들어 같은 SHA-256이 나왔다.
+카드 4의 묶음(`explainsoc-25d68ce.zip`)은 이 카드에서 두 번 바뀌었다. 데이터셋 인용 수정(`2e7bd73`, SHA-256
+`a3e65702…42557d2`)과 MIT 라이선스 추가(`2e00f55`)다. **제출할 묶음은 `explainsoc-2e00f55.zip`이다.**
+같은 커밋에서 두 번 만들어 같은 SHA-256이 나왔다. 라이선스 추가는 배포본을 바꾸지 않아 공개 주소의 자산은
+그대로다.
 
 ### 제출할 수 있는 URL — 모두 로그인 없이
 
@@ -174,32 +177,33 @@
 
 ### 최종 묶음의 새 임시 폴더 실행
 
-카드 4와 같은 방법(세션 임시 폴더 아래 빈 폴더, PowerShell `Expand-Archive`)으로 되풀이했다.
+카드 4와 같은 방법(세션 임시 폴더 아래 빈 폴더, PowerShell `Expand-Archive`)으로 되풀이했다. 인용을 고친
+`2e7bd73` 묶음에서 한 번, 라이선스를 넣은 `2e00f55` 묶음에서 한 번 했고 결과가 같았다. 아래는 마지막 묶음이다.
 
 ```text
-<새 임시 폴더>\explainsoc-2e7bd73> npm ci
+<새 임시 폴더>\explainsoc-2e00f55> npm ci
 added 113 packages, and audited 114 packages in 3s
 found 0 vulnerabilities
 
-<새 임시 폴더>\explainsoc-2e7bd73> npm run build
+<새 임시 폴더>\explainsoc-2e00f55> npm run build
 ✓ 41 modules transformed.
 dist/index.html                   1.22 kB │ gzip:  0.75 kB
 dist/third-party-licenses.md      3.42 kB
 dist/assets/index-B84lP8u3.css   17.00 kB │ gzip:  4.38 kB
 dist/assets/index-Rf7vZX1d.js   269.61 kB │ gzip: 83.58 kB
-✓ built in 386ms
+✓ built in 293ms
 
-<새 임시 폴더>\explainsoc-2e7bd73> npm run preview
+<새 임시 폴더>\explainsoc-2e00f55> npm run preview
   ➜  Local:   http://127.0.0.1:4173/explainsoc/
 ```
 
 | 확인 | 결과 |
 |---|---|
-| 풀린 파일 | 51개, `node_modules`·`.git`·`dist` 없음 |
+| 풀린 파일 | 52개(`LICENSE` 포함), `node_modules`·`.git`·`dist` 없음 |
 | HTTP | 페이지 200 (1,224 bytes), JS·CSS·아이콘 200 |
 | 첫 화면 (DOM) | 제목, h1, 도움 한 문장, 반영한 논문 제목, 시작 버튼 둘. 스크립트는 앱 JS 하나 |
 | 자산 이름 | 공개 주소와 같다(`index-Rf7vZX1d.js`, `index-B84lP8u3.css`) |
-| `npm run check` | 폴더 탐색 · 51개 파일 · 11개 PASS |
+| `npm run check` | 폴더 탐색 · 52개 파일 · 11개 PASS |
 | `npm test` | 75개 통과 |
 | `npm run test:e2e` | 20개 통과 |
 
@@ -244,6 +248,7 @@ dist/assets/index-Rf7vZX1d.js   269.61 kB │ gzip: 83.58 kB
 |---|---|---|
 | explainsoc | `src/data/paperEvidence.ts`, `README.md` | 데이터셋 인용에서 저자 실명을 빼고 DOI로 가리킨다 |
 | explainsoc | `tests/unit/evidence.test.ts` | 인용에 DOI가 있고 저자 표기가 없는지 본다(단위·컴포넌트 74 → 75개) |
+| explainsoc | `LICENSE`, `package.json`, `README.md`, `scripts/make-release-zip.mjs` | MIT 라이선스, 묶음 허용 목록에 LICENSE (`2e00f55`) |
 | explainsoc | `evidence/card-5.md`, `evidence/screenshots/t12-*.png` | 이 문서와 12번 화면 세 장 |
 | about (12번) | `content/approved.json`, `docs/index.html`, `docs/assets/t13-claim-flip.webp` | 13번 공개 카드 |
 | about (12번) | `device/test_device.py`, `planning/STATUS.md` | 사례 노트 수 검사, 제출 뒤 갱신 기록 |
