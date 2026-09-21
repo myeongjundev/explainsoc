@@ -1,5 +1,25 @@
 # 진행 기록
 
+## 2026-09-22 — 카드 1~4 구현 (Claude)
+
+- 승인된 설계(`planning/DESIGN.md`)와 인계 문서(`planning/CLAUDE-HANDOFF.md`)대로 카드 1~4를
+  구현하고, 카드마다 코드·테스트·증거를 함께 커밋해 푸시했다.
+
+  | 카드 | 커밋 | 증거 |
+  |---|---|---|
+  | 1 앱 문장과 세 행동 | `a90e1fc` | `evidence/card-1.md` |
+  | 2 첫 흐름 | `fee6025` | `evidence/card-2.md` |
+  | 3 데이터와 비밀값 | `9857a54` | `evidence/card-3.md` |
+  | 4 공개와 재현 | `665e819` | `evidence/card-4.md` |
+
+- 공개 주소 https://myeongjundev.github.io/explainsoc/ — GitHub Actions가 안전 검사·테스트·빌드·
+  의존성 감사·브라우저 테스트를 모두 통과한 커밋만 Pages에 배포한다. 공개 주소에 같은 브라우저
+  테스트 20개를 돌려 통과했다.
+- 실행 묶음 `explainsoc-25d68ce.zip` (SHA-256 `6986d64c…d3585134`)을 새 임시 폴더에 풀어
+  `npm ci`·`npm run build`·`npm run preview`와 검사 전부를 확인했다.
+- 사용자가 정할 것: 소스 코드 라이선스. 지금은 README에 미정으로 적혀 있다. 정하면 LICENSE를 넣고
+  ZIP을 다시 만든다.
+
 ## 2026-09-21 — ExplainSOC 설계 승인과 Claude 구현 인계
 
 - 사용자가 Codex 추천 방향으로 진행하도록 승인했다.
@@ -56,16 +76,13 @@
   이 프로젝트에서 특히 볼 눈만 적었다. Claude 의견 문서는 따를 지시가 아니라 동료 의견으로 읽고, 더 나은
   길이 보이면 반박하라고 적었다.
 
-## 다음 할 일 — 카드 1
+## 다음 할 일 — 카드 5
 
-논문 결론에서 결과 하나를 골라 "○○인 사람이 △△할 때 이 앱이 □□을 해 준다"로 쓰고,
-그 사람이 앱에서 할 일 세 가지를 정한다(BRB-C01·C02). **본인이 고른다.**
-
-순서: 본인이 문장을 고른다 → Codex가 설계한다. 참고 문서는 `planning/CLAUDE-OPINION.md`.
-
-- 논문 원문: `explainsoc-research/output/pdf/T10-research-paper.pdf`
-- 결과 요약: `explainsoc-research/README.md`의 "주요 결과", "설명이 안정적이어도 탐지가
-  유용한 것은 아니다"
+- 공개가 검증됐으므로 T12 `t13-app` 자리에 URL과 한 문장을 잇는다(`t12-about`은 `git fetch` 먼저).
+- 처음 보는 동료 한 명이 설명 없이 써 보고 이름 없는 한 줄을 남긴다. **사용자가 받아 온다.** 사람이 잰
+  60초도 이때 잰다.
+- 짧은 확인 방법, 제출 URL·ZIP 목록을 정리한다.
+- `AI에게 맡긴 일`, `따르지 않은 제안`은 사실 초안만 둔다. `내가 직접 판단한 일`은 사용자가 쓴다.
 
 ## 12번 사이트와 잇는 자리
 
