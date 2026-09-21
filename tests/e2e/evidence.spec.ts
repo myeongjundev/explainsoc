@@ -3,11 +3,12 @@ import { openHome, startExample } from './helpers'
 
 /**
  * 증거 스크린샷. 평소 테스트에서는 건너뛰고 `EVIDENCE=1`일 때만 evidence/screenshots에 남긴다.
- * 카드가 끝날 때 한 번 찍어 증거 문서가 가리키게 한다.
+ * 카드가 끝날 때 한 번 찍어 증거 문서가 가리키게 한다. `LIVE_URL`과 함께 주면 공개 주소를 찍어
+ * evidence/screenshots/live에 따로 둔다.
  */
 test.skip(!process.env.EVIDENCE, 'EVIDENCE=1일 때만 스크린샷을 남긴다')
 
-const DIR = 'evidence/screenshots'
+const DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence/screenshots'
 
 test('첫 화면 — 데스크톱 1440×900', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 })
