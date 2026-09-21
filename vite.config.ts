@@ -36,6 +36,9 @@ export default defineConfig({
   build: {
     // 소스 지도는 공개 사이트에 올리지 않는다. 필요한 사람은 저장소 소스를 보면 된다.
     sourcemap: false,
+    // 번들은 주석을 지우므로, 묶인 의존성(React 등)의 라이선스 전문을 따로 내보낸다.
+    // 점으로 시작하는 폴더(.vite)는 Pages 산출물에서 빠지므로 배포본 맨 위에 둔다.
+    license: { fileName: 'third-party-licenses.md' },
   },
   test: {
     globals: true,

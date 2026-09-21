@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises'
 import { extname, join, normalize, sep } from 'node:path'
 
 const DIST = join(process.cwd(), 'dist')
+const LIVE = !!process.env.LIVE_URL
 
 const TYPES: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
@@ -30,6 +31,11 @@ export const test = base.extend<{ outsideRequests: string[] }>({
       if (url.origin !== app.origin || !url.pathname.startsWith(app.pathname)) {
         outsideRequests.push(url.href)
         return route.abort('blockedbyclient')
+      }
+      if (LIVE) {
+        // 공개 주소 검사: 앱 요청은 실제 배포 서버에서 받는다. 받는 일은 브라우저가 아니라 테스트
+        // 도구가 하므로, 끼워 넣는 프로그램이 있는 PC에서도 배포된 바이트 그대로 검사한다.
+        return route.fulfill({ response: await route.fetch() })
       }
       let rel = url.pathname.slice(app.pathname.length) || 'index.html'
       if (rel.endsWith('/')) rel += 'index.html'

@@ -7,7 +7,7 @@
 [ExplainSOC Research](https://github.com/myeongjundev/explainsoc-research)의 결과를 실제로 쓰는
 앱이며, SKT ALEPH 마지막 과제 B로 만들었습니다.
 
-- 공개 주소: https://myeongjundev.github.io/explainsoc/ (카드 4에서 공개)
+- 공개 주소: https://myeongjundev.github.io/explainsoc/ — 로그인 없이 열립니다
 - 입력한 성능 자료는 이 브라우저 안에서만 계산되며 저장하거나 전송하지 않습니다.
 
 ---
@@ -59,7 +59,8 @@
 
 ## 실행
 
-Node.js 20.19 이상이 필요합니다. 새 폴더에서 다음 세 줄이면 됩니다.
+Node.js 24 LTS(24.15 이상)가 필요합니다. 22.x라면 22.22.2 이상이면 됩니다. 새 폴더에서 다음 세
+줄이면 됩니다.
 
 ```text
 npm ci
@@ -68,6 +69,13 @@ npm run preview
 ```
 
 브라우저에서 `http://127.0.0.1:4173/explainsoc/`를 엽니다.
+
+### 실행 묶음(ZIP)
+
+제출용 ZIP은 `npm run release:zip`으로 만듭니다. 커밋된 소스, `package-lock.json`, 이 README,
+예시 데이터(`src/data`), 테스트만 담고 `node_modules`, Git 기록, 빌드 결과, 로그, 환경 파일은
+담지 않습니다. 과제 기록인 `evidence/`와 `planning/`도 저장소에만 있습니다. 같은 커밋에서 다시
+만들면 같은 파일(같은 SHA-256)이 나옵니다.
 
 ### 환경 변수
 
@@ -78,12 +86,24 @@ npm run preview
 
 | 명령 | 하는 일 |
 |---|---|
+| `npm run check` | 비밀값·개인정보·사용자 폴더 경로·위험한 DOM API·외부 요청 검사, 빌드가 있으면 배포본의 보안 정책까지 |
 | `npm test` | 단위·컴포넌트 테스트 — 계산식, 입력 검증, 판독 규칙 R01~R10, 근거 데이터, 화면 동작 |
 | `npm run test:e2e` | 실제 브라우저 검사 — 60초 예시, 세 행동, 잘못된 입력, 키보드, 화면 폭, 접근성, 요청·저장소 |
+| `npm run verify` | 위 셋과 프로덕션 빌드를 차례로 |
 
 브라우저 검사는 로컬에서는 설치된 Chrome을, CI에서는 Playwright가 받은 Chromium을 씁니다.
 브라우저와 서버 사이에서 페이지에 스크립트를 끼워 넣는 프로그램이 있는 PC에서도 앱이 실제로 한
-일만 검사하도록, 테스트는 빌드 결과물을 네트워크 없이 바로 읽어 옵니다.
+일만 검사하도록, 테스트는 빌드 결과물을 네트워크 없이 바로 읽어 옵니다. 테스트마다 쿠키·저장소가
+빈 새 브라우저 컨텍스트에서 시작합니다.
+
+같은 브라우저 검사를 공개 주소에 돌리려면 `LIVE_URL`을 줍니다.
+
+```bash
+LIVE_URL=https://myeongjundev.github.io/explainsoc/ npm run test:e2e
+```
+
+`main`에 올라간 커밋은 GitHub Actions가 위 검사를 모두 통과시킨 뒤에만 GitHub Pages에 배포합니다
+(`.github/workflows/deploy.yml`).
 
 ## 개인정보와 보안
 
@@ -106,7 +126,9 @@ npm run preview
 ## 라이선스
 
 소스 코드의 라이선스는 아직 정하지 않았습니다. 따로 표시하기 전까지 모든 권리는 저작자에게
-있습니다. 의존성은 각자의 라이선스를 따르며 목록은 `package-lock.json`에 있습니다.
+있습니다. 의존성은 각자의 라이선스를 따르며 목록은 `package-lock.json`에 있습니다. 배포본에 묶이는
+의존성(React, React DOM, scheduler — 모두 MIT)의 라이선스 전문은 빌드할 때
+`dist/third-party-licenses.md`로 함께 나가며, 공개 주소의 같은 경로에서도 볼 수 있습니다.
 
 ## 구조
 
@@ -120,6 +142,7 @@ tests/
   unit/        계산·검증·규칙·근거
   component/   화면 동작
   e2e/         실제 브라우저
-evidence/      과제 카드별 증거
-planning/      과제 원문, 설계, 구현 체크리스트, 진행 기록
+scripts/       안전 검사(check-safety), 실행 묶음 만들기(make-release-zip)
+evidence/      과제 카드별 증거 — 저장소에만 있음
+planning/      과제 원문, 설계, 구현 체크리스트, 진행 기록 — 저장소에만 있음
 ```

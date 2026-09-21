@@ -4,6 +4,7 @@
  * 하나라도 걸리면 실패한다. `npm run check`, CI, 릴리스 전에 돈다.
  *
  * 검사 대상은 Git이 추적하거나 추적할 파일이다(.gitignore가 막은 node_modules·dist 등은 뺀다).
+ * 실행 묶음(ZIP)처럼 Git 기록이 없는 폴더에서는 폴더를 직접 훑는다.
  * 빌드가 있으면 배포본(dist)도 따로 본다.
  */
 
@@ -13,13 +14,33 @@ import { extname, join } from 'node:path'
 
 const TEXT = new Set(['.ts', '.tsx', '.js', '.mjs', '.cjs', '.json', '.css', '.html', '.md', '.svg', '.yml', '.yaml', '.txt', ''])
 
+/** 설치물·빌드·테스트 산출물. 어느 방식으로 파일을 모으든 뺀다. */
+const SKIP_DIRS = new Set(['node_modules', 'dist', '.git', '.vite', 'test-results', 'playwright-report', 'blob-report', 'release'])
+
 function gitFiles() {
-  const run = (args) => execFileSync('git', args, { encoding: 'utf8' }).split('\0').filter(Boolean)
-  const all = [...run(['ls-files', '-z']), ...run(['ls-files', '-z', '--others', '--exclude-standard'])]
-  return [...new Set(all)].filter((f) => existsSync(f) && statSync(f).isFile())
+  const run = (args) => execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).split('\0').filter(Boolean)
+  return [...run(['ls-files', '-z']), ...run(['ls-files', '-z', '--others', '--exclude-standard'])]
 }
 
-const files = gitFiles()
+function walkFiles(dir = '.') {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+    const p = dir === '.' ? e.name : `${dir}/${e.name}`
+    if (e.isDirectory()) return SKIP_DIRS.has(e.name) ? [] : walkFiles(p)
+    return e.isFile() ? [p] : []
+  })
+}
+
+let listedBy = 'Git 파일 목록'
+let listed
+try {
+  listed = gitFiles()
+} catch {
+  listedBy = '폴더 탐색(Git 저장소가 아님)'
+  listed = walkFiles()
+}
+const files = [...new Set(listed)].filter(
+  (f) => !f.split('/').some((seg) => SKIP_DIRS.has(seg)) && existsSync(f) && statSync(f).isFile(),
+)
 const textFiles = files.filter((f) => TEXT.has(extname(f).toLowerCase()))
 const sourceFiles = textFiles.filter((f) => f.startsWith('src/') || f === 'index.html')
 
@@ -71,7 +92,16 @@ check(
   }),
 )
 
-// 3. 위험한 DOM API — 앱 소스
+// 3. 작업자 PC의 사용자 폴더 경로 — 모든 텍스트 파일 (경로에 사용자 이름이 드러난다)
+check(
+  '사용자 폴더 경로',
+  scan(textFiles, [
+    ['Windows 사용자 폴더', /\b[A-Za-z]:[\\/]+Users[\\/]+[^\\/\s'"`]+/i],
+    ['macOS·Linux 홈 폴더', /(?<![\w.])\/(Users|home)\/[A-Za-z0-9._-]+\//],
+  ]),
+)
+
+// 4. 위험한 DOM API — 앱 소스
 check(
   'HTML 삽입·동적 코드 실행',
   scan(sourceFiles, [
@@ -84,7 +114,7 @@ check(
   ]),
 )
 
-// 4. 입력을 남기는 저장소 — 앱 소스
+// 5. 입력을 남기는 저장소 — 앱 소스
 check(
   '브라우저 저장소',
   scan(sourceFiles, [
@@ -95,7 +125,7 @@ check(
   ]),
 )
 
-// 5. 밖으로 보내는 요청 — 앱 소스
+// 6. 밖으로 보내는 요청 — 앱 소스
 check(
   '네트워크 요청 API',
   scan(sourceFiles, [
@@ -107,7 +137,7 @@ check(
   ]),
 )
 
-// 6. 외부 주소 — 앱 소스는 허용한 공개 링크만
+// 7. 외부 주소 — 앱 소스는 허용한 공개 링크만
 check(
   '외부 주소 (앱 소스)',
   scan(sourceFiles, [['외부 주소', /https?:\/\/[^\s'"`)<>]+/]], {
@@ -115,13 +145,13 @@ check(
   }),
 )
 
-// 7. 추적되는 환경 파일
+// 8. 환경 파일
 check(
-  '저장소에 올라간 환경 파일',
-  files.filter((f) => /(^|\/)\.env($|\.)/.test(f) && !f.endsWith('.env.example')).map((f) => `${f} — .env는 올리지 않는다`),
+  '환경 파일 (.env)',
+  files.filter((f) => /(^|\/)\.env($|\.)/.test(f) && !f.endsWith('.env.example')).map((f) => `${f} — .env는 올리지도 묶지도 않는다`),
 )
 
-// 8. 배포본 — 빌드가 있을 때만. 요청이 아니라 글자로만 들어 있는 주소는 따로 허용한다.
+// 9. 배포본 — 빌드가 있을 때만. 요청이 아니라 글자로만 들어 있는 주소는 따로 허용한다.
 if (existsSync('dist')) {
   const distFiles = []
   const walk = (dir) =>
@@ -161,5 +191,6 @@ for (const c of checks) {
     for (const f of c.findings) console.log(`      ${f}`)
   }
 }
-console.log(`\n검사한 파일 ${textFiles.length}개 · 앱 소스 ${sourceFiles.length}개 · 검사 ${checks.length}개 · 실패 ${failed}개`)
+console.log(`\n파일 목록: ${listedBy}`)
+console.log(`검사한 파일 ${textFiles.length}개 · 앱 소스 ${sourceFiles.length}개 · 검사 ${checks.length}개 · 실패 ${failed}개`)
 process.exit(failed ? 1 : 0)

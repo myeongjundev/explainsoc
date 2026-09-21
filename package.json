@@ -5,7 +5,7 @@
   "description": "성능표에 없는 질문 — 10번 논문의 결과로 보안 AI 성능 주장에서 빠진 평가 조건을 찾아 공급자 질문으로 바꾸는 앱",
   "type": "module",
   "engines": {
-    "node": ">=20.19"
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
@@ -14,7 +14,8 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "check": "node scripts/check-safety.mjs",
-    "verify": "npm run check && npm test && npm run build && npm run test:e2e"
+    "verify": "npm run check && npm test && npm run build && npm run test:e2e",
+    "release:zip": "node scripts/make-release-zip.mjs"
   },
   "dependencies": {
     "react": "^19.3.0",

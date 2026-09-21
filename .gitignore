@@ -21,3 +21,6 @@ Thumbs.db
 test-results/
 playwright-report/
 blob-report/
+
+# 제출용 실행 묶음 (npm run release:zip)
+release/
