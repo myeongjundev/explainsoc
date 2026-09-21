@@ -15,9 +15,10 @@ import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { mkdirSync, readFileSync, statSync } from 'node:fs'
 
-/** 소스·설정, lockfile, README(실행 방법·라이선스 안내), 예시 데이터(src/data), 테스트 */
+/** 소스·설정, lockfile, README(실행 방법), 라이선스, 예시 데이터(src/data), 테스트 */
 const INCLUDE = [
   'README.md',
+  'LICENSE',
   'package.json',
   'package-lock.json',
   '.gitignore',

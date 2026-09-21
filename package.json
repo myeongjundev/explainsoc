@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "description": "성능표에 없는 질문 — 10번 논문의 결과로 보안 AI 성능 주장에서 빠진 평가 조건을 찾아 공급자 질문으로 바꾸는 앱",
+  "license": "MIT",
   "type": "module",
   "engines": {
     "node": "^22.22.2 || ^24.15.0 || >=26.0.0"

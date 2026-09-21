@@ -73,9 +73,9 @@ npm run preview
 ### 실행 묶음(ZIP)
 
 제출용 ZIP은 `npm run release:zip`으로 만듭니다. 커밋된 소스, `package-lock.json`, 이 README,
-예시 데이터(`src/data`), 테스트만 담고 `node_modules`, Git 기록, 빌드 결과, 로그, 환경 파일은
-담지 않습니다. 과제 기록인 `evidence/`와 `planning/`도 저장소에만 있습니다. 같은 커밋에서 다시
-만들면 같은 파일(같은 SHA-256)이 나옵니다.
+예시 데이터(`src/data`), 테스트, 라이선스(`LICENSE`)만 담고 `node_modules`, Git 기록, 빌드 결과,
+로그, 환경 파일은 담지 않습니다. 과제 기록인 `evidence/`와 `planning/`도 저장소에만 있습니다. 같은
+커밋에서 다시 만들면 같은 파일(같은 SHA-256)이 나옵니다.
 
 ### 환경 변수
 
@@ -127,9 +127,8 @@ LIVE_URL=https://myeongjundev.github.io/explainsoc/ npm run test:e2e
 
 ## 라이선스
 
-소스 코드의 라이선스는 아직 정하지 않았습니다. 따로 표시하기 전까지 모든 권리는 저작자에게
-있습니다. 의존성은 각자의 라이선스를 따르며 목록은 `package-lock.json`에 있습니다. 배포본에 묶이는
-의존성(React, React DOM, scheduler — 모두 MIT)의 라이선스 전문은 빌드할 때
+[MIT 라이선스](LICENSE)입니다. 의존성은 각자의 라이선스를 따르며 목록은 `package-lock.json`에
+있습니다. 배포본에 묶이는 의존성(React, React DOM, scheduler — 모두 MIT)의 라이선스 전문은 빌드할 때
 `dist/third-party-licenses.md`로 함께 나가며, 공개 주소의 같은 경로에서도 볼 수 있습니다.
 
 ## 구조
