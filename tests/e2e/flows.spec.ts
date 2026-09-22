@@ -127,6 +127,50 @@ test.describe('PoC 검토 작업대 V2', () => {
   })
 })
 
+test.describe('회차별 로컬 PoC 사례 작업대 V3', () => {
+  test('공급자 답변으로 해결·추가 규칙을 비교하고 JSON을 다시 연다', async ({ page }) => {
+    await startExample(page)
+    await expect(page.getByRole('navigation', { name: 'PoC 작업대 바로 가기' })).toBeVisible()
+    await page.getByRole('button', { name: '현재 회차 저장 · 다음 답변 추가' }).click()
+
+    await page.getByLabel('지표 1').selectOption('attackRecall')
+    await page.getByLabel('값 (0부터 1 사이)').fill('0.0007')
+    await page.getByRole('button', { name: /PoC 검토표/ }).click()
+
+    const diff = page.locator('.round-diff')
+    await expect(diff.locator('.round-diff__group--resolved')).toContainText('R04')
+    await expect(diff.locator('.round-diff__group--added')).toContainText('R10')
+    await expect(diff.locator('.round-diff__group--added')).toContainText('R14')
+    await expect(page.locator('.finding', { hasText: 'R14' })).toBeVisible()
+
+    await page.getByLabel('기존 주장과 같은 시험입니까?').selectOption('yes')
+    await expect(page.locator('.finding', { hasText: 'R14' })).toHaveCount(0)
+    await expect(diff.locator('.round-diff__group--added')).not.toContainText('R14')
+
+    const downloadPromise = page.waitForEvent('download')
+    await page.getByRole('button', { name: '사례 JSON 내려받기' }).click()
+    const download = await downloadPromise
+    const path = await download.path()
+    expect(path).not.toBeNull()
+
+    const saved = JSON.parse(await (await import('node:fs/promises')).readFile(path!, 'utf8'))
+    expect(saved.kind).toBe('explainsoc-case')
+    expect(saved.schemaVersion).toBe(1)
+    expect(saved.rounds).toHaveLength(2)
+    expect(saved.rounds[0].input.claim).toEqual({ accuracy: 0.6299, fpr: 0.0002 })
+    expect(saved.rounds[1].input.claim).toEqual({ attackRecall: 0.0007 })
+
+    await page.getByRole('button', { name: '처음부터' }).click()
+    await page.getByLabel('검토 파일 열기').setInputFiles(path!)
+    await expect(page.getByRole('heading', { level: 2, name: '3. PoC 검토 작업대' })).toBeVisible()
+    await expect(page.locator('.rounds__timeline li')).toHaveCount(2)
+    await expect(page.getByText(/파일을 열었습니다/)).toBeVisible()
+    await page.getByLabel('기존 주장과 같은 시험입니까?').selectOption('no')
+    await expect(page.locator('.summary__list')).toContainText('공격 Recall (공격 탐지율)0.0007')
+    await expect(page.locator('.summary__list')).not.toContainText('FPR')
+  })
+})
+
 test.describe('잘못된 입력에도 멈추지 않는다 (BRB-C05)', () => {
   test('비율 칸의 글자·음수·1 초과는 그 칸에만 오류를 보이고 결과는 이어진다', async ({ page }) => {
     const errors = collectErrors(page)

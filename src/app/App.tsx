@@ -6,9 +6,11 @@ import { ResearchScope } from '../components/ResearchScope'
 import { ResultStep } from '../components/ResultStep'
 import { STEP_TITLES, Stepper, type StepNumber } from '../components/Stepper'
 import { EXAMPLE_A, EXAMPLE_B } from '../data/examples'
-import { checkForm, emptyForm, formFromExample, type FormState } from '../domain/form'
-import { buildReview } from '../domain/review'
+import { checkForm, emptyForm, formFromExample, formFromReviewInput, type FormState } from '../domain/form'
+import { caseFileToText, combineRoundInput, makeCaseFile, MAX_CASE_FILE_BYTES, parseCaseFileText, resolveRoundInputs, type CaseRound } from '../domain/caseFile'
+import { buildReview, compareReviews } from '../domain/review'
 import type { QuestionResponse } from '../domain/types'
+import type { RoundDraftMeta } from '../components/RoundWorkspace'
 
 type View = 'home' | StepNumber
 
@@ -32,8 +34,33 @@ export function App() {
   const [form, setForm] = useState<FormState>(emptyForm)
   const [view, setView] = useState<View>('home')
   const [responses, setResponses] = useState<Record<string, QuestionResponse>>({})
-  const check = useMemo(() => checkForm(form), [form])
-  const review = useMemo(() => buildReview(check.input), [check])
+  const [caseTitle, setCaseTitle] = useState('이름 없는 PoC 검토')
+  const [rounds, setRounds] = useState<CaseRound[]>([])
+  const [roundMeta, setRoundMeta] = useState<RoundDraftMeta>({ label: '1회차 · 최초 주장', sourceKind: 'proposal', sourceNote: '', sameTrial: null })
+  const [caseFileStatus, setCaseFileStatus] = useState('')
+  const rawCheck = useMemo(() => checkForm(form), [form])
+  const previousInput = useMemo(() => resolveRoundInputs(rounds), [rounds])
+  const effectiveInput = useMemo(
+    () => combineRoundInput(previousInput, rawCheck.input, roundMeta.sameTrial),
+    [previousInput, rawCheck.input, roundMeta.sameTrial],
+  )
+  const check = useMemo(() => ({ ...rawCheck, input: effectiveInput }), [effectiveInput, rawCheck])
+  const context = useMemo(() => ({
+    isFollowup: rounds.length > 0,
+    sameTrial: roundMeta.sameTrial,
+    hasReceivedEvidence: Object.keys(rawCheck.input.claim).length > 0 || Boolean(rawCheck.input.matrix),
+  }), [rawCheck.input, roundMeta.sameTrial, rounds.length])
+  const review = useMemo(() => buildReview(effectiveInput, context), [context, effectiveInput])
+  const previousReview = useMemo(() => {
+    const previous = rounds.at(-1)
+    if (!previous || !previousInput) return null
+    return buildReview(previousInput, {
+      isFollowup: rounds.length > 1,
+      sameTrial: previous.sameTrial,
+      hasReceivedEvidence: Object.keys(previous.input.claim).length > 0 || Boolean(previous.input.matrix),
+    })
+  }, [previousInput, rounds])
+  const diff = useMemo(() => previousReview ? compareReviews(previousReview, review) : null, [previousReview, review])
 
   const heroHeading = useRef<HTMLHeadingElement>(null)
   const stepHeading = useRef<HTMLHeadingElement>(null)
@@ -55,6 +82,70 @@ export function App() {
   const editNumbers = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch, source: 'user' }))
   const editConditions = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch }))
 
+  const resetCase = (nextForm: FormState = emptyForm()) => {
+    setForm(nextForm)
+    setResponses({})
+    setRounds([])
+    setCaseTitle('이름 없는 PoC 검토')
+    setCaseFileStatus('')
+    setRoundMeta({ label: '1회차 · 최초 주장', sourceKind: 'proposal', sourceNote: '', sameTrial: null })
+  }
+
+  const currentRound = (): CaseRound => ({
+    id: `r${rounds.length + 1}`,
+    label: roundMeta.label.trim() || `${rounds.length + 1}회차`,
+    sourceKind: roundMeta.sourceKind,
+    sourceNote: roundMeta.sourceNote,
+    sameTrial: roundMeta.sameTrial,
+    input: rawCheck.input,
+    responses: { ...responses },
+  })
+
+  const nextRound = () => {
+    setRounds((current) => [...current, currentRound()])
+    setForm(emptyForm())
+    setResponses({})
+    setRoundMeta({ label: `${rounds.length + 2}회차 · 공급자 답변`, sourceKind: 'vendor-response', sourceNote: '', sameTrial: 'unknown' })
+    go(1)
+  }
+
+  const downloadCase = () => {
+    const blob = new Blob([caseFileToText(makeCaseFile(caseTitle, [...rounds, currentRound()]))], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = 'explainsoc-case.json'
+    anchor.click()
+    window.setTimeout(() => URL.revokeObjectURL(url), 0)
+  }
+
+  const openCase = async (file: File) => {
+    if (file.size > MAX_CASE_FILE_BYTES) {
+      setCaseFileStatus('사례 파일은 1 MiB 이하여야 합니다.')
+      return
+    }
+    let text: string
+    try {
+      text = await file.text()
+    } catch {
+      setCaseFileStatus('파일을 읽지 못했습니다. 다시 선택해 주세요.')
+      return
+    }
+    const parsed = parseCaseFileText(text)
+    if (parsed.kind === 'error') {
+      setCaseFileStatus(parsed.message)
+      return
+    }
+    const current = parsed.value.rounds.at(-1)!
+    setCaseTitle(parsed.value.title)
+    setRounds(parsed.value.rounds.slice(0, -1))
+    setRoundMeta({ label: current.label, sourceKind: current.sourceKind, sourceNote: current.sourceNote, sameTrial: current.sameTrial })
+    setForm(formFromReviewInput(current.input))
+    setResponses(current.responses)
+    setCaseFileStatus(`‘${parsed.value.title}’ 파일을 열었습니다.`)
+    go(3)
+  }
+
   return (
     <div className="app">
       <a className="skip-link" href="#main">
@@ -72,10 +163,16 @@ export function App() {
           <Hero
             ref={heroHeading}
             onStartExample={() => {
-              setForm(formFromExample(EXAMPLE_A))
+              resetCase(formFromExample(EXAMPLE_A))
+              setCaseTitle('논문 예시 검토')
               go(3)
             }}
-            onStartOwn={() => go(1)}
+            onStartOwn={() => {
+              resetCase()
+              go(1)
+            }}
+            onOpenCase={openCase}
+            caseFileStatus={caseFileStatus}
           />
         ) : (
           <div className="workbench">
@@ -91,7 +188,7 @@ export function App() {
               <>
                 <ClaimStep
                   form={form}
-                  check={check}
+                  check={rawCheck}
                   onRowsChange={(metricRows) => editNumbers({ metricRows })}
                   onMatrixOpen={(matrixOpen) => editConditions({ matrixOpen })}
                   onMatrixChange={(matrix) => editNumbers({ matrix })}
@@ -99,7 +196,7 @@ export function App() {
                   onFillExampleB={() => setForm(formFromExample(EXAMPLE_B))}
                 />
                 <p className="visually-hidden" role="status">
-                  {check.errorCount > 0 ? `잘못 적은 칸 ${check.errorCount}개는 계산에서 뺍니다.` : ''}
+                  {rawCheck.errorCount > 0 ? `잘못 적은 칸 ${rawCheck.errorCount}개는 계산에서 뺍니다.` : ''}
                 </p>
                 <div className="step-actions">
                   <button type="button" className="button button--primary" onClick={() => go(2)}>
@@ -136,9 +233,17 @@ export function App() {
                 onEditConditions={() => go(2)}
                 responses={responses}
                 onResponse={(question, response) => setResponses((current) => ({ ...current, [question]: response }))}
+                caseTitle={caseTitle}
+                onCaseTitle={setCaseTitle}
+                rounds={rounds}
+                roundMeta={roundMeta}
+                onRoundMeta={setRoundMeta}
+                diff={diff}
+                onNextRound={nextRound}
+                onDownload={downloadCase}
+                caseFileStatus={caseFileStatus}
                 onRestart={() => {
-                  setForm(emptyForm())
-                  setResponses({})
+                  resetCase()
                   go('home')
                 }}
               />
@@ -150,7 +255,7 @@ export function App() {
       </main>
 
       <footer className="site-footer">
-        <p>ExplainSOC · SKT ALEPH 마지막 과제 B · 입력한 값은 이 브라우저 밖으로 나가지 않습니다.</p>
+        <p>ExplainSOC · SKT ALEPH 마지막 과제 B · 입력한 값은 외부 서버로 전송되지 않습니다.</p>
         <p>
           <a href="https://github.com/myeongjundev/explainsoc" target="_blank" rel="noopener noreferrer">
             앱 소스 저장소{' '}<span className="visually-hidden">(외부 링크, 새 탭)</span>

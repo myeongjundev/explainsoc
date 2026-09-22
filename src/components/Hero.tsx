@@ -6,10 +6,12 @@ import { ExternalIcon, LockIcon } from './icons'
 interface Props {
   onStartExample: () => void
   onStartOwn: () => void
+  onOpenCase: (file: File) => void
+  caseFileStatus: string
 }
 
 /** 화면 A — 누구를 어떻게 돕는지 10초 안에 전달한다. 입력 폼과 긴 연구 한계는 아직 보이지 않는다. */
-export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStartExample, onStartOwn }, headingRef) {
+export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStartExample, onStartOwn, onOpenCase, caseFileStatus }, headingRef) {
   return (
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero__copy">
@@ -28,9 +30,25 @@ export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStar
             내 성능표 검토
           </button>
         </div>
+        <p className="hero__example-note">논문 값이 채워진 예시로 결과부터 봅니다.</p>
+        <div className="hero__case-file">
+          <label className="button button--quiet" htmlFor="case-file">검토 파일 열기</label>
+          <input
+            id="case-file"
+            type="file"
+            accept=".json,application/json"
+            onChange={(event) => {
+              const file = event.currentTarget.files?.[0]
+              if (file) onOpenCase(file)
+              event.currentTarget.value = ''
+            }}
+          />
+          <span>이전에 내려받은 ExplainSOC JSON</span>
+        </div>
+        <p className="hero__file-status" role="status" aria-live="polite">{caseFileStatus}</p>
         <p className="hero__privacy">
           <LockIcon />
-          입력한 성능 자료는 이 브라우저 안에서만 계산되며 저장하거나 전송하지 않습니다.
+          입력한 성능 자료는 브라우저 메모리에서만 계산됩니다. 파일 저장은 사용자가 눌렀을 때만 이 기기에 내려받습니다.
         </p>
         <div className="hero__paper">
           <p>

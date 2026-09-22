@@ -55,6 +55,25 @@ export function formFromExample(example: ExampleInput): FormState {
   }
 }
 
+/** 저장된 검증 입력을 사용자가 다시 고칠 수 있는 폼 문자열로 되돌린다. */
+export function formFromReviewInput(input: ReviewInput): FormState {
+  const rows = METRIC_KINDS.filter((kind) => input.claim[kind] !== undefined).map((kind) => ({
+    id: newRowId(),
+    kind,
+    raw: String(input.claim[kind]),
+  }))
+  return {
+    metricRows: rows.length > 0 ? rows : [{ id: newRowId(), kind: '', raw: '' }],
+    matrixOpen: input.matrix !== null,
+    matrix: input.matrix ? Object.fromEntries(Object.entries(input.matrix).map(([key, value]) => [key, String(value)])) as MatrixRaw : { ...EMPTY_MATRIX },
+    claimedBest: input.claimedBest,
+    split: input.split,
+    unseenIncluded: input.unseenIncluded,
+    deduplicated: input.deduplicated,
+    source: input.source,
+  }
+}
+
 export interface RowCheck {
   id: string
   parsed: Parsed<number> | null

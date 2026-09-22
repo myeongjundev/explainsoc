@@ -108,6 +108,13 @@ describe('규칙 하나마다 켜지는 조건과 꺼지는 조건', () => {
   it('R13 — 기타 분할은 구체적인 기준을 묻는다', () => {
     expect(fired(quiet({ split: 'other' }))).toEqual(['R13'])
   })
+
+  it('R14 — 후속 자료가 같은 시험인지 모르면 출처를 확인한다', () => {
+    const input = quiet({ claim: { attackRecall: 0.8 } })
+    expect(buildReview(input, { isFollowup: true, sameTrial: 'unknown' }).findings.map((f) => f.ruleId)).toContain('R14')
+    expect(buildReview(input, { isFollowup: true, sameTrial: 'yes' }).findings.map((f) => f.ruleId)).not.toContain('R14')
+    expect(buildReview(input, { isFollowup: false, sameTrial: null }).findings.map((f) => f.ruleId)).not.toContain('R14')
+  })
 })
 
 describe('모름이 가장 중요한 입력이다', () => {
@@ -166,9 +173,9 @@ describe('결과는 판정이 아니라 다음 행동 순서다', () => {
     }
   })
 
-  it('기존 규칙 R01~R10과 V2 정합성 규칙 R11~R13이 있다', () => {
+  it('기존 규칙 R01~R10, V2 정합성 규칙 R11~R13, V3 출처 규칙 R14가 있다', () => {
     expect(REVIEW_RULES.map((r) => r.id)).toEqual([
-      'R01', 'R02', 'R03', 'R04', 'R05', 'R06', 'R07', 'R08', 'R09', 'R10', 'R11', 'R12', 'R13',
+      'R01', 'R02', 'R03', 'R04', 'R05', 'R06', 'R07', 'R08', 'R09', 'R10', 'R11', 'R12', 'R13', 'R14',
     ])
   })
 })

@@ -765,8 +765,90 @@ a {
   min-width: 0;
 }
 
+.hero__example-note {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.hero__case-file {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.hero__case-file input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.hero__case-file input:focus-visible + span {
+  outline: 3px solid var(--focus);
+}
+
+.hero__file-status {
+  min-height: 1.5em;
+  margin-top: 4px;
+  color: var(--ink-2);
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
 .result__split {
   min-width: 0;
+}
+
+.workbench-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 74%);
+}
+
+.workbench-nav a {
+  padding: 5px 11px;
+  border-radius: 999px;
+  color: var(--ink-2);
+  font-size: 0.88rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.workbench-nav a:hover {
+  background: var(--sheet);
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+.workbench-file-status {
+  margin: -4px 0 14px;
+  padding: 9px 12px;
+  border: 1px solid var(--input-line);
+  border-radius: var(--radius-sm);
+  background: var(--input-bg);
+  color: var(--input-ink);
+  font-weight: 700;
+}
+
+#findings-title,
+#questions-title,
+#round-comparison,
+#brief-title {
+  scroll-margin-top: 16px;
 }
 
 @media (min-width: 1000px) {
@@ -1425,6 +1507,217 @@ a {
   gap: 8px;
 }
 
+/* 용어·요청 자료·회차 기록 */
+.terminology summary {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.terminology dl {
+  display: grid;
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.terminology dl div {
+  display: grid;
+  grid-template-columns: minmax(92px, auto) 1fr;
+  gap: 12px;
+  padding-top: 7px;
+  border-top: 1px solid var(--line);
+}
+
+.terminology dt {
+  font-weight: 800;
+}
+
+.terminology dd {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+.request-package {
+  border-style: dashed;
+}
+
+.rounds {
+  border-color: var(--input-line);
+  background: linear-gradient(180deg, #fff 0%, #fbfcff 100%);
+}
+
+.rounds input,
+.rounds select,
+.rounds textarea {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--sheet);
+}
+
+.rounds textarea {
+  resize: vertical;
+}
+
+.rounds__label,
+.rounds__meta label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.rounds__timeline {
+  display: flex;
+  gap: 0;
+  padding: 4px 0;
+  list-style: none;
+  overflow-x: auto;
+}
+
+.rounds__timeline li {
+  position: relative;
+  min-width: 132px;
+  padding: 34px 14px 0 0;
+}
+
+.rounds__timeline li::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 27px;
+  right: 0;
+  height: 2px;
+  background: var(--line-strong);
+}
+
+.rounds__timeline li:last-child::before {
+  display: none;
+}
+
+.rounds__timeline li > span {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--sheet);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.rounds__timeline li.is-current > span {
+  border-color: var(--input-ink);
+  background: var(--input-ink);
+  color: #fff;
+}
+
+.rounds__timeline strong,
+.rounds__timeline small {
+  display: block;
+}
+
+.rounds__timeline strong {
+  line-height: 1.35;
+}
+
+.rounds__timeline small {
+  margin-top: 2px;
+  color: var(--muted);
+}
+
+.rounds__meta {
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 560px) {
+  .rounds__meta {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .rounds__note {
+    grid-column: 1 / -1;
+  }
+}
+
+.round-diff {
+  padding-top: 14px;
+  border-top: 1px dashed var(--line-strong);
+}
+
+.round-diff__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.round-diff__head span {
+  color: var(--check-ink);
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
+.round-diff__grid {
+  display: grid;
+  gap: 8px;
+  margin-top: 9px;
+}
+
+@media (min-width: 620px) {
+  .round-diff__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.round-diff__group {
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--sheet);
+}
+
+.round-diff__group--resolved { border-top: 4px solid #29734b; }
+.round-diff__group--remaining { border-top: 4px solid var(--check-ink); }
+.round-diff__group--added { border-top: 4px solid var(--input-ink); }
+
+.round-diff__group h5 {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.round-diff__group h5 span,
+.round-diff__group p,
+.round-diff__group li {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.round-diff__group ul {
+  margin-top: 6px;
+  padding-left: 1.1em;
+}
+
+.rounds__privacy {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--check-bg);
+  color: var(--check-ink);
+  font-size: 0.84rem;
+}
+
+.rounds__limit {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
 /* 논문 근거 */
 .evidence summary {
   color: var(--ink-2);
@@ -1600,6 +1893,14 @@ a {
     display: none !important;
   }
 
+  .workbench-nav,
+  .workbench-file-status,
+  .request-package,
+  .rounds,
+  .terminology {
+    display: none !important;
+  }
+
   .site-main,
   .workbench,
   .step-body,
@@ -1613,18 +1914,27 @@ a {
   }
 
   .brief {
-    display: grid;
+    display: block;
     border: 0;
     box-shadow: none;
     padding: 0;
   }
 
+  .brief__lead {
+    margin-top: 8mm;
+  }
+
   .brief__preview {
+    margin-top: 8mm;
     max-height: none;
     overflow: visible;
     border: 0;
     padding: 0;
     background: #fff;
     font-size: 10pt;
+    white-space: pre-wrap;
+    break-inside: auto;
+    orphans: 3;
+    widows: 3;
   }
 }

@@ -26,6 +26,14 @@ export type RuleId =
   | 'R11'
   | 'R12'
   | 'R13'
+  | 'R14'
+
+export interface ReviewContext {
+  isFollowup: boolean
+  sameTrial: import('./types').TriAnswer | null
+  /** 이번 회차에 새로 적은 지표나 혼동행렬이 있는지. 합쳐진 이전 근거와 구분한다. */
+  hasReceivedEvidence?: boolean
+}
 
 export interface ReviewRule {
   id: RuleId
@@ -37,7 +45,7 @@ export interface ReviewRule {
   /** 공급자에게 그대로 소리 내어 읽을 수 있는 질문 */
   question: string
   evidenceIds: readonly EvidenceId[]
-  applies: (input: ReviewInput) => boolean
+  applies: (input: ReviewInput, context?: ReviewContext) => boolean
   /** 질문을 목록에 넣을지. 없으면 늘 넣는다. */
   asks?: (input: ReviewInput) => boolean
   /** 논문 예시 A에서만 원고의 표현을 빌려 쓰는 안내 */
@@ -191,6 +199,19 @@ export const REVIEW_RULES: readonly ReviewRule[] = [
     question: '학습과 시험을 나눈 구체적인 기준과 각 시험의 공격 유형 구성을 제공할 수 있습니까?',
     evidenceIds: ['P01', 'P07'],
     applies: (i) => splitOf(i) === 'other',
+  },
+  {
+    id: 'R14',
+    status: 'check',
+    title: '받은 자료의 시험 출처',
+    guidance: '새로 받은 성능 근거가 기존 주장과 같은 시험에서 나왔는지 알 수 없습니다. 확인 전의 변화는 임시 미리보기입니다.',
+    question: '이번에 받은 지표와 혼동행렬은 기존 성능 주장과 같은 시험 결과입니까?',
+    evidenceIds: ['P02', 'P06'],
+    applies: (i, context) => Boolean(
+      context?.isFollowup
+      && (context.sameTrial === null || context.sameTrial === 'unknown')
+      && (context.hasReceivedEvidence ?? (Object.keys(i.claim).length > 0 || Boolean(i.matrix))),
+    ),
   },
 ]
 

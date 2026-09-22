@@ -20,7 +20,9 @@ describe('첫 화면 (BRB-C03)', () => {
       ),
     ).toBeInTheDocument()
     expect(screen.getByText((_, el) => el?.tagName === 'P' && el.textContent === `반영한 논문 · ${PAPER.title}`)).toBeInTheDocument()
-    expect(screen.getByText('입력한 성능 자료는 이 브라우저 안에서만 계산되며 저장하거나 전송하지 않습니다.')).toBeInTheDocument()
+    expect(screen.getByText(/입력한 성능 자료는 브라우저 메모리에서만 계산됩니다/)).toBeInTheDocument()
+    expect(screen.getByText(/논문 값이 채워진 예시로 결과부터 봅니다/)).toBeInTheDocument()
+    expect(screen.getByText('검토 파일 열기')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '논문 예시로 60초 검토' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '내 성능표 검토' })).toBeInTheDocument()
   })
@@ -187,6 +189,10 @@ describe('PoC 미팅 산출물', () => {
     const copied = writeText.mock.calls.at(-1)?.[0] ?? ''
     expect(copied).toContain('상태: 자료 요청')
     expect(copied).toContain('메모: 공격 유형별 Recall 표를 요청함')
+    expect(copied).toContain('요청할 자료: 같은 시험의 공격 Recall과 공격 표본 수')
+    expect(copied).toContain('[회차 기록]')
+    expect(copied).toContain('논문 예시 검토')
+    expect(copied).toContain('최초 제안서 · 같은 시험: 해당 없음')
     expect(copied).toContain('모델의 합격·불합격이나 실제 조직망 성능을 판정하지 않습니다')
     expect(await screen.findByText(/PoC 검토표 전체를 복사했습니다/)).toBeInTheDocument()
   })
