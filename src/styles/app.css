@@ -1998,10 +1998,28 @@ a {
   font-size: clamp(1rem, 0.93rem + 0.35vw, 1.2rem);
 }
 
+.hero__help strong {
+  color: #fff;
+}
+
+.hero__scenario {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-left: 3px solid #8da7ff;
+  border-radius: 0 10px 10px 0;
+  background: rgb(255 255 255 / 7%);
+  color: #dce4f1;
+  font-size: 0.94rem;
+}
+
+.hero__scenario strong {
+  color: #fff;
+}
+
 .hero__story {
   display: grid;
   gap: 8px;
-  margin-top: 26px;
+  margin-top: 20px;
   padding: 0;
   list-style: none;
 }

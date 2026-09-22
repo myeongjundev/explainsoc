@@ -15,18 +15,20 @@ export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStar
   return (
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero__copy">
-        <p className="hero__kicker"><span>CLAIM INVESTIGATION</span> · EVIDENCE-LED POC REVIEW</p>
+        <p className="hero__kicker"><span>보안 AI 성능표 검토</span> · 업체에 물을 질문 만들기</p>
         <h1 id="hero-title" className="hero__title" tabIndex={-1} ref={headingRef}>
-          그 99%, 무엇을 시험한 점수입니까?
+          보안 AI의 99%, 무엇을 시험한 점수일까요?
         </h1>
         <p className="hero__help">
-          보안 AI 도입을 처음 맡은 담당자가 성능표에서 빠진 평가 조건을 찾고, 공급자에게 물을 질문을 논문 근거와 함께 준비하도록
-          돕습니다.
+          이 사이트는 <strong>“정확도 99%” 같은 광고 숫자가 실제로 무엇을 시험한 결과인지 확인하고, 판매 업체에 물어볼 질문을
+          만들어 주는 도구</strong>입니다.
         </p>
+        <p className="hero__scenario"><strong>이럴 때 씁니다.</strong> 회사에서 AI 제품 자료를 받았지만 어떤 공격을 시험했는지,
+          처음 보는 공격도 잡는지 알 수 없을 때.</p>
         <ol className="hero__story" aria-label="ExplainSOC가 하는 세 가지">
-          <li><span>01</span><strong>주장을 해부하고</strong></li>
-          <li><span>02</span><strong>시험 출처를 추적해</strong></li>
-          <li><span>03</span><strong>다음 질문을 남깁니다</strong></li>
+          <li><span>01</span><strong>받은 성능 숫자를 넣고</strong></li>
+          <li><span>02</span><strong>모르는 시험 조건에 답하면</strong></li>
+          <li><span>03</span><strong>업체에 물을 질문이 완성됩니다</strong></li>
         </ol>
         <div className="hero__actions">
           <button type="button" className="button button--primary button--large" onClick={onStartExample}>
@@ -36,7 +38,7 @@ export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStar
             내 성능표 검토
           </button>
         </div>
-        <p className="hero__example-note">논문 값이 채워진 예시로 결과부터 봅니다.</p>
+        <p className="hero__example-note">숫자를 준비하지 않아도 됩니다. 논문 예시가 자동으로 채워집니다.</p>
       </div>
 
       <figure className="hero__figure claim-autopsy">

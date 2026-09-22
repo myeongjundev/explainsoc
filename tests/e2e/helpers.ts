@@ -22,7 +22,7 @@ export function collectRequests(page: Page): string[] {
 
 export async function openHome(page: Page) {
   await page.goto('./')
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('그 99%, 무엇을 시험한 점수입니까?')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('보안 AI의 99%, 무엇을 시험한 점수일까요?')
 }
 
 export async function startExample(page: Page) {

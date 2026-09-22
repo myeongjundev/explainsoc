@@ -13,15 +13,14 @@ function setup() {
 describe('첫 화면 (BRB-C03)', () => {
   it('제목, 도움 한 문장, 축약하지 않은 논문 제목, 개인정보 안내가 있다', () => {
     setup()
-    expect(screen.getByRole('heading', { level: 1, name: '그 99%, 무엇을 시험한 점수입니까?' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: '보안 AI의 99%, 무엇을 시험한 점수일까요?' })).toBeInTheDocument()
     expect(
-      screen.getByText(
-        '보안 AI 도입을 처음 맡은 담당자가 성능표에서 빠진 평가 조건을 찾고, 공급자에게 물을 질문을 논문 근거와 함께 준비하도록 돕습니다.',
-      ),
+      screen.getByText(/“정확도 99%” 같은 광고 숫자가 실제로 무엇을 시험한 결과인지 확인하고/),
     ).toBeInTheDocument()
+    expect(screen.getByText(/회사에서 AI 제품 자료를 받았지만 어떤 공격을 시험했는지/)).toBeInTheDocument()
     expect(screen.getByText((_, el) => el?.tagName === 'P' && el.textContent === `반영한 논문 · ${PAPER.title}`)).toBeInTheDocument()
     expect(screen.getByText(/입력한 성능 자료는 브라우저 메모리에서만 계산됩니다/)).toBeInTheDocument()
-    expect(screen.getByText(/논문 값이 채워진 예시로 결과부터 봅니다/)).toBeInTheDocument()
+    expect(screen.getByText(/숫자를 준비하지 않아도 됩니다/)).toBeInTheDocument()
     expect(screen.getByText('검토 파일 열기')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '논문 예시로 60초 검토' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '내 성능표 검토' })).toBeInTheDocument()

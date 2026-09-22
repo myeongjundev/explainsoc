@@ -10,7 +10,9 @@ test.describe('논문 예시 60초 경로 (BRB-C02·C05)', () => {
     await openHome(page)
     await expect(page.locator('.claim-autopsy')).toContainText('99.88%')
     await expect(page.locator('.claim-autopsy')).toContainText('220,788건 중 160건 탐지')
-    await expect(page.locator('.hero__story strong')).toHaveText(['주장을 해부하고', '시험 출처를 추적해', '다음 질문을 남깁니다'])
+    await expect(page.locator('.hero__help')).toContainText('광고 숫자가 실제로 무엇을 시험한 결과인지 확인')
+    await expect(page.locator('.hero__scenario')).toContainText('처음 보는 공격도 잡는지 알 수 없을 때')
+    await expect(page.locator('.hero__story strong')).toHaveText(['받은 성능 숫자를 넣고', '모르는 시험 조건에 답하면', '업체에 물을 질문이 완성됩니다'])
     await page.getByRole('button', { name: '논문 예시로 60초 검토' }).click()
     await expect(page.getByRole('heading', { level: 2, name: '3. PoC 검토 작업대' })).toBeFocused()
 
