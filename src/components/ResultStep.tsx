@@ -13,6 +13,7 @@ import { RequestPackage } from './RequestPackage'
 import { RoundWorkspace, type RoundDraftMeta } from './RoundWorkspace'
 import { TerminologyHelp } from './TerminologyHelp'
 import { WorkbenchNav } from './WorkbenchNav'
+import { EvidenceStatusBoard } from './EvidenceStatusBoard'
 
 interface Props {
   check: FormCheck
@@ -34,8 +35,7 @@ interface Props {
 }
 
 /**
- * 화면 D·E·F. 데스크톱에서는 숫자가 말하는 것(왼쪽)과 판독·질문(오른쪽)을 나란히 두고,
- * 모바일에서는 위에서 아래로 쌓는다.
+ * V4 수사 보드. 회차를 맨 위에 두고 주장과 근거 / 판독 / 다음 행동을 세 열로 나눈다.
  */
 export function ResultStep({ check, review, onEdit, onEditConditions, onRestart, responses, onResponse, caseTitle, onCaseTitle, rounds, roundMeta, onRoundMeta, comparison, onNextRound, onDownload, caseFileStatus }: Props) {
   const { input } = check
@@ -43,8 +43,13 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onRestart,
     <div className="step-body">
       <WorkbenchNav />
       {caseFileStatus && <p className="workbench-file-status" role="status">{caseFileStatus}</p>}
-      <div className="result">
-        <div className="result__evidence">
+      <RoundWorkspace caseTitle={caseTitle} onCaseTitle={onCaseTitle} rounds={rounds} current={roundMeta} onCurrent={onRoundMeta} comparison={comparison} onNextRound={onNextRound} onDownload={onDownload} />
+      <div className="result investigation-board">
+        <div className="result__evidence board-column">
+          <header className="board-column__head">
+            <span>01</span><div><p>CLAIM &amp; EVIDENCE</p><h3>주장과 근거</h3></div>
+          </header>
+          <EvidenceStatusBoard input={input} roundCount={rounds.length + 1} sameTrial={roundMeta.sameTrial} />
           {input.matrix ? (
             <ClaimReveal matrix={input.matrix} claim={input.claim} source={input.source} />
           ) : (
@@ -60,15 +65,22 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onRestart,
           <EvaluationMap input={input} onEditConditions={onEditConditions} />
           <TerminologyHelp />
         </div>
-        <div className="result__output">
+        <div className="result__findings board-column">
+          <header className="board-column__head">
+            <span>02</span><div><p>INTERPRETATION</p><h3>판독</h3></div>
+          </header>
           <FindingList review={review} check={check} />
+        </div>
+        <div className="result__output board-column">
+          <header className="board-column__head">
+            <span>03</span><div><p>NEXT ACTION</p><h3>다음 행동</h3></div>
+          </header>
           <QuestionList questions={review.questions} responses={responses} onResponse={onResponse} />
           <RequestPackage review={review} />
-          <RoundWorkspace caseTitle={caseTitle} onCaseTitle={onCaseTitle} rounds={rounds} current={roundMeta} onCurrent={onRoundMeta} comparison={comparison} onNextRound={onNextRound} onDownload={onDownload} />
           <ReviewBrief check={check} review={review} responses={responses} caseTitle={caseTitle} rounds={rounds} current={{ id: `r${rounds.length + 1}`, ...roundMeta, input, responses: { ...responses } }} comparison={comparison} />
         </div>
-        <div className="result__split"><SplitEvidenceFigure /></div>
       </div>
+      <div className="result__split"><SplitEvidenceFigure /></div>
       <div className="step-actions">
         <button type="button" className="button" onClick={onEdit}>
           입력 수정

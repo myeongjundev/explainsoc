@@ -33,14 +33,16 @@ export function RoundWorkspace({ caseTitle, onCaseTitle, rounds, current, onCurr
     <section className="panel rounds" id="round-comparison" aria-labelledby="rounds-title">
       <div className="brief__head">
         <div>
-          <p className="brief__eyebrow">회차별 근거</p>
-          <h3 id="rounds-title" className="panel__title">PoC 사례의 변화</h3>
+          <p className="brief__eyebrow">EVIDENCE TIMELINE · 회차별 근거</p>
+          <h3 id="rounds-title" className="panel__title">주장이 어떻게 바뀌었습니까?</h3>
         </div>
         <span className="brief__privacy">로컬 파일로만 저장</span>
       </div>
 
-      <label className="rounds__label" htmlFor="case-title">사례 이름</label>
-      <input id="case-title" value={caseTitle} maxLength={200} onChange={(e) => onCaseTitle(e.target.value)} />
+      <div className="rounds__case">
+        <label className="rounds__label" htmlFor="case-title">사례 이름</label>
+        <input id="case-title" value={caseTitle} maxLength={200} onChange={(e) => onCaseTitle(e.target.value)} />
+      </div>
 
       <ol className="rounds__timeline" aria-label="검토 회차">
         {rounds.map((round) => (
@@ -50,10 +52,11 @@ export function RoundWorkspace({ caseTitle, onCaseTitle, rounds, current, onCurr
             <small>{SOURCE_OPTIONS.find((item) => item.value === round.sourceKind)?.label}</small>
           </li>
         ))}
-        <li className="is-current">
+        <li className={`is-current${followup ? ` is-${current.sameTrial ?? 'unknown'}` : ''}`}>
           <span>{rounds.length + 1}</span>
           <strong>{current.label || `회차 ${rounds.length + 1}`}</strong>
           <small>현재 작성 중</small>
+          {followup && <em className="rounds__branch-label">{current.sameTrial === 'yes' ? '같은 시험 병합' : current.sameTrial === 'no' ? '별도 시험 분기' : '출처 확인 전 임시 연결'}</em>}
         </li>
       </ol>
 

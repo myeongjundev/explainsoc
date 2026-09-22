@@ -122,6 +122,15 @@ test.describe('접근성 자동 검사 (axe, WCAG 2.2 AA)', () => {
   })
 })
 
+test('인쇄에서는 Decision Dossier 앞장과 전체 기록만 보인다', async ({ page }) => {
+  await startExample(page)
+  await page.emulateMedia({ media: 'print' })
+  await expect(page.locator('.dossier__cover')).toBeVisible()
+  await expect(page.locator('.brief__print-preview')).toBeVisible()
+  await expect(page.locator('.result__evidence')).toBeHidden()
+  await expect(page.getByRole('button', { name: '검토표 전체 복사' })).toBeHidden()
+})
+
 test.describe('보안과 개인정보', () => {
   test('정적 자산 말고는 어디에도 요청하지 않는다', async ({ page, baseURL, outsideRequests }) => {
     const requests = collectRequests(page)

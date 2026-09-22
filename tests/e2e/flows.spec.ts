@@ -7,7 +7,19 @@ test.describe('논문 예시 60초 경로 (BRB-C02·C05)', () => {
     const errors = collectErrors(page)
     const started = Date.now()
 
-    await startExample(page)
+    await openHome(page)
+    await expect(page.locator('.claim-autopsy')).toContainText('99.88%')
+    await expect(page.locator('.claim-autopsy')).toContainText('220,788건 중 160건 탐지')
+    await expect(page.locator('.hero__story strong')).toHaveText(['주장을 해부하고', '시험 출처를 추적해', '다음 질문을 남깁니다'])
+    await page.getByRole('button', { name: '논문 예시로 60초 검토' }).click()
+    await expect(page.getByRole('heading', { level: 2, name: '3. PoC 검토 작업대' })).toBeFocused()
+
+    // V4 수사 보드: 근거 → 판독 → 다음 행동과 회의용 앞장이 한 흐름에 있다
+    await expect(page.locator('.board-column__head h3')).toHaveText(['주장과 근거', '판독', '다음 행동'])
+    await expect(page.locator('.evidence-status__item')).toHaveCount(6)
+    await expect(page.locator('.evidence-status__note')).toContainText('완성도 점수가 아닙니다')
+    await expect(page.locator('.dossier__cover')).toContainText('다음 회의에서 확인할 것')
+    await expect(page.locator('.dossier__metrics')).toContainText('다음 질문')
 
     // 15~30초: 정확도·FPR 카드가 공격 개수로 뒤집힌다
     await expect(page.locator('.flip__face--front')).toContainText('겉으로는 무난해 보이는 성능 주장')
@@ -127,7 +139,7 @@ test.describe('PoC 검토 작업대 V2', () => {
   })
 })
 
-test.describe('회차별 로컬 PoC 사례 작업대 V3', () => {
+test.describe('회차별 로컬 PoC 사례 작업대 V4', () => {
   test('공급자 답변으로 해결·추가 규칙을 비교하고 JSON을 다시 연다', async ({ page }) => {
     await startExample(page)
     await expect(page.getByRole('navigation', { name: 'PoC 작업대 바로 가기' })).toBeVisible()
@@ -180,6 +192,8 @@ test.describe('회차별 로컬 PoC 사례 작업대 V3', () => {
     await expect(page.locator('.rounds__timeline li')).toHaveCount(2)
     await expect(page.getByText(/파일을 열었습니다/)).toBeVisible()
     await page.getByLabel('기존 주장과 같은 시험입니까?').selectOption('no')
+    await expect(page.locator('.rounds__branch-label')).toHaveText('별도 시험 분기')
+    await expect(page.locator('.rounds__timeline li.is-current')).toHaveClass(/is-no/)
     await expect(page.locator('.summary__list')).toContainText('공격 Recall (공격 탐지율)0.0007')
     await expect(page.locator('.summary__list')).not.toContainText('FPR')
     await expect(page.locator('.round-diff')).toContainText('별도 시험 판독')
