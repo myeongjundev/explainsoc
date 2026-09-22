@@ -1,5 +1,23 @@
 # 카드 5 증거 — 포트폴리오와 제출
 
+## V2 제출본 갱신 — 2026-09-22
+
+> 이 섹션이 아래 V1 기록의 실행 묶음·검증 값을 대체한다. 아래 내용은 과제 완주 당시의 이력으로 남겨 둔다.
+
+| 항목 | V2 제출본 |
+|---|---|
+| 구현 커밋 | `720dc764b288d4c08fadb8f621ce7793b1a51205` |
+| 배포 | [GitHub Actions run 35675622887](https://github.com/myeongjundev/explainsoc/actions/runs/35675622887) 검사·Pages 성공 |
+| 공개 주소 | https://myeongjundev.github.io/explainsoc/ |
+| 실행 묶음 | `explainsoc-720dc76.zip` · 112,221 bytes · 54개 파일 |
+| SHA-256 | `7dc9812c4528ddd47f6354ebcb359686bbd8f81989b14914399c242f213503c5` |
+| 재현 | 같은 커밋으로 두 번 생성한 SHA-256 일치 |
+| 빈 폴더 검증 | `npm ci`, 안전 검사, Vitest 80개, 프로덕션 빌드, Playwright 22개 통과 |
+| 공개본 검증 | JS `index-DDzNqu6T.js`, CSS `index-DY_sn3fI.css` 로컬 빌드와 일치 · Playwright 22개 통과 |
+
+V2는 PoC 검토 작업대, 평가 근거 지도, 질문 상태·메모, 검토표 복사·인쇄와 R11~R13을 포함한다.
+제출할 ZIP은 기존 `explainsoc-9d71d39.zip`이 아니라 **`explainsoc-720dc76.zip`**이다.
+
 > 통과 기준: BRB-C10 · BRB-C11 · BRB-C12 · BRB-C13 · BRB-C14 · BRB-C15 · BRB-C22
 > 기록일: 2026-09-22 · 기록한 사람: Claude(구현 담당)
 >
