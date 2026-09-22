@@ -1,22 +1,24 @@
 # 카드 5 증거 — 포트폴리오와 제출
 
-## V2 제출본 갱신 — 2026-09-22
+## V3 제출본 갱신 — 2026-09-22
 
-> 이 섹션이 아래 V1 기록의 실행 묶음·검증 값을 대체한다. 아래 내용은 과제 완주 당시의 이력으로 남겨 둔다.
+> 이 섹션이 아래 V1·V2 기록의 실행 묶음·검증 값을 대체한다. 아래 내용은 당시의 이력으로 남겨 둔다.
 
-| 항목 | V2 제출본 |
+| 항목 | V3 제출본 |
 |---|---|
-| 구현 커밋 | `720dc764b288d4c08fadb8f621ce7793b1a51205` |
-| 배포 | [GitHub Actions run 35675622887](https://github.com/myeongjundev/explainsoc/actions/runs/35675622887) 검사·Pages 성공 |
+| 구현 커밋 | `679add3c250b36545b319a80f9f55c847e56b1ba` |
+| 배포 | [GitHub Actions run 35698164859](https://github.com/myeongjundev/explainsoc/actions/runs/35698164859) 검사·Pages 성공 |
 | 공개 주소 | https://myeongjundev.github.io/explainsoc/ |
-| 실행 묶음 | `explainsoc-720dc76.zip` · 112,221 bytes · 54개 파일 |
-| SHA-256 | `7dc9812c4528ddd47f6354ebcb359686bbd8f81989b14914399c242f213503c5` |
+| 실행 묶음 | `explainsoc-679add3.zip` · 130,786 bytes · 61개 파일 |
+| SHA-256 | `80650a6729c912dadd071adb87384d59e253660a82d4296cefa0a0503ecffdbd` |
 | 재현 | 같은 커밋으로 두 번 생성한 SHA-256 일치 |
-| 빈 폴더 검증 | `npm ci`, 안전 검사, Vitest 80개, 프로덕션 빌드, Playwright 22개 통과 |
-| 공개본 검증 | JS `index-DDzNqu6T.js`, CSS `index-DY_sn3fI.css` 로컬 빌드와 일치 · Playwright 22개 통과 |
+| 빈 폴더 검증 | 저장소 밖 새 임시 폴더에서 `npm ci`, 프로덕션 빌드, 안전 검사 11개, Vitest 91개, Playwright 24개 통과(증거 캡처 9개 제외) |
+| 공개본 검증 | JS `index--yn4oNyf.js`, CSS `index-D1Vo0e1F.css` 로컬 빌드와 SHA-256 일치 · Playwright 24개 통과 |
 
-V2는 PoC 검토 작업대, 평가 근거 지도, 질문 상태·메모, 검토표 복사·인쇄와 R11~R13을 포함한다.
-제출할 ZIP은 기존 `explainsoc-9d71d39.zip`이 아니라 **`explainsoc-720dc76.zip`**이다.
+V3는 최초 주장과 후속 공급자 답변을 회차로 비교하고, 같은 시험 여부 R14, JSON 저장·열기,
+공급자 자료 요청서, 회차 요약 검토표를 포함한다. 제출할 ZIP은 V1·V2 묶음이 아니라
+**`explainsoc-679add3.zip`**이다. 독립 리뷰 R1~R5와 작은 결함 L1~L3까지 반영해 별도 시험을
+해결로 표시하지 않고, 회차별 답변 메모와 사람이 읽는 근거 풀이를 보존한다.
 
 > 통과 기준: BRB-C10 · BRB-C11 · BRB-C12 · BRB-C13 · BRB-C14 · BRB-C15 · BRB-C22
 > 기록일: 2026-09-22 · 기록한 사람: Claude(구현 담당)
@@ -45,12 +47,11 @@ V2는 PoC 검토 작업대, 평가 근거 지도, 질문 상태·메모, 검토�
 | 칸 | 문장 | 근거 |
 |---|---|---|
 | 문제 | 10번 논문에서 같은 XGBoost가 무작위 분할에서는 Macro F1 0.9979, 학습에 없던 공격을 시험하면 0.3871이었습니다. 제품 소개서의 성능 숫자 하나로는 무엇을 시험한 점수인지 알 수 없습니다. | 원고 V-2, `evidence/card-1.md` |
-| 판단 | 숫자가 좋은지 나쁜지 판정하지 않고, 논문 결과에서 뽑은 판독 규칙 10개로 빠진 평가 조건을 찾아 공급자에게 물을 질문으로 바꾸게 했습니다. | `planning/DESIGN.md` 7절, `src/domain/reviewRules.ts` |
-| 구현 | React·TypeScript·Vite 정적 앱으로 만들었습니다. 입력은 브라우저 메모리에서만 계산하고, 콘텐츠 보안 정책으로 앱 코드가 어디로도 요청을 보내지 못하게 막았습니다. | `evidence/card-3.md` |
-| 검증 | 단위·컴포넌트 테스트 75개와 접근성 검사를 포함한 실제 브라우저 테스트 20개를 통과한 커밋만 GitHub Pages에 배포되게 했고, 새 임시 폴더에 ZIP을 풀어 README대로 실행되는 것을 확인했습니다. | `evidence/card-4.md` |
+| 판단 | 숫자의 좋고 나쁨을 판정하는 대신, 논문 근거 규칙 13개로 빠진 조건과 모순을 찾고 질문·답변·다음 행동이 남는 PoC 검토 작업대로 바꿨습니다. | `planning/DESIGN.md`, `src/domain/reviewRules.ts` |
+| 구현 | React·TypeScript·Vite 정적 앱에 평가 근거 지도, 질문별 상태·메모, 회차 비교, JSON 저장·열기, 자료 요청서와 검토표를 연결했습니다. 입력은 브라우저 안에서만 다루고 콘텐츠 보안 정책으로 외부 전송을 막았습니다. | `evidence/card-3.md`, V3 구현 커밋 |
+| 검증 | 단위·컴포넌트 테스트 91개와 WCAG 2.2 AA를 포함한 실제 브라우저 테스트 24개를 통과한 커밋만 배포되게 했습니다. 재현 가능한 ZIP을 저장소 밖 빈 폴더에 풀어 설치·빌드·브라우저 검사까지 다시 통과했습니다. | `evidence/card-4.md`, 이 문서 V3 제출본 갱신 |
 
-처음 연결할 때는 74개였다. 이 카드에서 단위 테스트가 하나 늘어(아래 BRB-C12) 12번 카드도 75개로
-고쳤다(`ea77b4e`).
+처음 연결할 때는 74개였고 V1 카드에서 75개로 고쳤다(`ea77b4e`). V3 현재 수치는 91개·24개다.
 
 **그림을 세로로 다시 찍은 이유.** 대표작 칸은 데스크톱에서 세로로 길다(417×500). 처음 넣은 가로
 화면(1200×750)은 가운데만 남아 "공격 220,788건 가운데 탐지 160건"이 "운데 탐지 160건"으로 잘렸다.
@@ -119,7 +120,7 @@ V2는 PoC 검토 작업대, 평가 근거 지도, 질문 상태·메모, 검토�
 | 제출물 | 본 방법 | 결과 |
 |---|---|---|
 | 공개 주소의 배포본 5개 파일(HTML·JS·CSS·아이콘·라이선스 고지) | 공개 서버에서 받아 비밀값·이메일·휴대전화·주민번호·데이터셋 저자 이름을 찾음 | 0건 |
-| 실행 묶음 `explainsoc-9d71d39.zip` 52개 파일 | 풀어서 `npm run check`(폴더 탐색) + 저자 이름·PC 경로 검색 | 11개 PASS · 0건 |
+| 실행 묶음 `explainsoc-679add3.zip` 61개 파일 | 저장소 밖 빈 폴더에 풀어서 `npm run check`(폴더 탐색) + 저자 이름·PC 경로 검색 | 11개 PASS · 0건 |
 | 공개 저장소의 모든 파일(과제 기록·증거 포함) | `npm run check` + `git grep`으로 저자 이름, 이니셜+성 표기, 호칭(님·씨 등) 검색 | PASS · 0건 |
 | 12번 사이트의 13번 카드 | 문장·그림·링크 확인, 12번 `validate_release` | 다른 사람 이름 없음 · PASS |
 | 제출문 초안(이 문서 아래) | 직접 확인 | 다른 사람 이름 없음 |
@@ -142,24 +143,27 @@ V2는 PoC 검토 작업대, 평가 근거 지도, 질문 상태·메모, 검토�
 
 ```text
 결과물: https://myeongjundev.github.io/explainsoc/ (로그인 없음)
-실행 묶음: explainsoc-9d71d39.zip — README.md "실행"대로 npm ci → npm run build → npm run preview 후
+실행 묶음: explainsoc-679add3.zip — README.md "실행"대로 npm ci → npm run build → npm run preview 후
   http://127.0.0.1:4173/explainsoc/ (Node.js 24.15 이상)
 
 어디에 무엇이
 - 첫 화면: 제목 "그 99%, 무엇을 시험한 점수입니까?", 누구를 어떻게 돕는지 한 문장, 반영한 논문 제목
 - 묶음 안: src/data/paperEvidence.ts(논문 근거 P01~P10과 수치), src/domain/reviewRules.ts(판독 규칙
-  R01~R10), tests/(단위·컴포넌트 75개, 브라우저 20개)
+  R01~R14), tests/(단위·컴포넌트 91개, 브라우저 24개)
 
 세 행동 해 보기
 1) "논문 예시로 60초 검토"를 누르거나, "내 성능표 검토"에서 지표 하나(예: 정확도 0.99)를 적는다.
-2) 평가 조건 세 질문에 예/아니오/모름으로 답한다. 모름만 골라도 된다.
-3) 결과에서 "공격 기준으로 뒤집기"를 누르고 "질문 복사"를 누른다.
+2) 결과에서 "현재 회차 저장 후 다음 답변 받기"를 누르고, 후속 답변에 공격 Recall 0.0007을 적은 뒤
+   같은 시험 여부는 모름으로 두고 결과를 본다.
+3) 변화 비교에서 해결됨·남음·새로 생김을 보고 같은 시험 여부를 예로 바꿔 R14가 사라지는지 확인한다.
+   "작업 파일 저장"으로 JSON을 내려받아 "작업 파일 열기"로 다시 열고, 두 회차가 돌아오는지 확인한다.
 
 무엇이 나오면 통과
 - 논문 예시: "공격 220,788건 가운데 탐지 160건"과 공급자 질문 "같은 시험에서 공격 Recall은
   얼마입니까?"가 나온다.
 - 정확도 0.99만 적고 모두 모름: 확인 필요 3개, 해석 주의 1개와 질문 4개가 나온다.
-- 복사하면 "질문 N개를 복사했습니다. 입력한 숫자는 담지 않았습니다."가 뜨고, 복사한 글에는 질문만 있다.
+- 후속 답변의 같은 시험 여부가 모름이면 R14가 새로 생기고, 예로 바꾸면 사라진다.
+- JSON을 다시 열면 숫자·답변 메모·출처와 두 회차가 복원된다. 앱이 자동 저장하거나 외부로 보내지는 않는다.
 - 99를 적으면 멈추지 않고 칸 옆에 "비율은 0부터 1 사이로 적어 주세요. 99%는 0.99입니다"가 나온다.
 ```
 
@@ -168,19 +172,15 @@ V2는 PoC 검토 작업대, 평가 근거 지도, 질문 상태·메모, 검토�
 | 무엇 | 값 |
 |---|---|
 | 결과물 URL | https://myeongjundev.github.io/explainsoc/ |
-| 실행 묶음 | `explainsoc-9d71d39.zip` · 104,812 bytes · SHA-256 `cb6cf56631ee50da28b581ec26c64f78405b84770e370fea7326bc3bca752c4a` · 원본 커밋 `9d71d39fd4ad9a9f15a17bd379c39aa53c834060` · 로컬 저장소 `release/` |
+| 실행 묶음 | `explainsoc-679add3.zip` · 130,786 bytes · 61개 파일 · SHA-256 `80650a6729c912dadd071adb87384d59e253660a82d4296cefa0a0503ecffdbd` · 원본 커밋 `679add3c250b36545b319a80f9f55c847e56b1ba` · 로컬 저장소 `release/` |
 | 라이선스 | MIT (`LICENSE`, 2026-09-22 사용자 결정). GitHub도 저장소를 MIT로 인식한다 |
 | 짧은 확인 방법 | 위 BRB-C13 |
 | 제출문 세 줄 | 아래 BRB-C14 — ②는 사용자가 쓴다 |
 
-카드 4의 묶음(`explainsoc-25d68ce.zip`)은 이 카드에서 세 번 바뀌었다. 데이터셋 인용 수정(`2e7bd73`, SHA-256
-`a3e65702…42557d2`), MIT 라이선스 추가(`2e00f55`, `f3131e37…7403fa082`), README에 트러블슈팅 기록 링크
-추가(`9d71d39`)다. **제출할 묶음은 `explainsoc-9d71d39.zip`이다.** 같은 커밋에서 두 번 만들어 같은 SHA-256이
-나왔다. 뒤의 두 변경은 배포본을 바꾸지 않아 공개 주소의 자산은 그대로다. 학원 PC에서 다시 만드는 방법은
+V1 묶음은 인용·라이선스·README 변경 때마다 갱신했고, V2에서 작업대 기능을 더한 묶음으로 교체했다.
+현재 제출물은 V3 구현 커밋으로 만든 **`explainsoc-679add3.zip`**이다. 같은 커밋에서 두 번 만들어 같은
+SHA-256이 나왔고, 저장소 밖 새 임시 폴더에서 전체 검사를 다시 통과했다. 다시 만드는 방법은
 `planning/HANDOFF-2026-09-22.md` 1-0에 있다.
-
-학원 PC(Git 2.55.0.windows.5, Node 24.19.0)에서도 같은 SHA-256이 나왔다(2026-09-22, `npm run release:zip -- 9d71d39`,
-104,812 bytes, 파일 52개).
 
 ### 제출할 수 있는 URL — 모두 로그인 없이
 
@@ -194,41 +194,34 @@ V2는 PoC 검토 작업대, 평가 근거 지도, 질문 상태·메모, 검토�
 | https://github.com/myeongjundev/explainsoc-research/blob/main/output/pdf/T10-research-paper.pdf | 200 · 0 · 0 |
 | https://myeongjundev.github.io/explainsoc/third-party-licenses.md | 200 · 0 · 0 |
 
-공개 주소는 새 브라우저 컨텍스트(쿠키·저장소·로그인 없음)에서 브라우저 테스트 20개를 다시 통과했다.
-최종 배포본 `index-Rf7vZX1d.js`로 돌렸다.
+공개 주소는 새 브라우저 컨텍스트(쿠키·저장소·로그인 없음)에서 브라우저 테스트 24개를 다시 통과했다.
+최종 배포본 `index--yn4oNyf.js`와 `index-D1Vo0e1F.css`는 로컬 빌드와 SHA-256이 같다.
 
 ### 최종 묶음의 새 임시 폴더 실행
 
-카드 4와 같은 방법(세션 임시 폴더 아래 빈 폴더, PowerShell `Expand-Archive`)으로 되풀이했다. 인용을 고친
-`2e7bd73`, 라이선스를 넣은 `2e00f55`, 트러블슈팅 링크를 넣은 `9d71d39` 묶음에서 한 번씩 했고 결과가 같았다.
-아래는 마지막 묶음이다.
+저장소 밖 세션 임시 폴더 아래 빈 폴더에 PowerShell `Expand-Archive`로 풀었다. 아래는 V3 묶음의 결과다.
 
 ```text
-<새 임시 폴더>\explainsoc-9d71d39> npm ci
-added 113 packages, and audited 114 packages in 2s
+<새 임시 폴더>\explainsoc-679add3> npm ci
+added 113 packages, and audited 114 packages
 found 0 vulnerabilities
 
-<새 임시 폴더>\explainsoc-9d71d39> npm run build
-✓ 41 modules transformed.
-dist/index.html                   1.22 kB │ gzip:  0.75 kB
-dist/third-party-licenses.md      3.42 kB
-dist/assets/index-B84lP8u3.css   17.00 kB │ gzip:  4.38 kB
-dist/assets/index-Rf7vZX1d.js   269.61 kB │ gzip: 83.58 kB
-✓ built in 497ms
+<새 임시 폴더>\explainsoc-679add3> npm run build
+✓ 48 modules transformed.
+dist/assets/index-D1Vo0e1F.css
+dist/assets/index--yn4oNyf.js
 
-<새 임시 폴더>\explainsoc-9d71d39> npm run preview
+<새 임시 폴더>\explainsoc-679add3> npm run preview
   ➜  Local:   http://127.0.0.1:4173/explainsoc/
 ```
 
 | 확인 | 결과 |
 |---|---|
-| 풀린 파일 | 52개(`LICENSE` 포함), `node_modules`·`.git`·`dist` 없음 |
-| HTTP | 페이지 200 (1,224 bytes), JS·CSS·아이콘 200 |
-| 첫 화면 (DOM) | 제목, h1, 도움 한 문장, 반영한 논문 제목, 시작 버튼 둘. 스크립트는 앱 JS 하나 |
-| 자산 이름 | 공개 주소와 같다(`index-Rf7vZX1d.js`, `index-B84lP8u3.css`) |
-| `npm run check` | 폴더 탐색 · 52개 파일 · 11개 PASS |
-| `npm test` | 75개 통과 |
-| `npm run test:e2e` | 20개 통과 |
+| 풀린 파일 | 61개(`LICENSE` 포함), `node_modules`·`.git`·`dist` 없음 |
+| 자산 이름 | 공개 주소와 같다(`index--yn4oNyf.js`, `index-D1Vo0e1F.css`) |
+| `npm run check` | 폴더 탐색 · 61개 파일 · 앱 소스 36개 · 11개 PASS |
+| `npm test` | 91개 통과 |
+| `npm run test:e2e` | 24개 통과, 증거 캡처 9개 제외 |
 
 ## 제출문 세 줄 — BRB-C14
 

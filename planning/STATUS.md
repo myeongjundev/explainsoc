@@ -13,8 +13,14 @@
 - 손수 고친 JSON의 후속 `sameTrial: null`과 공백 이름을 거부하고, V3 증거 화면을 현재 코드로 다시 찍었다.
 - 로컬 `npm run verify` 통과: 안전 검사 11개, Vitest 91개, 프로덕션 빌드, Playwright 24개
   (증거 캡처 9개 제외). 구현 설계는 `DESIGN.md` 25절이다.
+- 구현 커밋 `679add3`; GitHub Actions [run 35698164859](https://github.com/myeongjundev/explainsoc/actions/runs/35698164859)의
+  검사와 Pages 배포가 성공했다. 공개 `index--yn4oNyf.js`·`index-D1Vo0e1F.css`의 SHA-256은 로컬 빌드와 같고,
+  공개 주소 브라우저 검사 24개도 통과했다.
+- 현재 실행 묶음은 `explainsoc-679add3.zip`(130,786 bytes, 61개 파일), SHA-256
+  `80650a6729c912dadd071adb87384d59e253660a82d4296cefa0a0503ecffdbd`이다. 두 번 생성한 해시가 같고,
+  저장소 밖 빈 폴더에서 설치·빌드·안전 검사 11개·Vitest 91개·Playwright 24개를 다시 통과했다.
 
-## 2026-09-22 — 대표 앱 V3 로컬 구현·검증
+## 2026-09-22 — 대표 앱 V3 초기 로컬 구현·검증
 
 - 한 번의 정적 판독을 `최초 주장 → 공급자 답변 → 변화 비교`의 회차형 PoC 사례 작업대로 확장했다.
 - 같은 시험 여부가 확인되지 않은 후속 자료에는 R14를 남기고, `해결됨 / 남음 / 새로 생김`은 규칙 ID 차이로만 계산한다.
@@ -23,7 +29,7 @@
 - 로컬 `npm run verify` 통과: 안전 검사 11개, Vitest 85개, 프로덕션 빌드, Playwright 23개 실행(증거 캡처 6개 제외). V3 JSON 왕복과 2회차 차이 비교도 실제 브라우저로 검증했다.
 - 구현 커밋 `8696eb9`; GitHub Actions [run 35682006918](https://github.com/myeongjundev/explainsoc/actions/runs/35682006918)의 검사와 Pages 배포가 성공했다.
 - 공개 주소는 로컬 빌드와 같은 `index-CebDU8ns.js`·`index-DVlAH9ql.css`를 제공했고 두 자산의 SHA-256도 일치했다. 공개 주소 브라우저 검사 23개도 통과했다.
-- 현재 실행 묶음은 `explainsoc-8696eb9.zip`(126,324 bytes, 60개 파일), SHA-256
+- 당시 실행 묶음은 `explainsoc-8696eb9.zip`(126,324 bytes, 60개 파일), SHA-256
   `1a3e43624f1a3b18e161749ca6776d3f58c3b19c13c9d049ef3b7a3e5afb1a27`이다. 같은 커밋에서 두 번 만들어
   해시가 같았고, 저장소 밖 빈 폴더에서 `npm ci` → 빌드 → 안전 검사 11개 → Vitest 85개 → Playwright
   23개를 모두 통과했다(증거 캡처 6개 제외).
@@ -76,7 +82,7 @@
 1. **처음 보는 동료 한 명(BRB-C11)과 사람이 잰 60초.** 공개 주소만 주고 설명 없이 써 보게 한 뒤, 걸린
    시간·막힌 곳·이름 없는 한 줄을 `evidence/card-5.md`의 양식에 적는다.
 2. **제출문 ② `내가 직접 판단한 일`(BRB-C14).** 사용자가 직접 쓴다. ①·③은 사실 초안이 있다.
-3. **제출.** 결과물 URL과 `explainsoc-8696eb9.zip`(학원 PC에서는 `npm run release:zip -- 8696eb9`로 다시 만든다),
+3. **제출.** 결과물 URL과 `explainsoc-679add3.zip`(학원 PC에서는 `npm run release:zip -- 679add3`로 다시 만든다),
    짧은 확인 방법, 세 줄. 자세한 순서는 `planning/HANDOFF-2026-09-22.md`.
 
 ## 2026-09-22 — 카드 1~4 구현 (Claude)
