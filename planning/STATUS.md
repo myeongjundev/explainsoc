@@ -9,6 +9,15 @@
   확인해 판매 업체에 물을 질문을 만드는 도구라는 쉬운 설명과 실제 사용 상황을 추가했다.
 - 세 단계도 `숫자 입력 → 모르는 시험 조건 답변 → 업체 질문 완성`으로 바꿨다. 수치·논문·R01~R14·
   계산·결과·보안 경계는 바꾸지 않았다. 설계는 `DESIGN.md` 28절이다.
+- 구현 커밋 `b5384eee193add96acbacd1f59d2dbf5d06a9577`; GitHub Actions
+  [run 35732418454](https://github.com/myeongjundev/explainsoc/actions/runs/35732418454)의 검사와 Pages 배포가
+  성공했다. 공개 주소에서 기능·품질 26개와 증거 캡처 9개를 통과했고 배포 자산 SHA-256도 로컬과 같다.
+- 새 실행 묶음은 `explainsoc-b5384ee.zip`(140,962 bytes, 63개 파일), SHA-256
+  `5cda7ec171d36a352dd3cd33f5b17a1092453a8356288862d4200bd189b8c87b`이다. 저장소 밖 새 임시 폴더에서
+  설치·안전 검사 11개·Vitest 92개·빌드·미리보기 HTTP 200·Playwright 26개를 다시 통과했다.
+- 12번 대표 카드의 한 문장도 `about` 커밋 `64945b4`에서 쉬운 말로 맞췄다.
+  [T12 checks 35732677557](https://github.com/myeongjundev/about/actions/runs/35732677557)와
+  [Pages 35732676543](https://github.com/myeongjundev/about/actions/runs/35732676543)이 성공했다.
 
 ## 2026-09-22 — 대표 앱 V5 결과 우선 브리핑과 제출본 재검증
 
@@ -102,7 +111,7 @@
 - 새 실행 묶음은 `explainsoc-720dc76.zip`(112,221 bytes, 54개 파일), SHA-256
   `7dc9812c4528ddd47f6354ebcb359686bbd8f81989b14914399c242f213503c5`이다. 두 번 생성해 해시가 같았고, 새 임시 폴더에서
   `npm ci` → 안전 검사 → 80개 테스트 → 빌드 → 브라우저 22개를 전부 통과했다.
-- 이 묶음이 당시 기존 `explainsoc-9d71d39.zip`을 대체한 V2 제출본이었다. 현재 제출본은 맨 위 V5 기록을 따른다.
+- 이 묶음이 당시 기존 `explainsoc-9d71d39.zip`을 대체한 V2 제출본이었다. 현재 제출본은 맨 위 V6 기록을 따른다.
 
 ## 2026-09-22 — 트러블슈팅 기록과 학원 인계
 
@@ -141,7 +150,7 @@
 1. **처음 보는 동료 한 명(BRB-C11)과 사람이 잰 60초.** 공개 주소만 주고 설명 없이 써 보게 한 뒤, 걸린
    시간·막힌 곳·이름 없는 한 줄을 `evidence/card-5.md`의 양식에 적는다.
 2. **제출문 ② `내가 직접 판단한 일`(BRB-C14).** 사용자가 직접 쓴다. ①·③은 사실 초안이 있다.
-3. **제출.** 결과물 URL과 `explainsoc-7d0a105.zip`(다른 PC에서는 `npm run release:zip -- 7d0a105`로 다시 만든다),
+3. **제출.** 결과물 URL과 `explainsoc-b5384ee.zip`(다른 PC에서는 `npm run release:zip -- b5384ee`로 다시 만든다),
    짧은 확인 방법, 세 줄. 자세한 순서는 `planning/HANDOFF-2026-09-22.md`.
 
 ## 2026-09-22 — 카드 1~4 구현 (Claude)

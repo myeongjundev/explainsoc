@@ -1,24 +1,24 @@
 # 인계 — 2026-09-22 저녁 (학원 PC → 집 PC)
 
 > 집에서 이 문서 하나만 읽고 이어서 할 수 있게 적었다. 기록한 사람: Claude · 2026-09-22 17:10 무렵
-> 아침 인계 문서는 [`HANDOFF-2026-09-22.md`](HANDOFF-2026-09-22.md)(Codex가 V5 기준으로 갱신)다.
+> 아침 인계 문서는 [`HANDOFF-2026-09-22.md`](HANDOFF-2026-09-22.md)(Codex가 V6 기준으로 갱신)다.
 > 이 문서가 더 최신이다.
 
 ## 0. 한 줄 상태
 
-**V5까지 구현·배포·검증이 끝났다. 남은 것은 사람만 할 수 있는 두 가지(처음 보는 사람 시험, 제출문 ②)와 제출이다.**
-V5는 기능을 늘리지 않고 결과 첫 화면에 Decision Brief를 두고 모바일 결과를 장면별로 나눴다.
+**V6까지 구현·배포·검증이 끝났다. 남은 것은 새로운 사람 재시험, 제출문 ②와 제출이다.**
+첫 비전공자 관찰 실패를 근거로 첫 화면을 쉬운 말로 고쳤고, V5 결과 구조와 기능은 유지했다.
 
-| 무엇 | 값 (2026-09-22 V5 확인) |
+| 무엇 | 값 (2026-09-22 V6 확인) |
 |---|---|
-| V5 구현 커밋 | `7d0a105` feat: 결과를 먼저 읽는 V5 브리핑으로 재구성한다 |
-| CI | [run 35728715004](https://github.com/myeongjundev/explainsoc/actions/runs/35728715004) 검사·Pages 배포 성공 |
-| 공개 주소 | https://myeongjundev.github.io/explainsoc/ — 자산 `index-WXO94w-9.js`, `index-i0wfD4Ar.css` (V5) |
-| 제출 ZIP | `explainsoc-7d0a105.zip` · 140,605 bytes · 63개 파일 · SHA-256 `1b2854d4a847a5606711b4ba020adc6595ca698f5aefc96a0bdc668f7c21fe92` |
+| V6 구현 커밋 | `b5384ee` fix: 첫 화면에서 사이트 목적을 바로 설명한다 |
+| CI | [run 35732418454](https://github.com/myeongjundev/explainsoc/actions/runs/35732418454) 검사·Pages 배포 성공 |
+| 공개 주소 | https://myeongjundev.github.io/explainsoc/ — 자산 `index-CRXUGNHw.js`, `index-BHoV4po4.css` (V6) |
+| 제출 ZIP | `explainsoc-b5384ee.zip` · 140,962 bytes · 63개 파일 · SHA-256 `5cda7ec171d36a352dd3cd33f5b17a1092453a8356288862d4200bd189b8c87b` |
 | ZIP 위치 | 현재 PC `release/`에만 있다(`.gitignore`). 다른 PC에서는 2절 명령으로 다시 만든다 |
 | 검증 수 | 안전 검사 11 · Vitest 92 · Playwright 26(증거 캡처 9 제외). 공개 주소는 26개와 캡처 9개 통과 |
-| 12번 저장소(about) | `e53e2c3` — V5 Decision Brief 카드, T12 검사·Pages 성공 |
-| 제출 자료 | [`evidence/card-5.md`](../evidence/card-5.md) 맨 위 "V5 대표 앱 제출본" 표와 "짧은 확인 방법" |
+| 12번 저장소(about) | `64945b4` — V6 쉬운 한 문장, V5 Decision Brief 그림 유지, T12 검사·Pages 성공 |
+| 제출 자료 | [`evidence/card-5.md`](../evidence/card-5.md) 맨 위 "V6 비전공자 첫 화면 명료화 제출본" 표와 "짧은 확인 방법" |
 
 ## 1. 오늘 한 일 (시간순)
 
@@ -33,10 +33,11 @@ V5는 기능을 늘리지 않고 결과 첫 화면에 Decision Brief를 두고 �
 | 16시 | `679add3` `2de42f4` | Codex | 리뷰 R1~R5·L1~L3 반영(설계 25절). "아니오"는 별도 시험 분기, 이전 회차 메모 이어받기, 코드에 제목 붙이기 등 |
 | 16~17시 | `3220867` `454f75d` | Codex | **V4** — 첫 화면 Claim Autopsy(99.88% → 두 시험 → 220,788건 중 160건), 결과 3열 수사 보드, 6항목 근거 지도, 회차 분기 타임라인, Decision Dossier, 인쇄 회귀 검사. 12번 카드 V4로 갱신(about `5584650`) |
 | 21~22시 | `7d0a105` | Codex | **V5** — 결과 우선 Decision Brief, 독립 3열 카드, 모바일 장면 전환, 회차 입력 펼침. 공개본·격리 ZIP 검증 뒤 12번 카드도 `e53e2c3`으로 갱신 |
+| 22시 | `b5384ee` | Codex | **V6** — 비전공자 첫 관찰 실패를 기록하고 제목·쉬운 설명·사용 상황·세 단계를 명료화. 공개본·격리 ZIP 검증 뒤 12번 한 문장도 `64945b4`로 갱신 |
 
-설계 근거: [`DESIGN.md`](DESIGN.md) 23절(V2) · 24절(V3) · 25절(V3 리뷰 반영) · 26절(V4) · 27절(V5).
-22절 다섯 결정(제품명, 첫 화면 제목, `성능표에 없는 질문`, 9종 대 3종 그림, URL+ZIP)은 유지된 상태다.
-V4 첫 화면 제목도 코드상 `그 99%, 무엇을 시험한 점수입니까?` 그대로다(`src/components/Hero.tsx`).
+설계 근거: [`DESIGN.md`](DESIGN.md) 23절(V2) · 24절(V3) · 25절(V3 리뷰 반영) · 26절(V4) · 27절(V5) · 28절(V6).
+제품명·`성능표에 없는 질문`·9종 대 3종 그림·URL과 ZIP 결정은 유지했다. 첫 화면 제목은 실제 관찰을
+근거로 `보안 AI의 99%, 무엇을 시험한 점수일까요?`로 명료화했다.
 
 ## 2. 집에서 처음 할 일 (15분)
 
@@ -62,21 +63,22 @@ npm --prefix t13-explainsoc run verify
 **제출 ZIP 다시 만들기 — 커밋을 반드시 적는다.**
 
 ```bash
-npm --prefix t13-explainsoc run release:zip -- 7d0a105
+npm --prefix t13-explainsoc run release:zip -- b5384ee
 ```
 
-- SHA-256이 `1b2854d4…21fe92`(위 표 전체 값)와 **같으면** 그 파일을 낸다.
+- SHA-256이 `5cda7ec1…9b8c87b`(위 표 전체 값)와 **같으면** 그 파일을 낸다.
 - **다르면** 새 해시를 card-5에 적고, 아침 인계 문서 5절대로 새 빈 폴더에서 `npm ci → build → preview → check → test → test:e2e`를 한 번 돌린다.
 
 ## 3. 남은 일 — 사람만 할 수 있음
 
 ### 3-1. 처음 보는 사람 한 명 (BRB-C11, 필수)
 
-- 오늘 한 페르소나 시험은 **V2 화면 기준 AI 사전 시험**이라 BRB-C11 증거가 아니다. 결과 구조가 바뀌었으므로 **공개 V5로 사람 시험을 한다.**
+- 첫 비전공자 관찰은 목적 전달 실패를 발견했지만 시간·기기·세 행동이 없어 BRB-C11 완료 증거가 아니다.
+  V6 수정 뒤 **새로운 처음 보는 사람**에게 다시 시험한다.
 - 공개 주소만 주고, 설명·도움 없이 옆에서 본다. 시계를 켠다.
 - 적을 것([`card-5.md`](../evidence/card-5.md) "처음 보는 동료 한 명"·"사람이 잰 60초" 양식):
   - 1분 안에 "누구를 돕는 앱인지" 말하는가(몇 초)
-  - 세 행동을 혼자 끝내는가 — V5 기준: 숫자·근거 입력(또는 논문 예시) → Decision Brief와 빠진 조건 검토 → 질문 상태·메모 남기고 검토표 복사·인쇄
+  - 세 행동을 혼자 끝내는가 — V6 기준: 숫자·근거 입력(또는 논문 예시) → Decision Brief와 빠진 조건 검토 → 질문 상태·메모 남기고 검토표 복사·인쇄
   - 막힌 곳(본 그대로)
   - 논문 예시로 핵심 장면(99.88% 해부 → 160건 탐지 → 공급자 질문)까지 몇 초
   - 마지막 "한 줄로 말하면?" — **이름 없이** 그대로
@@ -99,8 +101,8 @@ npm --prefix t13-explainsoc run release:zip -- 7d0a105
 ### 3-3. 제출
 
 1. 결과물 URL: https://myeongjundev.github.io/explainsoc/
-2. 실행 묶음: `explainsoc-7d0a105.zip` (2절에서 만든 파일)
-3. 짧은 확인 방법: card-5 "짧은 확인 방법" 코드 블록 그대로(V5 값: ZIP 7d0a105, R01~R14, 92/26)
+2. 실행 묶음: `explainsoc-b5384ee.zip` (2절에서 만든 파일)
+3. 짧은 확인 방법: card-5 "짧은 확인 방법" 코드 블록 그대로(V6 값: ZIP b5384ee, R01~R14, 92/26)
 4. 세 줄: ①·③ 다듬은 것 + ② 본인 글
 
 내기 직전에 새 시크릿 창에서 URL이 로그인 없이 열리는지 본다(BRB-C15). 낸 뒤 [`STATUS.md`](STATUS.md) 맨 위에 "제출" 항목(날짜·시각, 커밋, ZIP 이름·SHA-256)을 쓴다.
@@ -116,8 +118,8 @@ npm --prefix t13-explainsoc run release:zip -- 7d0a105
 ## 5. 참고 문서
 
 - 제출 자료·양식: [`evidence/card-5.md`](../evidence/card-5.md)
-- 진행 기록: [`STATUS.md`](STATUS.md) 맨 위(V5 → V4 → V3 리뷰 반영 → V3)
-- 설계: [`DESIGN.md`](DESIGN.md) 22~27절
+- 진행 기록: [`STATUS.md`](STATUS.md) 맨 위(V6 → V5 → V4 → V3 리뷰 반영 → V3)
+- 설계: [`DESIGN.md`](DESIGN.md) 22~28절
 - 리뷰: [`CLAUDE-V3-IDEAS.md`](CLAUDE-V3-IDEAS.md) · [`CLAUDE-V3-REVIEW.md`](CLAUDE-V3-REVIEW.md) · [`../evidence/persona-pretest-2026-09-22.md`](../evidence/persona-pretest-2026-09-22.md)
-- V5 증거 화면: `evidence/v5-investigation-board-desktop.png`, `evidence/v5-separate-branch-desktop.png`, `evidence/v5-briefing-mobile.png`, 공개본은 `evidence/screenshots/live/`
+- V6 첫 화면: `evidence/screenshots/a-first-screen-desktop.png`, `evidence/screenshots/a-first-screen-mobile.png`; V5 결과 증거는 기존 파일과 공개본 `evidence/screenshots/live/`
 - 트러블슈팅: [`../TROUBLESHOOTING.md`](../TROUBLESHOOTING.md)
