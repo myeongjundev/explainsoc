@@ -50,13 +50,13 @@ test.describe('키보드만으로 (BRB-C05)', () => {
     const outline = await page.evaluate(() => getComputedStyle(document.activeElement as Element).outlineStyle)
     expect(outline).not.toBe('none')
     await page.keyboard.press('Enter')
-    await expect(page.getByRole('heading', { level: 2, name: '3. 결과와 질문' })).toBeFocused()
+    await expect(page.getByRole('heading', { level: 2, name: '3. PoC 검토 작업대' })).toBeFocused()
 
     await tabTo('공격 기준으로 뒤집기')
     await page.keyboard.press('Enter')
     await expect(page.getByRole('button', { name: '받은 주장 다시 보기' })).toHaveAttribute('aria-pressed', 'true')
 
-    await tabTo('질문 복사')
+    await tabTo('질문만 복사')
     await page.keyboard.press('Enter')
     await expect(page.getByText(/질문 1개를 복사했습니다/)).toBeVisible()
   })
@@ -123,7 +123,7 @@ test.describe('보안과 개인정보', () => {
     await page.getByRole('button', { name: '공격 기준으로 뒤집기' }).click()
     await page.getByRole('button', { name: '입력 수정' }).click()
     await page.getByLabel(/\(TP\)/).fill('999')
-    await page.getByRole('button', { name: /결과와 질문/ }).click()
+    await page.getByRole('button', { name: /PoC 검토표/ }).click()
     const origin = new URL(baseURL as string).origin
     expect(outsideRequests).toEqual([])
     const nonStatic = requests.filter((u) => u.startsWith(origin) && !/\/explainsoc\/(assets\/[\w.-]+\.(js|css)|favicon\.svg)?$/.test(u))

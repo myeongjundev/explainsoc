@@ -30,7 +30,7 @@ describe('출발점', () => {
 describe('규칙 하나마다 켜지는 조건과 꺼지는 조건', () => {
   it('R01 — 분할이 무작위면 해석 주의', () => {
     expect(fired(quiet({ split: 'random' }))).toEqual(['R01'])
-    expect(fired(quiet({ split: 'other' }))).toEqual([])
+    expect(fired(quiet({ split: 'other' }))).toEqual(['R13'])
     expect(RULE_BY_ID.R01.status).toBe('caution')
   })
 
@@ -43,7 +43,7 @@ describe('규칙 하나마다 켜지는 조건과 꺼지는 조건', () => {
   it('R03 — 정확도는 있는데 공격 Recall과 혼동행렬이 없으면 해석 주의', () => {
     expect(fired(quiet({ claim: { accuracy: 0.99 } }))).toEqual(['R03'])
     expect(fired(quiet({ claim: { accuracy: 0.99, attackRecall: 0.9 } }))).toEqual([])
-    expect(fired(quiet({ claim: { accuracy: 0.99 }, matrix: MATRIX }))).toEqual([])
+    expect(fired(quiet({ claim: { accuracy: 0.99 }, matrix: MATRIX }))).not.toContain('R03')
   })
 
   it('R04 — 오탐률은 있는데 공격 Recall이 없으면 해석 주의', () => {
@@ -73,7 +73,7 @@ describe('규칙 하나마다 켜지는 조건과 꺼지는 조건', () => {
   })
 
   it('R08 — 학습에 없던 공격을 시험하지 않았으면 입력한 근거', () => {
-    expect(fired(quiet({ unseenIncluded: 'no' }))).toEqual(['R08'])
+    expect(fired(quiet({ unseenIncluded: 'no' }))).toContain('R08')
     expect(RULE_BY_ID.R08.status).toBe('input')
   })
 
@@ -93,6 +93,20 @@ describe('규칙 하나마다 켜지는 조건과 꺼지는 조건', () => {
     expect(withoutMatrix.questions).toContain(RULE_BY_ID.R10.question)
     expect(withMatrix.findings.map((f) => f.ruleId)).toContain('R10')
     expect(withMatrix.questions).not.toContain(RULE_BY_ID.R10.question)
+  })
+
+  it('R11 — 주장 지표와 혼동행렬 계산값이 다르면 출처를 확인한다', () => {
+    expect(fired(quiet({ claim: { accuracy: 0.99 }, matrix: MATRIX }))).toContain('R11')
+    expect(fired(quiet({ claim: { accuracy: 0.92 }, matrix: MATRIX }))).not.toContain('R11')
+  })
+
+  it('R12 — 미관측 분할과 미관측 공격 미포함 답을 모순으로 보여 준다', () => {
+    expect(fired(quiet({ split: 'unseen', unseenIncluded: 'no' }))).toEqual(['R12', 'R08'])
+    expect(fired(quiet({ split: 'unseen', unseenIncluded: 'yes' }))).not.toContain('R12')
+  })
+
+  it('R13 — 기타 분할은 구체적인 기준을 묻는다', () => {
+    expect(fired(quiet({ split: 'other' }))).toEqual(['R13'])
   })
 })
 
@@ -152,8 +166,10 @@ describe('결과는 판정이 아니라 다음 행동 순서다', () => {
     }
   })
 
-  it('규칙은 R01부터 R10까지 정확히 열 개다', () => {
-    expect(REVIEW_RULES.map((r) => r.id)).toEqual(['R01', 'R02', 'R03', 'R04', 'R05', 'R06', 'R07', 'R08', 'R09', 'R10'])
+  it('기존 규칙 R01~R10과 V2 정합성 규칙 R11~R13이 있다', () => {
+    expect(REVIEW_RULES.map((r) => r.id)).toEqual([
+      'R01', 'R02', 'R03', 'R04', 'R05', 'R06', 'R07', 'R08', 'R09', 'R10', 'R11', 'R12', 'R13',
+    ])
   })
 })
 

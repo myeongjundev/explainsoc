@@ -35,7 +35,7 @@ test.describe('논문 예시 60초 경로 (BRB-C02·C05)', () => {
 
     // 50~60초: 질문과 복사
     await expect(questionItems(page)).toHaveText(['같은 시험에서 공격 Recall은 얼마입니까?'])
-    await page.getByRole('button', { name: '질문 복사' }).click()
+    await page.getByRole('button', { name: '질문만 복사' }).click()
     await expect(page.getByText('질문 1개를 복사했습니다. 입력한 숫자는 담지 않았습니다.')).toBeVisible()
     const copied = await page.evaluate(() => navigator.clipboard.readText())
     expect(copied).toBe('1. 같은 시험에서 공격 Recall은 얼마입니까?')
@@ -73,7 +73,7 @@ test.describe('내 성능표로 세 행동 (BRB-C02)', () => {
     // 행동 3 — 말하는 것과 말하지 않는 것, 질문 복사
     await expect(page.locator('.finding__id')).toHaveText(['R02', 'R09', 'R03', 'R06'])
     await expect(questionItems(page)).toHaveCount(4)
-    await page.getByRole('button', { name: '질문 복사' }).click()
+    await page.getByRole('button', { name: '질문만 복사' }).click()
     const copied = await page.evaluate(() => navigator.clipboard.readText())
     expect(copied.split('\n')).toHaveLength(4)
     expect(copied).not.toContain('0.99')
@@ -82,7 +82,7 @@ test.describe('내 성능표로 세 행동 (BRB-C02)', () => {
   test('모든 조건을 모름으로 두어도 질문이 나온다', async ({ page }) => {
     await openHome(page)
     await page.getByRole('button', { name: '내 성능표 검토' }).click()
-    await page.getByRole('button', { name: /결과와 질문/ }).click()
+    await page.getByRole('button', { name: /PoC 검토표/ }).click()
     await expect(page.locator('.finding__id')).toHaveText(['R02', 'R07', 'R09'])
     await expect(questionItems(page)).toHaveCount(3)
   })
@@ -91,9 +91,39 @@ test.describe('내 성능표로 세 행동 (BRB-C02)', () => {
     await openHome(page)
     await page.getByRole('button', { name: '내 성능표 검토' }).click()
     await page.getByRole('button', { name: /예시 B로 채우기/ }).click()
-    await page.getByRole('button', { name: /결과와 질문/ }).click()
+    await page.getByRole('button', { name: /PoC 검토표/ }).click()
     await expect(page.locator('.finding__id')).toHaveText(['R01', 'R08', 'R10'])
     await expect(page.locator('.flip__face--front')).toContainText('정확도 0.9988')
+  })
+})
+
+test.describe('PoC 검토 작업대 V2', () => {
+  test('주장 지표와 혼동행렬이 다르면 R11로 같은 시험인지 묻는다', async ({ page }) => {
+    await openHome(page)
+    await page.getByRole('button', { name: '내 성능표 검토' }).click()
+    await page.getByLabel('지표 1').selectOption('accuracy')
+    await page.getByLabel('값 (0부터 1 사이)').fill('0.99')
+    await page.getByRole('button', { name: '혼동행렬로 입력' }).click()
+    for (const [label, value] of [
+      [/정상→정상/, '90'], [/정상→공격/, '5'], [/공격→정상/, '3'], [/공격→공격/, '2'],
+    ] as const) await page.getByLabel(label).fill(value)
+    await page.getByRole('button', { name: /PoC 검토표/ }).click()
+
+    await expect(page.locator('.finding', { hasText: 'R11' })).toBeVisible()
+    await expect(page.locator('.question-card__text', { hasText: '이 성능 지표와 혼동행렬은 같은 시험 결과입니까?' })).toBeVisible()
+  })
+
+  test('미팅 상태·메모를 포함한 검토표를 복사한다', async ({ page, context }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+    await startExample(page)
+    await page.getByLabel('답변 상태').selectOption('requested')
+    await page.getByLabel('답변 메모').fill('공격 유형별 표를 추가로 요청')
+    await page.getByRole('button', { name: '검토표 전체 복사' }).click()
+
+    const copied = await page.evaluate(() => navigator.clipboard.readText())
+    expect(copied).toContain('상태: 자료 요청')
+    expect(copied).toContain('메모: 공격 유형별 표를 추가로 요청')
+    await expect(page.getByText(/PoC 검토표 전체를 복사했습니다/)).toBeVisible()
   })
 })
 
@@ -114,7 +144,7 @@ test.describe('잘못된 입력에도 멈추지 않는다 (BRB-C05)', () => {
       await expect(page.getByText(message)).toBeVisible()
       await expect(value).toHaveAttribute('aria-invalid', 'true')
     }
-    await page.getByRole('button', { name: /결과와 질문/ }).click()
+    await page.getByRole('button', { name: /PoC 검토표/ }).click()
     await expect(page.getByText('잘못 적은 칸 1개는 계산에서 뺐습니다. 입력 수정에서 고칠 수 있습니다.')).toBeVisible()
     await expect(questionItems(page)).toHaveCount(3)
     expect(errors).toEqual([])
@@ -150,8 +180,8 @@ test.describe('잘못된 입력에도 멈추지 않는다 (BRB-C05)', () => {
     await fp.fill('0')
     await expect(page.locator('.matrix__na')).toContainText('공격 Recall: 공격 표본이 없어 계산할 수 없습니다')
 
-    await page.getByRole('button', { name: /결과와 질문/ }).click()
-    await expect(page.getByRole('heading', { level: 2, name: '3. 결과와 질문' })).toBeVisible()
+    await page.getByRole('button', { name: /PoC 검토표/ }).click()
+    await expect(page.getByRole('heading', { level: 2, name: '3. PoC 검토 작업대' })).toBeVisible()
     expect(errors).toEqual([])
   })
 })

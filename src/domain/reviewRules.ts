@@ -1,5 +1,6 @@
 /**
- * 판독 규칙 R01~R10 (설계 7절). 규칙 하나에 조건·상태·문구·질문·근거를 함께 둔다.
+ * 판독 규칙 R01~R10(설계 7절) + V2 정합성 규칙 R11~R13(설계 23절).
+ * 규칙 하나에 조건·상태·문구·질문·근거를 함께 둔다.
  *
  * - 임계값으로 등급을 매기지 않는다. 숫자가 높은지 낮은지 판정하지 않는다.
  * - 사용자 입력을 논문 수치와 우열 비교하지 않는다.
@@ -8,9 +9,23 @@
  */
 
 import { XGB_UNSEEN, type EvidenceId } from '../data/paperEvidence'
+import { computeMetrics, roundTo4, type Computed } from './metrics'
 import type { FindingStatus, ReviewInput } from './types'
 
-export type RuleId = 'R01' | 'R02' | 'R03' | 'R04' | 'R05' | 'R06' | 'R07' | 'R08' | 'R09' | 'R10'
+export type RuleId =
+  | 'R01'
+  | 'R02'
+  | 'R03'
+  | 'R04'
+  | 'R05'
+  | 'R06'
+  | 'R07'
+  | 'R08'
+  | 'R09'
+  | 'R10'
+  | 'R11'
+  | 'R12'
+  | 'R13'
 
 export interface ReviewRule {
   id: RuleId
@@ -34,6 +49,25 @@ const splitOf = (i: ReviewInput) => i.split ?? 'unknown'
 const unseenOf = (i: ReviewInput) => i.unseenIncluded ?? 'unknown'
 const dedupOf = (i: ReviewInput) => i.deduplicated ?? 'unknown'
 const has = (i: ReviewInput, k: keyof ReviewInput['claim']) => i.claim[k] !== undefined
+
+const computedValue = (value: Computed): number | undefined => (value.kind === 'value' ? roundTo4(value.value) : undefined)
+
+/** 사용자가 적은 반올림 지표와 혼동행렬 계산값이 화면에서 다르게 보이는지 확인한다. */
+export function hasMetricMismatch(input: ReviewInput): boolean {
+  if (!input.matrix) return false
+  const m = computeMetrics(input.matrix)
+  const calculated = {
+    accuracy: computedValue(m.accuracy),
+    macroF1: computedValue(m.macroF1),
+    attackRecall: computedValue(m.attackRecall),
+    fpr: computedValue(m.fpr),
+  }
+  return (Object.keys(input.claim) as (keyof typeof calculated)[]).some((kind) => {
+    const claimed = input.claim[kind]
+    const actual = calculated[kind]
+    return claimed !== undefined && actual !== undefined && roundTo4(claimed) !== actual
+  })
+}
 
 export const REVIEW_RULES: readonly ReviewRule[] = [
   {
@@ -130,6 +164,33 @@ export const REVIEW_RULES: readonly ReviewRule[] = [
     applies: (i) => has(i, 'fpr') && has(i, 'attackRecall'),
     // 이미 네 칸을 입력했다면 같은 것을 다시 묻지 않는다 (구현 체크리스트 1절 해석 2).
     asks: (i) => i.matrix === null,
+  },
+  {
+    id: 'R11',
+    status: 'check',
+    title: '주장 지표와 혼동행렬 계산값이 다름',
+    guidance: '적어 준 지표와 같은 화면의 혼동행렬에서 계산한 값이 소수 넷째 자리에서 다릅니다.',
+    question: '이 성능 지표와 혼동행렬은 같은 시험 결과입니까?',
+    evidenceIds: ['P02', 'P06'],
+    applies: hasMetricMismatch,
+  },
+  {
+    id: 'R12',
+    status: 'check',
+    title: '평가 조건의 두 답이 서로 다름',
+    guidance: '학습에 없던 공격을 따로 시험했다고 했지만, 미관측 공격 포함 여부에는 아니오라고 답했습니다.',
+    question: '미관측 공격을 별도 시험한 것과 시험에 미관측 공격이 없다는 답 가운데 어느 것이 맞습니까?',
+    evidenceIds: ['P01', 'P07'],
+    applies: (i) => splitOf(i) === 'unseen' && unseenOf(i) === 'no',
+  },
+  {
+    id: 'R13',
+    status: 'check',
+    title: '다른 방식으로 나눈 시험',
+    guidance: '다른 방식이라는 답만으로는 학습과 시험의 관계를 알 수 없습니다.',
+    question: '학습과 시험을 나눈 구체적인 기준과 각 시험의 공격 유형 구성을 제공할 수 있습니까?',
+    evidenceIds: ['P01', 'P07'],
+    applies: (i) => splitOf(i) === 'other',
   },
 ]
 

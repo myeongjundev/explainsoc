@@ -28,6 +28,14 @@ export interface ConfusionMatrix {
 /** 입력 값이 어디서 왔는지. 논문 예시일 때만 원고의 표현을 그대로 빌려 쓴다. */
 export type InputSource = 'exampleA' | 'exampleB' | 'user'
 
+/** PoC 미팅에서 질문 하나를 어디까지 확인했는지. 브라우저 메모리에만 둔다. */
+export type QuestionStatus = 'unasked' | 'answered' | 'requested' | 'followup'
+
+export interface QuestionResponse {
+  status: QuestionStatus
+  note: string
+}
+
 /**
  * 판독 규칙이 읽는 입력. 검증을 통과한 값만 들어온다.
  * 잘못 적은 값은 0으로 바꾸지 않고 아예 빠진다.

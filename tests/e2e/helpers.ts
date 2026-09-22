@@ -28,11 +28,11 @@ export async function openHome(page: Page) {
 export async function startExample(page: Page) {
   await openHome(page)
   await page.getByRole('button', { name: '논문 예시로 60초 검토' }).click()
-  await expect(page.getByRole('heading', { level: 2, name: '3. 결과와 질문' })).toBeFocused()
+  await expect(page.getByRole('heading', { level: 2, name: '3. PoC 검토 작업대' })).toBeFocused()
 }
 
 export function questionItems(page: Page) {
-  return page.getByRole('region', { name: '공급자에게 물을 질문' }).getByRole('listitem')
+  return page.getByRole('region', { name: '공급자에게 물을 질문' }).locator('.question-card__text')
 }
 
 /** 가로 스크롤이 생겼는지. 요소 하나라도 화면 밖으로 나가면 그 이름을 돌려준다. */

@@ -8,18 +8,19 @@ import { STEP_TITLES, Stepper, type StepNumber } from '../components/Stepper'
 import { EXAMPLE_A, EXAMPLE_B } from '../data/examples'
 import { checkForm, emptyForm, formFromExample, type FormState } from '../domain/form'
 import { buildReview } from '../domain/review'
+import type { QuestionResponse } from '../domain/types'
 
 type View = 'home' | StepNumber
 
 const STEP_HEADINGS: Record<StepNumber, string> = {
   1: '1. 받은 숫자를 적어 주세요',
   2: '2. 평가 조건에 답해 주세요',
-  3: '3. 결과와 질문',
+  3: '3. PoC 검토 작업대',
 }
 
 const SOURCE_NOTE: Record<FormState['source'], string | null> = {
-  exampleA: '논문 예시 A — 미관측 공격 스트레스 테스트의 XGBoost 값으로 채웠습니다. 숫자를 바꾸면 내 입력으로 바뀝니다.',
-  exampleB: '논문 예시 B — 계층화 무작위 분할의 XGBoost 값으로 채웠습니다. 숫자를 바꾸면 내 입력으로 바뀝니다.',
+  exampleA: '논문 예시 A — 숫자와 세 평가 조건을 논문 값으로 미리 채웠습니다. 숫자를 바꾸면 내 입력으로 바뀝니다.',
+  exampleB: '논문 예시 B — 숫자와 세 평가 조건을 논문 값으로 미리 채웠습니다. 숫자를 바꾸면 내 입력으로 바뀝니다.',
   user: null,
 }
 
@@ -30,6 +31,7 @@ const SOURCE_NOTE: Record<FormState['source'], string | null> = {
 export function App() {
   const [form, setForm] = useState<FormState>(emptyForm)
   const [view, setView] = useState<View>('home')
+  const [responses, setResponses] = useState<Record<string, QuestionResponse>>({})
   const check = useMemo(() => checkForm(form), [form])
   const review = useMemo(() => buildReview(check.input), [check])
 
@@ -91,7 +93,7 @@ export function App() {
                   form={form}
                   check={check}
                   onRowsChange={(metricRows) => editNumbers({ metricRows })}
-                  onMatrixOpen={(matrixOpen) => editNumbers({ matrixOpen })}
+                  onMatrixOpen={(matrixOpen) => editConditions({ matrixOpen })}
                   onMatrixChange={(matrix) => editNumbers({ matrix })}
                   onClaimedBest={(claimedBest) => editConditions({ claimedBest })}
                   onFillExampleB={() => setForm(formFromExample(EXAMPLE_B))}
@@ -131,8 +133,12 @@ export function App() {
                 check={check}
                 review={review}
                 onEdit={() => go(1)}
+                onEditConditions={() => go(2)}
+                responses={responses}
+                onResponse={(question, response) => setResponses((current) => ({ ...current, [question]: response }))}
                 onRestart={() => {
                   setForm(emptyForm())
+                  setResponses({})
                   go('home')
                 }}
               />

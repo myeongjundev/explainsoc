@@ -74,7 +74,8 @@ blockquote {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
   color: inherit;
 }
@@ -764,6 +765,99 @@ a {
   min-width: 0;
 }
 
+.result__split {
+  min-width: 0;
+}
+
+@media (min-width: 1000px) {
+  .result__split {
+    grid-column: 1 / -1;
+  }
+}
+
+/* 평가 근거 지도 */
+.eval-map__eyebrow,
+.brief__eyebrow {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.eval-map__steps {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 560px) {
+  .eval-map__steps {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.eval-map__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 12px;
+  border: 1px dashed var(--check-line);
+  border-radius: var(--radius-sm);
+  background: var(--check-bg);
+}
+
+.eval-map__item.is-known {
+  border-style: solid;
+  border-color: var(--input-line);
+  background: var(--input-bg);
+}
+
+.eval-map__item.is-alert {
+  border: 2px solid var(--error);
+  background: #fff2f2;
+}
+
+.eval-map__item > span:last-child {
+  display: grid;
+  gap: 2px;
+}
+
+.eval-map__item strong {
+  font-size: 0.9rem;
+}
+
+.eval-map__item span span {
+  color: var(--ink-2);
+  font-size: 0.86rem;
+}
+
+.eval-map__icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 75%);
+}
+
+.eval-map__icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.eval-map__alert {
+  color: var(--error);
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.eval-map__note {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 /* 뒤집기 카드 */
 .reveal {
   box-shadow: var(--stack), var(--shadow);
@@ -915,6 +1009,15 @@ a {
 .reveal__scope {
   color: var(--ink-2);
   font-size: 0.93rem;
+}
+
+.baseline__delta {
+  margin: 0.75rem 0 0;
+  padding: 0.75rem 0.875rem;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--ink);
+  line-height: 1.55;
 }
 
 .reveal__ask {
@@ -1209,6 +1312,44 @@ a {
   font-size: 1.04rem;
 }
 
+.question-card {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--sheet-2);
+}
+
+.question-card__text {
+  margin-bottom: 12px;
+}
+
+.question-card__fields {
+  display: grid;
+  gap: 6px;
+  font-weight: 400;
+}
+
+.question-card__fields label {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.question-card__fields select,
+.question-card__fields textarea {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--sheet);
+}
+
+.question-card__fields textarea {
+  resize: vertical;
+  min-height: 78px;
+  line-height: 1.5;
+}
+
 .questions__list li::marker {
   font-variant-numeric: tabular-nums;
   color: var(--muted);
@@ -1222,6 +1363,66 @@ a {
   min-height: 1.5em;
   color: var(--ink-2);
   font-weight: 600;
+}
+
+/* PoC 검토표 */
+.brief {
+  border-color: var(--ink);
+  box-shadow: var(--stack), var(--shadow);
+}
+
+.brief__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.brief__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 3px;
+}
+
+.brief__eyebrow svg {
+  width: 16px;
+  height: 16px;
+}
+
+.brief__privacy {
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--input-bg);
+  color: var(--input-ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.brief__lead {
+  color: var(--ink-2);
+}
+
+.brief__preview {
+  max-height: 340px;
+  overflow: auto;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--sheet-2);
+  color: var(--ink-2);
+  font-family: var(--font);
+  font-size: 0.86rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.brief__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 /* 논문 근거 */
@@ -1369,5 +1570,61 @@ a {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  @page {
+    margin: 16mm;
+  }
+
+  body {
+    background: #fff;
+    font-size: 11pt;
+  }
+
+  .skip-link,
+  .site-header,
+  .stepper,
+  .step-head,
+  .result__evidence,
+  .findings,
+  .questions,
+  .result__split,
+  .step-actions,
+  .scope,
+  .site-footer,
+  .brief__actions,
+  .brief__privacy,
+  .questions__status {
+    display: none !important;
+  }
+
+  .site-main,
+  .workbench,
+  .step-body,
+  .result,
+  .result__output {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    display: block;
+  }
+
+  .brief {
+    display: grid;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .brief__preview {
+    max-height: none;
+    overflow: visible;
+    border: 0;
+    padding: 0;
+    background: #fff;
+    font-size: 10pt;
   }
 }

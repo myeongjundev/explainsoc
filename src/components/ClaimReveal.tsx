@@ -120,6 +120,12 @@ export function ClaimReveal({ matrix, claim, source }: Props) {
               ? `같은 시험 자료에서 모든 흐름을 정상으로만 예측한 경우의 정확도는 약 ${formatRatio(baseline)}입니다. XGBoost의 ${formatRatio(accuracy)}와 거의 같아 보이는 이유를 이해하기 위한 비교이며, 다른 데이터셋의 기준이나 합격선이 아닙니다.`
               : `모든 흐름을 정상으로만 예측했다면 정확도는 약 ${formatRatio(baseline)}입니다. 판정 기준이 아니라 정확도를 읽기 위한 비교입니다.`}
           </p>
+          {isA && (
+            <p className="baseline__delta">
+              정확도가 항상 정상 기준선을 앞선 분량은 전체 {formatCount(m.total)}건 가운데{' '}
+              <strong>{formatCount(matrix.tp - matrix.fp)}건</strong>(탐지 {formatCount(matrix.tp)} − 오탐 {formatCount(matrix.fp)})입니다.
+            </p>
+          )}
         </figure>
       )}
 
@@ -127,7 +133,7 @@ export function ClaimReveal({ matrix, claim, source }: Props) {
 
       {isA && (
         <div className="reveal__ask">
-          <p className="reveal__ask-label">이런 숫자를 받았다면 먼저 물을 질문</p>
+          <p className="reveal__ask-label">이 논문 예시가 답해 주는 핵심 평가 조건</p>
           <p className="reveal__ask-q">“시험에 학습 때 없던 공격이 들어 있었습니까?”</p>
         </div>
       )}

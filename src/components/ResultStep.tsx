@@ -1,22 +1,28 @@
 import type { FormCheck } from '../domain/form'
 import type { Review } from '../domain/review'
+import type { QuestionResponse } from '../domain/types'
 import { ClaimReveal } from './ClaimReveal'
+import { EvaluationMap } from './EvaluationMap'
 import { FindingList } from './FindingList'
 import { QuestionList } from './QuestionList'
+import { ReviewBrief } from './ReviewBrief'
 import { SplitEvidenceFigure } from './SplitEvidenceFigure'
 
 interface Props {
   check: FormCheck
   review: Review
   onEdit: () => void
+  onEditConditions: () => void
   onRestart: () => void
+  responses: Readonly<Record<string, QuestionResponse>>
+  onResponse: (question: string, response: QuestionResponse) => void
 }
 
 /**
  * 화면 D·E·F. 데스크톱에서는 숫자가 말하는 것(왼쪽)과 판독·질문(오른쪽)을 나란히 두고,
  * 모바일에서는 위에서 아래로 쌓는다.
  */
-export function ResultStep({ check, review, onEdit, onRestart }: Props) {
+export function ResultStep({ check, review, onEdit, onEditConditions, onRestart, responses, onResponse }: Props) {
   const { input } = check
   return (
     <div className="step-body">
@@ -34,12 +40,14 @@ export function ResultStep({ check, review, onEdit, onRestart }: Props) {
               </p>
             </section>
           )}
-          <SplitEvidenceFigure />
+          <EvaluationMap input={input} onEditConditions={onEditConditions} />
         </div>
         <div className="result__output">
           <FindingList review={review} check={check} />
-          <QuestionList questions={review.questions} />
+          <QuestionList questions={review.questions} responses={responses} onResponse={onResponse} />
+          <ReviewBrief check={check} review={review} responses={responses} />
         </div>
+        <div className="result__split"><SplitEvidenceFigure /></div>
       </div>
       <div className="step-actions">
         <button type="button" className="button" onClick={onEdit}>
