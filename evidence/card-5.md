@@ -15,6 +15,19 @@
 | 빈 폴더 검증 | 저장소 밖 새 임시 폴더에서 `npm ci`, 프로덕션 빌드, 안전 검사 11개, Vitest 91개, Playwright 25개 통과(증거 캡처 9개 제외) |
 | 공개본 검증 | JS `index-CfDxTmKS.js`, CSS `index-2ZwK-MBR.css` 로컬 빌드와 SHA-256 일치 · Playwright 25개 통과 |
 
+### 집 PC 제출 직전 재검증 — 2026-09-22
+
+학원에서 올린 `8aa382a`까지 fast-forward한 뒤 집 PC의 Node.js 24.15.0, npm 11.12.1에서 다시
+확인했다. 구현 파일은 바꾸지 않았다.
+
+| 확인 | 결과 |
+|---|---|
+| 고정 설치 | `npm ci` · 113개 패키지 설치 · 취약점 0개 |
+| 전체 검증 | 안전 검사 11개 · Vitest 91개 · 프로덕션 빌드 · Playwright 25개 통과(증거 캡처 9개 제외) |
+| 공개 주소 | 로그인·쿠키·저장소가 없는 새 브라우저 컨텍스트에서 Playwright 25개 통과 |
+| V4 ZIP 재생성 | `explainsoc-3220867.zip` · 136,265 bytes · 파일 62개 |
+| SHA-256 대조 | `8f0ef71046c9bd643fa1d18e3c1bb3c37ca57ca6b1657b1b2193344c75128a1e` · 학원 PC 기록과 일치 |
+
 V4는 기존 R01~R14·회차 JSON·보안 경계를 유지하면서 화면의 제품 서사를 바꿨다. 첫 화면에서
 `99.88% → 시험 조건 → 220,788건 중 160건 탐지`를 해부하고, 결과는 `주장과 근거 / 판독 / 다음 행동`
 3열 수사 보드로 읽는다. 같은 시험·미확인·별도 시험은 회차 타임라인에서 다른 분기로 보이며,
@@ -253,16 +266,12 @@ dist/assets/index-CfDxTmKS.js
 
 ### ① AI에게 맡긴 일 — 사실 초안
 
-- **설계는 Codex에게.** Codex가 과제 원문과 10번 논문을 읽고 카드 1 후보 둘(Evidence Gate,
-  SplitLens)을 냈고, 제품 설계(`planning/DESIGN.md` — 60초 핵심 경험, 판독 규칙 R01~R10, 근거
-  P01~P10, 검증·배포·증거 계획)를 썼다.
-- **의견과 구현은 Claude에게.** Claude가 카드 1 후보 A·B·C와 설계 조건(`planning/CLAUDE-OPINION.md`),
-  Codex 두 후보에 대한 답(`planning/CLAUDE-CARD1-ANSWER.md`), Codex 요청문과 페르소나를 썼다. 승인된
-  설계대로 앱(React·TypeScript·Vite), 계산·입력 검증·판독 규칙 코드, 테스트 95개(단위·컴포넌트 75,
-  브라우저 20), 안전 검사, GitHub Pages 배포, 재현 가능한 실행 묶음, 카드별 증거를 만들고, 12번 사이트
-  대표작 자리를 채웠다.
+Codex와 Claude에게 과제·논문 분석, 제품 대안 검토와 설계, React·TypeScript 구현, 판독 규칙
+R01~R14, 접근성·보안 검증, GitHub Pages 배포, 재현 가능한 ZIP과 카드별 증거 기록을 맡겼다. 현재
+제출본은 단위·컴포넌트 91개와 실제 브라우저 25개를 통과했다.
 
-한 줄로 줄이면(초안): 설계는 Codex, 의견·구현·검증·배포·증거 기록은 Claude에게 맡겼다.
+한 줄 제출안: **과제·논문 분석부터 제품 설계, React 구현, 판독 규칙 R01~R14와 접근성·보안 검증,
+Pages 배포와 재현 가능한 ZIP·증거 기록까지 Codex와 Claude에게 맡겼다.**
 
 ### ② 내가 직접 판단한 일
 
@@ -279,6 +288,9 @@ dist/assets/index-CfDxTmKS.js
 | Claude: 10번 저장소 대시보드 네 화면을 앱 안 "근거 보기"로 남긴다 | 첫 판 범위에서 뺐다(나중에 선택) | `CLAUDE-OPINION.md` 5절 → `DESIGN.md` 15절 |
 | Codex: 이름 "Evidence Gate" | 쓰지 않았다. Gate는 앱이 모델을 승인·거절하는 것처럼 읽힌다 | `CLAUDE-CARD1-REVIEW.md` → `DESIGN.md` 0절 |
 | Codex: SplitLens를 사용자가 분할을 넣는 도구로 만든다 | 입력 도구로 만들지 않고 논문의 실제 분할 그림(학습 9종 대 시험 3종)으로만 넣었다 | `CLAUDE-CARD1-ANSWER.md` → `DESIGN.md` 22절 4 |
+
+한 줄 제출안: **Codex가 제안한 `Evidence Gate`는 모델을 승인·거절하는 도구처럼 읽힐 수 있어
+따르지 않고, 판정 대신 빠진 평가 조건과 공급자 질문을 드러내는 `ExplainSOC`로 정했다.**
 
 구현 단계(카드 1~5)에서 사용자가 AI 제안을 물리친 기록은 없다. 구현은 승인된 설계를 따랐다.
 
