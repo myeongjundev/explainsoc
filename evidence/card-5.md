@@ -1,8 +1,32 @@
 # 카드 5 증거 — 포트폴리오와 제출
 
+## V4 대표 앱 제출본 — 2026-09-22
+
+> 이 섹션이 아래 V1~V3 실행 묶음과 검증 값을 대체한다. 아래 내용은 당시 이력으로 남겨 둔다.
+
+| 항목 | V4 제출본 |
+|---|---|
+| 구현 커밋 | `32208672ed96d87fcd1ccb319d2c66a6debce41c` |
+| 배포 | [GitHub Actions run 35700989600](https://github.com/myeongjundev/explainsoc/actions/runs/35700989600) 검사·Pages 성공 |
+| 공개 주소 | https://myeongjundev.github.io/explainsoc/ |
+| 실행 묶음 | `explainsoc-3220867.zip` · 136,265 bytes · 62개 파일 |
+| SHA-256 | `8f0ef71046c9bd643fa1d18e3c1bb3c37ca57ca6b1657b1b2193344c75128a1e` |
+| 재현 | 같은 커밋으로 두 번 생성한 SHA-256 일치 |
+| 빈 폴더 검증 | 저장소 밖 새 임시 폴더에서 `npm ci`, 프로덕션 빌드, 안전 검사 11개, Vitest 91개, Playwright 25개 통과(증거 캡처 9개 제외) |
+| 공개본 검증 | JS `index-CfDxTmKS.js`, CSS `index-2ZwK-MBR.css` 로컬 빌드와 SHA-256 일치 · Playwright 25개 통과 |
+
+V4는 기존 R01~R14·회차 JSON·보안 경계를 유지하면서 화면의 제품 서사를 바꿨다. 첫 화면에서
+`99.88% → 시험 조건 → 220,788건 중 160건 탐지`를 해부하고, 결과는 `주장과 근거 / 판독 / 다음 행동`
+3열 수사 보드로 읽는다. 같은 시험·미확인·별도 시험은 회차 타임라인에서 다른 분기로 보이며,
+Decision Dossier 앞장은 다음 회의의 질문 수와 우선 질문을 원문 기록보다 먼저 보여 준다.
+
+V4 전용 증거 화면은 `evidence/v4-investigation-board-desktop.png`,
+`evidence/v4-separate-branch-desktop.png`, `evidence/v4-dossier-mobile.png`에 있다. 공개 주소에서도 같은
+세 장을 `evidence/screenshots/live/`에 다시 찍었다.
+
 ## V3 제출본 갱신 — 2026-09-22
 
-> 이 섹션이 아래 V1·V2 기록의 실행 묶음·검증 값을 대체한다. 아래 내용은 당시의 이력으로 남겨 둔다.
+> V4 전 최종 V3 기록이다. 현재 제출본은 바로 위 V4 기록을 따른다.
 
 | 항목 | V3 제출본 |
 |---|---|
@@ -32,12 +56,12 @@ V3는 최초 주장과 후속 공급자 답변을 회차로 비교하고, 같은
 
 | 항목 | 값 |
 |---|---|
-| 저장소·커밋 | `myeongjundev/about` [`1dbbbfc`](https://github.com/myeongjundev/about/commit/1dbbbfc) (연결), [`ea77b4e`](https://github.com/myeongjundev/about/commit/ea77b4e) (검증 칸 테스트 수) — 제출본 `a413189` 뒤의 제출 뒤 갱신 |
+| 저장소·커밋 | `myeongjundev/about` [`5584650`](https://github.com/myeongjundev/about/commit/5584650) (V4 그림·사례 노트·검증 수) — 최초 연결 `1dbbbfc`, V3 갱신 `b52d33b` |
 | 바꾼 것 | `content/approved.json`의 `t13-app`을 `planned` → `published`. 예정일을 빼고 이름·한 문장·사례 노트 넷·그림·링크 셋을 채웠다 |
 | 이름 | ExplainSOC — 성능표에 없는 질문 |
 | 한 문장 | 보안 AI 도입을 처음 맡은 담당자가 성능표에서 빠진 평가 조건을 찾고, 공급자에게 물을 질문을 10번 논문 근거와 함께 준비하도록 돕는 앱입니다. |
 | 링크 | 앱 체험 (공개 주소) · 검증 기록 (`evidence/card-4.md`) · 공개 저장소 |
-| 그림 | `docs/assets/t13-claim-flip.webp` 900×1200 — 공개 주소에서 찍은 "숫자 뒤집어 보기" 칸 |
+| 그림 | `docs/assets/t13-claim-investigation-v4.png` 571×680 — 공개 주소의 Claim Autopsy 전체 |
 
 한 문장은 앱 첫 화면의 도움 문장에 "10번 논문"만 더했다. 12번 사이트에서 바로 위 카드가 10번
 논문이라 둘이 이어져 읽힌다.
@@ -47,16 +71,15 @@ V3는 최초 주장과 후속 공급자 답변을 회차로 비교하고, 같은
 | 칸 | 문장 | 근거 |
 |---|---|---|
 | 문제 | 10번 논문에서 같은 XGBoost가 무작위 분할에서는 Macro F1 0.9979, 학습에 없던 공격을 시험하면 0.3871이었습니다. 제품 소개서의 성능 숫자 하나로는 무엇을 시험한 점수인지 알 수 없습니다. | 원고 V-2, `evidence/card-1.md` |
-| 판단 | 숫자의 좋고 나쁨을 판정하는 대신, 논문 근거 규칙 13개로 빠진 조건과 모순을 찾고 질문·답변·다음 행동이 남는 PoC 검토 작업대로 바꿨습니다. | `planning/DESIGN.md`, `src/domain/reviewRules.ts` |
-| 구현 | React·TypeScript·Vite 정적 앱에 평가 근거 지도, 질문별 상태·메모, 회차 비교, JSON 저장·열기, 자료 요청서와 검토표를 연결했습니다. 입력은 브라우저 안에서만 다루고 콘텐츠 보안 정책으로 외부 전송을 막았습니다. | `evidence/card-3.md`, V3 구현 커밋 |
-| 검증 | 단위·컴포넌트 테스트 91개와 WCAG 2.2 AA를 포함한 실제 브라우저 테스트 24개를 통과한 커밋만 배포되게 했습니다. 재현 가능한 ZIP을 저장소 밖 빈 폴더에 풀어 설치·빌드·브라우저 검사까지 다시 통과했습니다. | `evidence/card-4.md`, 이 문서 V3 제출본 갱신 |
+| 판단 | 숫자의 좋고 나쁨을 판정하는 대신, 99% 주장을 시험 조건과 운영 의미로 해부하고 근거·판독·다음 행동이 이어지는 성능 주장 수사 보드로 만들었습니다. | `planning/DESIGN.md` 26절 |
+| 구현 | React·TypeScript·Vite 정적 앱에 Claim Autopsy, 6항목 근거 지도, 시험 분기 타임라인, 회차 JSON과 Decision Dossier를 연결했습니다. 입력은 브라우저 안에서만 다루고 콘텐츠 보안 정책으로 외부 전송을 막았습니다. | V4 구현 커밋 `3220867` |
+| 검증 | 단위·컴포넌트 테스트 91개와 WCAG 2.2 AA·375px·키보드·인쇄를 포함한 실제 브라우저 테스트 25개를 통과한 커밋만 배포되게 했습니다. 재현 가능한 ZIP을 저장소 밖 빈 폴더에 풀어 설치·빌드·브라우저 검사까지 다시 통과했습니다. | 이 문서 V4 제출본 기록 |
 
-처음 연결할 때는 74개였고 V1 카드에서 75개로 고쳤다(`ea77b4e`). V3 현재 수치는 91개·24개다.
+처음 연결할 때는 74개였고 V1 카드에서 75개로 고쳤다(`ea77b4e`). V4 현재 수치는 91개·25개다.
 
-**그림을 세로로 다시 찍은 이유.** 대표작 칸은 데스크톱에서 세로로 길다(417×500). 처음 넣은 가로
-화면(1200×750)은 가운데만 남아 "공격 220,788건 가운데 탐지 160건"이 "운데 탐지 160건"으로 잘렸다.
-결과 화면의 왼쪽 칸만 세로 3:4로 다시 찍어, 데스크톱 대표작·모바일 대표작·왼쪽 카드 묶음 세 곳에서 그
-문장이 온전히 보이게 했다.
+**V4 그림을 Claim Autopsy로 바꾼 이유.** 카드 한 장만 봐도 `99.88%`가 시험 A·B로 갈라지고
+`220,788건 중 160건 탐지`로 바뀌는 앱의 대표 장면을 읽을 수 있다. 전체 결과 화면을 줄여 넣지 않고,
+공개 주소의 `.claim-autopsy` 요소만 그대로 캡처해 글자와 축을 보존했다.
 
 | 데스크톱 대표작 | 모바일 대표작 | 왼쪽 카드 묶음 |
 |---|---|---|
@@ -71,8 +94,9 @@ V3는 최초 주장과 후속 공급자 답변을 회차로 비교하고, 같은
 | `python -m unittest device/test_device.py` | 20개 OK |
 | `python device/check_repeat.py` | PASS — 반복 결과와 기대 결과가 같다 |
 | `python device/validate_release.py --check-urls` | PASS — 새 링크 셋 포함 외부 링크 전부 |
-| `python release/build_release.py` | PASS — 임시 경로에 만들었다. 제출한 `release/out/T12-KimMyeongjun.zip`은 덮지 않았다 |
-| GitHub Pages 빌드 | 성공. 공개 HTML에 `work-t13-app` 공개 카드, 그림 200 `image/webp`, 왼쪽 카드 `01—08` |
+| `python release/build_release.py` | PASS — 로컬 `release/out/T12-KimMyeongjun.zip` 재생성 |
+| GitHub Actions | [T12 checks run 35702015373](https://github.com/myeongjundev/about/actions/runs/35702015373) 성공 |
+| GitHub Pages | [pages run 35702014987](https://github.com/myeongjundev/about/actions/runs/35702014987) 성공 · 공개 HTML에 V4 그림·25개 검증 문장 확인 |
 
 - 12번 테스트에 사례 노트 수가 3·12로 적혀 있어 4·16으로 고쳤다. 13번 카드가 왼쪽 카드와 대표작에
   모두 있는지 보는 줄 둘을 더했다.
@@ -120,7 +144,7 @@ V3는 최초 주장과 후속 공급자 답변을 회차로 비교하고, 같은
 | 제출물 | 본 방법 | 결과 |
 |---|---|---|
 | 공개 주소의 배포본 5개 파일(HTML·JS·CSS·아이콘·라이선스 고지) | 공개 서버에서 받아 비밀값·이메일·휴대전화·주민번호·데이터셋 저자 이름을 찾음 | 0건 |
-| 실행 묶음 `explainsoc-679add3.zip` 61개 파일 | 저장소 밖 빈 폴더에 풀어서 `npm run check`(폴더 탐색) + 저자 이름·PC 경로 검색 | 11개 PASS · 0건 |
+| 실행 묶음 `explainsoc-3220867.zip` 62개 파일 | 저장소 밖 빈 폴더에 풀어서 `npm run check`(폴더 탐색) + 저자 이름·PC 경로 검색 | 11개 PASS · 0건 |
 | 공개 저장소의 모든 파일(과제 기록·증거 포함) | `npm run check` + `git grep`으로 저자 이름, 이니셜+성 표기, 호칭(님·씨 등) 검색 | PASS · 0건 |
 | 12번 사이트의 13번 카드 | 문장·그림·링크 확인, 12번 `validate_release` | 다른 사람 이름 없음 · PASS |
 | 제출문 초안(이 문서 아래) | 직접 확인 | 다른 사람 이름 없음 |
@@ -143,20 +167,20 @@ V3는 최초 주장과 후속 공급자 답변을 회차로 비교하고, 같은
 
 ```text
 결과물: https://myeongjundev.github.io/explainsoc/ (로그인 없음)
-실행 묶음: explainsoc-679add3.zip — README.md "실행"대로 npm ci → npm run build → npm run preview 후
+실행 묶음: explainsoc-3220867.zip — README.md "실행"대로 npm ci → npm run build → npm run preview 후
   http://127.0.0.1:4173/explainsoc/ (Node.js 24.15 이상)
 
 어디에 무엇이
 - 첫 화면: 제목 "그 99%, 무엇을 시험한 점수입니까?", 누구를 어떻게 돕는지 한 문장, 반영한 논문 제목
 - 묶음 안: src/data/paperEvidence.ts(논문 근거 P01~P10과 수치), src/domain/reviewRules.ts(판독 규칙
-  R01~R14), tests/(단위·컴포넌트 91개, 브라우저 24개)
+  R01~R14), tests/(단위·컴포넌트 91개, 브라우저 25개)
 
 세 행동 해 보기
 1) "논문 예시로 60초 검토"를 누르거나, "내 성능표 검토"에서 지표 하나(예: 정확도 0.99)를 적는다.
-2) 결과에서 "현재 회차 저장 후 다음 답변 받기"를 누르고, 후속 답변에 공격 Recall 0.0007을 적은 뒤
+2) 결과에서 "현재 회차 저장 · 다음 답변 추가"를 누르고, 후속 답변에 공격 Recall 0.0007을 적은 뒤
    같은 시험 여부는 모름으로 두고 결과를 본다.
 3) 변화 비교에서 해결됨·남음·새로 생김을 보고 같은 시험 여부를 예로 바꿔 R14가 사라지는지 확인한다.
-   "작업 파일 저장"으로 JSON을 내려받아 "작업 파일 열기"로 다시 열고, 두 회차가 돌아오는지 확인한다.
+   "사례 JSON 내려받기"로 JSON을 내려받아 "검토 파일 열기"로 다시 열고, 두 회차가 돌아오는지 확인한다.
 
 무엇이 나오면 통과
 - 논문 예시: "공격 220,788건 가운데 탐지 160건"과 공급자 질문 "같은 시험에서 공격 Recall은
@@ -172,13 +196,13 @@ V3는 최초 주장과 후속 공급자 답변을 회차로 비교하고, 같은
 | 무엇 | 값 |
 |---|---|
 | 결과물 URL | https://myeongjundev.github.io/explainsoc/ |
-| 실행 묶음 | `explainsoc-679add3.zip` · 130,786 bytes · 61개 파일 · SHA-256 `80650a6729c912dadd071adb87384d59e253660a82d4296cefa0a0503ecffdbd` · 원본 커밋 `679add3c250b36545b319a80f9f55c847e56b1ba` · 로컬 저장소 `release/` |
+| 실행 묶음 | `explainsoc-3220867.zip` · 136,265 bytes · 62개 파일 · SHA-256 `8f0ef71046c9bd643fa1d18e3c1bb3c37ca57ca6b1657b1b2193344c75128a1e` · 원본 커밋 `32208672ed96d87fcd1ccb319d2c66a6debce41c` · 로컬 저장소 `release/` |
 | 라이선스 | MIT (`LICENSE`, 2026-09-22 사용자 결정). GitHub도 저장소를 MIT로 인식한다 |
 | 짧은 확인 방법 | 위 BRB-C13 |
 | 제출문 세 줄 | 아래 BRB-C14 — ②는 사용자가 쓴다 |
 
 V1 묶음은 인용·라이선스·README 변경 때마다 갱신했고, V2에서 작업대 기능을 더한 묶음으로 교체했다.
-현재 제출물은 V3 구현 커밋으로 만든 **`explainsoc-679add3.zip`**이다. 같은 커밋에서 두 번 만들어 같은
+현재 제출물은 V4 구현 커밋으로 만든 **`explainsoc-3220867.zip`**이다. 같은 커밋에서 두 번 만들어 같은
 SHA-256이 나왔고, 저장소 밖 새 임시 폴더에서 전체 검사를 다시 통과했다. 다시 만드는 방법은
 `planning/HANDOFF-2026-09-22.md` 1-0에 있다.
 
@@ -194,34 +218,34 @@ SHA-256이 나왔고, 저장소 밖 새 임시 폴더에서 전체 검사를 다
 | https://github.com/myeongjundev/explainsoc-research/blob/main/output/pdf/T10-research-paper.pdf | 200 · 0 · 0 |
 | https://myeongjundev.github.io/explainsoc/third-party-licenses.md | 200 · 0 · 0 |
 
-공개 주소는 새 브라우저 컨텍스트(쿠키·저장소·로그인 없음)에서 브라우저 테스트 24개를 다시 통과했다.
-최종 배포본 `index--yn4oNyf.js`와 `index-D1Vo0e1F.css`는 로컬 빌드와 SHA-256이 같다.
+공개 주소는 새 브라우저 컨텍스트(쿠키·저장소·로그인 없음)에서 브라우저 테스트 25개를 다시 통과했다.
+최종 배포본 `index-CfDxTmKS.js`와 `index-2ZwK-MBR.css`는 로컬 빌드와 SHA-256이 같다.
 
 ### 최종 묶음의 새 임시 폴더 실행
 
-저장소 밖 세션 임시 폴더 아래 빈 폴더에 PowerShell `Expand-Archive`로 풀었다. 아래는 V3 묶음의 결과다.
+저장소 밖 세션 임시 폴더 아래 빈 폴더에 PowerShell `Expand-Archive`로 풀었다. 아래는 V4 묶음의 결과다.
 
 ```text
-<새 임시 폴더>\explainsoc-679add3> npm ci
+<새 임시 폴더>\explainsoc-3220867> npm ci
 added 113 packages, and audited 114 packages
 found 0 vulnerabilities
 
-<새 임시 폴더>\explainsoc-679add3> npm run build
-✓ 48 modules transformed.
-dist/assets/index-D1Vo0e1F.css
-dist/assets/index--yn4oNyf.js
+<새 임시 폴더>\explainsoc-3220867> npm run build
+✓ 49 modules transformed.
+dist/assets/index-2ZwK-MBR.css
+dist/assets/index-CfDxTmKS.js
 
-<새 임시 폴더>\explainsoc-679add3> npm run preview
+<새 임시 폴더>\explainsoc-3220867> npm run preview
   ➜  Local:   http://127.0.0.1:4173/explainsoc/
 ```
 
 | 확인 | 결과 |
 |---|---|
-| 풀린 파일 | 61개(`LICENSE` 포함), `node_modules`·`.git`·`dist` 없음 |
-| 자산 이름 | 공개 주소와 같다(`index--yn4oNyf.js`, `index-D1Vo0e1F.css`) |
-| `npm run check` | 폴더 탐색 · 61개 파일 · 앱 소스 36개 · 11개 PASS |
+| 풀린 파일 | 62개(`LICENSE` 포함), `node_modules`·`.git`·`dist` 없음 |
+| 자산 이름 | 공개 주소와 같다(`index-CfDxTmKS.js`, `index-2ZwK-MBR.css`) |
+| `npm run check` | 폴더 탐색 · 62개 파일 · 앱 소스 37개 · 11개 PASS |
 | `npm test` | 91개 통과 |
-| `npm run test:e2e` | 24개 통과, 증거 캡처 9개 제외 |
+| `npm run test:e2e` | 25개 통과, 증거 캡처 9개 제외 |
 
 ## 제출문 세 줄 — BRB-C14
 
