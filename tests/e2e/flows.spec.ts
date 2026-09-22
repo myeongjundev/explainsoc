@@ -14,6 +14,10 @@ test.describe('논문 예시 60초 경로 (BRB-C02·C05)', () => {
     await page.getByRole('button', { name: '논문 예시로 60초 검토' }).click()
     await expect(page.getByRole('heading', { level: 2, name: '3. PoC 검토 작업대' })).toBeFocused()
 
+    const briefing = page.locator('.investigation-brief')
+    await expect(briefing).toContainText('1개의 해석 주의를 먼저 읽어야 합니다')
+    await expect(briefing).toContainText('같은 시험에서 공격 Recall은 얼마입니까?')
+
     // V4 수사 보드: 근거 → 판독 → 다음 행동과 회의용 앞장이 한 흐름에 있다
     await expect(page.locator('.board-column__head h3')).toHaveText(['주장과 근거', '판독', '다음 행동'])
     await expect(page.locator('.evidence-status__item')).toHaveCount(6)
@@ -140,11 +144,30 @@ test.describe('PoC 검토 작업대 V2', () => {
 })
 
 test.describe('회차별 로컬 PoC 사례 작업대 V4', () => {
+  test('모바일에서는 근거·판독·다음 행동을 한 장씩 전환한다', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await startExample(page)
+
+    await expect(page.locator('.result__evidence')).toBeVisible()
+    await expect(page.locator('.result__findings')).toBeHidden()
+    await expect(page.locator('.result__output')).toBeHidden()
+
+    await page.getByRole('button', { name: '02 판독' }).click()
+    await expect(page.locator('.result__evidence')).toBeHidden()
+    await expect(page.locator('.result__findings')).toBeVisible()
+
+    await page.getByRole('button', { name: '03 다음 행동' }).click()
+    await expect(page.locator('.result__findings')).toBeHidden()
+    await expect(page.locator('.result__output')).toBeVisible()
+    await expect(page.getByRole('region', { name: '공급자에게 물을 질문' })).toBeVisible()
+  })
+
   test('공급자 답변으로 해결·추가 규칙을 비교하고 JSON을 다시 연다', async ({ page }) => {
     await startExample(page)
     await expect(page.getByRole('navigation', { name: 'PoC 작업대 바로 가기' })).toBeVisible()
     await page.getByLabel('답변 상태').selectOption('requested')
     await page.getByLabel('답변 메모').fill('다음 주 Recall 표를 보내기로 함')
+    await page.getByText('회차 기록과 다음 답변 관리').click()
     await page.getByRole('button', { name: '현재 회차 저장 · 다음 답변 추가' }).click()
 
     await expect(page.getByText(/2회차 · 이번에 새로 받은 자료만 적으세요/)).toBeVisible()

@@ -30,7 +30,7 @@ const SOURCE_OPTIONS: { value: RoundSourceKind; label: string }[] = [
 export function RoundWorkspace({ caseTitle, onCaseTitle, rounds, current, onCurrent, comparison, onNextRound, onDownload }: Props) {
   const followup = rounds.length > 0
   return (
-    <section className="panel rounds" id="round-comparison" aria-labelledby="rounds-title">
+    <section className="panel rounds" aria-labelledby="rounds-title">
       <div className="brief__head">
         <div>
           <p className="brief__eyebrow">EVIDENCE TIMELINE · 회차별 근거</p>

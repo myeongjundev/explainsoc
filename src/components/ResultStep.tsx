@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { FormCheck } from '../domain/form'
 import type { Review } from '../domain/review'
 import type { QuestionResponse } from '../domain/types'
@@ -12,8 +13,9 @@ import { SplitEvidenceFigure } from './SplitEvidenceFigure'
 import { RequestPackage } from './RequestPackage'
 import { RoundWorkspace, type RoundDraftMeta } from './RoundWorkspace'
 import { TerminologyHelp } from './TerminologyHelp'
-import { WorkbenchNav } from './WorkbenchNav'
+import { WorkbenchNav, type WorkbenchChapter } from './WorkbenchNav'
 import { EvidenceStatusBoard } from './EvidenceStatusBoard'
+import { InvestigationBrief } from './InvestigationBrief'
 
 interface Props {
   check: FormCheck
@@ -39,17 +41,23 @@ interface Props {
  */
 export function ResultStep({ check, review, onEdit, onEditConditions, onRestart, responses, onResponse, caseTitle, onCaseTitle, rounds, roundMeta, onRoundMeta, comparison, onNextRound, onDownload, caseFileStatus }: Props) {
   const { input } = check
+  const [chapter, setChapter] = useState<WorkbenchChapter>('evidence')
+  const [roundsOpen, setRoundsOpen] = useState(rounds.length > 0)
+  const showChapter = (next: WorkbenchChapter) => {
+    setChapter(next)
+    const target = next === 'evidence' ? 'evidence-column' : next === 'findings' ? 'findings-title' : 'questions-title'
+    window.requestAnimationFrame(() => document.getElementById(target)?.scrollIntoView({ block: 'start' }))
+  }
   return (
     <div className="step-body">
-      <WorkbenchNav />
+      <WorkbenchNav active={chapter} onSelect={setChapter} />
       {caseFileStatus && <p className="workbench-file-status" role="status">{caseFileStatus}</p>}
-      <RoundWorkspace caseTitle={caseTitle} onCaseTitle={onCaseTitle} rounds={rounds} current={roundMeta} onCurrent={onRoundMeta} comparison={comparison} onNextRound={onNextRound} onDownload={onDownload} />
+      <InvestigationBrief review={review} roundNumber={rounds.length + 1} caseTitle={caseTitle} onShowQuestions={() => showChapter('output')} />
       <div className="result investigation-board">
-        <div className="result__evidence board-column">
+        <div className={`result__evidence board-column${chapter === 'evidence' ? ' is-active' : ''}`} id="evidence-column">
           <header className="board-column__head">
             <span>01</span><div><p>CLAIM &amp; EVIDENCE</p><h3>주장과 근거</h3></div>
           </header>
-          <EvidenceStatusBoard input={input} roundCount={rounds.length + 1} sameTrial={roundMeta.sameTrial} />
           {input.matrix ? (
             <ClaimReveal matrix={input.matrix} claim={input.claim} source={input.source} />
           ) : (
@@ -62,16 +70,17 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onRestart,
               </p>
             </section>
           )}
+          <EvidenceStatusBoard input={input} roundCount={rounds.length + 1} sameTrial={roundMeta.sameTrial} />
           <EvaluationMap input={input} onEditConditions={onEditConditions} />
           <TerminologyHelp />
         </div>
-        <div className="result__findings board-column">
+        <div className={`result__findings board-column${chapter === 'findings' ? ' is-active' : ''}`}>
           <header className="board-column__head">
             <span>02</span><div><p>INTERPRETATION</p><h3>판독</h3></div>
           </header>
           <FindingList review={review} check={check} />
         </div>
-        <div className="result__output board-column">
+        <div className={`result__output board-column${chapter === 'output' ? ' is-active' : ''}`}>
           <header className="board-column__head">
             <span>03</span><div><p>NEXT ACTION</p><h3>다음 행동</h3></div>
           </header>
@@ -81,6 +90,19 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onRestart,
         </div>
       </div>
       <div className="result__split"><SplitEvidenceFigure /></div>
+      <details
+        className="rounds-disclosure"
+        id="round-comparison"
+        open={roundsOpen}
+        onToggle={(event) => setRoundsOpen(event.currentTarget.open)}
+      >
+        <summary>
+          <span>04</span>
+          <strong>회차 기록과 다음 답변 관리</strong>
+          <em>{rounds.length + 1}회차 · 브라우저 안에서만 작업</em>
+        </summary>
+        <RoundWorkspace caseTitle={caseTitle} onCaseTitle={onCaseTitle} rounds={rounds} current={roundMeta} onCurrent={onRoundMeta} comparison={comparison} onNextRound={onNextRound} onDownload={onDownload} />
+      </details>
       <div className="step-actions">
         <button type="button" className="button" onClick={onEdit}>
           입력 수정

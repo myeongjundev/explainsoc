@@ -9,7 +9,7 @@ import { openHome, startExample } from './helpers'
 test.skip(!process.env.EVIDENCE, 'EVIDENCE=1일 때만 스크린샷을 남긴다')
 
 const DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence/screenshots'
-const V4_DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence'
+const V5_DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence'
 
 test('첫 화면 — 데스크톱 1440×900', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 })
@@ -67,29 +67,26 @@ test('평가 조건 — 모름 경로', async ({ page }) => {
   await page.screenshot({ path: `${DIR}/f-result-all-unknown.png`, fullPage: true })
 })
 
-test('V4 수사 보드 — 현재 회차와 Decision Dossier', async ({ page }) => {
+test('V5 결과 브리핑 — 현재 회차와 수사 보드', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 })
   await startExample(page)
-  await page.screenshot({ path: `${V4_DIR}/v4-investigation-board-desktop.png`, fullPage: true })
+  await page.screenshot({ path: `${V5_DIR}/v5-investigation-board-desktop.png`, fullPage: true })
 })
 
-test('V4 회차 분기 — 데스크톱', async ({ page }) => {
+test('V5 회차 분기 — 데스크톱', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 })
   await startExample(page)
+  await page.getByText('회차 기록과 다음 답변 관리').click()
   await page.getByRole('button', { name: '현재 회차 저장 · 다음 답변 추가' }).click()
   await page.getByLabel('지표 1').selectOption('attackRecall')
   await page.getByLabel('값 (0부터 1 사이)').fill('0.0007')
   await page.getByRole('button', { name: /PoC 검토표/ }).click()
   await page.getByLabel('기존 주장과 같은 시험입니까?').selectOption('no')
-  await page.locator('.rounds').screenshot({ path: `${V4_DIR}/v4-separate-branch-desktop.png` })
+  await page.locator('.rounds').screenshot({ path: `${V5_DIR}/v5-separate-branch-desktop.png` })
 })
 
-test('V4 Decision Dossier — 모바일', async ({ page }) => {
+test('V5 결과 브리핑 — 모바일', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })
   await startExample(page)
-  await page.getByRole('button', { name: '현재 회차 저장 · 다음 답변 추가' }).click()
-  await page.getByLabel('지표 1').selectOption('attackRecall')
-  await page.getByLabel('값 (0부터 1 사이)').fill('0.0007')
-  await page.getByRole('button', { name: /PoC 검토표/ }).click()
-  await page.locator('.brief').screenshot({ path: `${V4_DIR}/v4-dossier-mobile.png` })
+  await page.locator('.investigation-brief').screenshot({ path: `${V5_DIR}/v5-briefing-mobile.png` })
 })

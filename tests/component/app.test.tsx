@@ -54,6 +54,15 @@ describe('논문 예시로 60초 검토', () => {
     expect(document.querySelector('.baseline__delta')).toHaveTextContent('74건(탐지 160 − 오탐 86)')
   })
 
+  it('긴 판독 목록보다 먼저 현재 회차와 첫 질문을 한눈에 요약한다', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
+    const briefing = screen.getByRole('region', { name: '1개의 해석 주의를 먼저 읽어야 합니다' })
+    expect(within(briefing).getByText('논문 예시 검토')).toBeInTheDocument()
+    expect(within(briefing).getByText('같은 시험에서 공격 Recall은 얼마입니까?')).toBeInTheDocument()
+    expect(within(briefing).getByRole('button', { name: '질문과 답변으로 이동' })).toBeInTheDocument()
+  })
+
   it('정확한 P09 원수치와 두 주장 지표를 넣는다', async () => {
     const { user } = setup()
     await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
@@ -213,6 +222,7 @@ describe('PoC 미팅 산출물', () => {
     await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
     await user.selectOptions(screen.getByLabelText('답변 상태'), 'requested')
     await user.type(screen.getByLabelText('답변 메모'), '1회차 요청 메모')
+    await user.click(screen.getByText('회차 기록과 다음 답변 관리'))
     await user.click(screen.getByRole('button', { name: '현재 회차 저장 · 다음 답변 추가' }))
     await user.click(screen.getByRole('button', { name: /PoC 검토표/ }))
 
