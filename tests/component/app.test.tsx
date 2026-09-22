@@ -207,4 +207,25 @@ describe('PoC 미팅 산출물', () => {
     expect(document.querySelector('.reveal__scope')).toHaveTextContent('CICIDS2017')
     expect(document.querySelector('.step-source')).toHaveTextContent('논문 예시 A')
   })
+
+  it('계속 남은 질문은 직전 상태·메모를 이어받되 이전 회차 기록은 바꾸지 않는다', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
+    await user.selectOptions(screen.getByLabelText('답변 상태'), 'requested')
+    await user.type(screen.getByLabelText('답변 메모'), '1회차 요청 메모')
+    await user.click(screen.getByRole('button', { name: '현재 회차 저장 · 다음 답변 추가' }))
+    await user.click(screen.getByRole('button', { name: /PoC 검토표/ }))
+
+    expect(screen.getByLabelText('답변 상태')).toHaveValue('requested')
+    expect(screen.getByLabelText('답변 메모')).toHaveValue('1회차 요청 메모')
+    await user.selectOptions(screen.getByLabelText('답변 상태'), 'answered')
+    await user.clear(screen.getByLabelText('답변 메모'))
+    await user.type(screen.getByLabelText('답변 메모'), '2회차 답변 메모')
+
+    const brief = screen.getByLabelText('PoC 검토표 미리보기')
+    expect(brief).toHaveTextContent('당시 상태: 자료 요청')
+    expect(brief).toHaveTextContent('당시 메모: 1회차 요청 메모')
+    expect(brief).toHaveTextContent('상태: 답변 받음')
+    expect(brief).toHaveTextContent('메모: 2회차 답변 메모')
+  })
 })

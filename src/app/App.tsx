@@ -8,7 +8,7 @@ import { STEP_TITLES, Stepper, type StepNumber } from '../components/Stepper'
 import { EXAMPLE_A, EXAMPLE_B } from '../data/examples'
 import { checkForm, emptyForm, formFromExample, formFromReviewInput, type FormState } from '../domain/form'
 import { caseFileToText, combineRoundInput, makeCaseFile, MAX_CASE_FILE_BYTES, parseCaseFileText, resolveRoundInputs, type CaseRound } from '../domain/caseFile'
-import { buildReview, compareReviews } from '../domain/review'
+import { buildReview, buildRoundComparison } from '../domain/review'
 import type { QuestionResponse } from '../domain/types'
 import type { RoundDraftMeta } from '../components/RoundWorkspace'
 
@@ -60,7 +60,10 @@ export function App() {
       hasReceivedEvidence: Object.keys(previous.input.claim).length > 0 || Boolean(previous.input.matrix),
     })
   }, [previousInput, rounds])
-  const diff = useMemo(() => previousReview ? compareReviews(previousReview, review) : null, [previousReview, review])
+  const comparison = useMemo(
+    () => previousReview ? buildRoundComparison(previousReview, review, roundMeta.sameTrial) : null,
+    [previousReview, review, roundMeta.sameTrial],
+  )
 
   const heroHeading = useRef<HTMLHeadingElement>(null)
   const stepHeading = useRef<HTMLHeadingElement>(null)
@@ -102,9 +105,10 @@ export function App() {
   })
 
   const nextRound = () => {
-    setRounds((current) => [...current, currentRound()])
+    const saved = currentRound()
+    setRounds((current) => [...current, saved])
     setForm(emptyForm())
-    setResponses({})
+    setResponses({ ...saved.responses })
     setRoundMeta({ label: `${rounds.length + 2}회차 · 공급자 답변`, sourceKind: 'vendor-response', sourceNote: '', sameTrial: 'unknown' })
     go(1)
   }
@@ -182,6 +186,11 @@ export function App() {
                 {STEP_HEADINGS[view]}
               </h2>
               {SOURCE_NOTE[form.source] && <p className="step-source">{SOURCE_NOTE[form.source]}</p>}
+              {rounds.length > 0 && view !== 3 && (
+                <p className="followup-banner">
+                  <strong>{rounds.length + 1}회차</strong> · 이번에 새로 받은 자료만 적으세요. 비운 칸은 이전 회차 값을 이어 씁니다.
+                </p>
+              )}
             </div>
 
             {view === 1 && (
@@ -194,6 +203,7 @@ export function App() {
                   onMatrixChange={(matrix) => editNumbers({ matrix })}
                   onClaimedBest={(claimedBest) => editConditions({ claimedBest })}
                   onFillExampleB={() => setForm(formFromExample(EXAMPLE_B))}
+                  previous={previousInput}
                 />
                 <p className="visually-hidden" role="status">
                   {rawCheck.errorCount > 0 ? `잘못 적은 칸 ${rawCheck.errorCount}개는 계산에서 뺍니다.` : ''}
@@ -213,6 +223,7 @@ export function App() {
                   onSplit={(split) => editConditions({ split })}
                   onUnseen={(unseenIncluded) => editConditions({ unseenIncluded })}
                   onDedup={(deduplicated) => editConditions({ deduplicated })}
+                  previous={previousInput}
                 />
                 <div className="step-actions">
                   <button type="button" className="button" onClick={() => go(1)}>
@@ -238,7 +249,7 @@ export function App() {
                 rounds={rounds}
                 roundMeta={roundMeta}
                 onRoundMeta={setRoundMeta}
-                diff={diff}
+                comparison={comparison}
                 onNextRound={nextRound}
                 onDownload={downloadCase}
                 caseFileStatus={caseFileStatus}

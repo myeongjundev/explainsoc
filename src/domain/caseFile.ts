@@ -34,6 +34,7 @@ const RESPONSE_STATUSES: readonly QuestionResponse['status'][] = ['unasked', 'an
 const isObject = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value)
 const hasOnlyKeys = (value: Record<string, unknown>, keys: readonly string[]) => Object.keys(value).every((key) => keys.includes(key))
 const shortText = (value: unknown, max: number) => typeof value === 'string' && [...value].length <= max
+const nonBlankShortText = (value: unknown, max: number) => shortText(value, max) && String(value).trim().length > 0
 const nullableEnum = <T extends string>(value: unknown, values: readonly T[]): value is T | null => value === null || values.includes(value as T)
 const nonNegativeInteger = (value: unknown) => typeof value === 'number' && Number.isSafeInteger(value) && value >= 0
 const ratio = (value: unknown) => typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1
@@ -69,11 +70,10 @@ function validResponses(value: unknown): value is Record<string, QuestionRespons
 function validRound(value: unknown, index: number): value is CaseRound {
   if (!isObject(value) || !hasOnlyKeys(value, ['id', 'label', 'sourceKind', 'sourceNote', 'sameTrial', 'input', 'responses'])) return false
   return value.id === `r${index + 1}`
-    && shortText(value.label, 120)
-    && [...String(value.label)].length > 0
+    && nonBlankShortText(value.label, 120)
     && SOURCE_KINDS.includes(value.sourceKind as RoundSourceKind)
     && shortText(value.sourceNote, 1000)
-    && nullableEnum(value.sameTrial, TRI)
+    && (index === 0 ? value.sameTrial === null : TRI.includes(value.sameTrial as TriAnswer))
     && validInput(value.input)
     && validResponses(value.responses)
 }
@@ -109,7 +109,7 @@ export function parseCaseFileText(text: string): CaseFileParse {
   if (raw.kind !== CASE_KIND || raw.schemaVersion !== CASE_SCHEMA_VERSION) {
     return { kind: 'error', message: '지원하는 ExplainSOC 사례 파일 버전이 아닙니다.' }
   }
-  if (!shortText(raw.title, 200) || !Array.isArray(raw.rounds) || raw.rounds.length === 0 || raw.rounds.length > 20) {
+  if (!nonBlankShortText(raw.title, 200) || !Array.isArray(raw.rounds) || raw.rounds.length === 0 || raw.rounds.length > 20) {
     return { kind: 'error', message: '사례 이름 또는 회차 수가 올바르지 않습니다.' }
   }
   if (!raw.rounds.every((round, index) => validRound(round, index))) {

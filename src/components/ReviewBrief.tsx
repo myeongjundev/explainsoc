@@ -1,6 +1,6 @@
 import { useId, useMemo, useState } from 'react'
 import type { FormCheck } from '../domain/form'
-import { buildBriefText, type Review, type ReviewDiff } from '../domain/review'
+import { buildBriefText, type Review, type RoundComparison } from '../domain/review'
 import type { CaseRound } from '../domain/caseFile'
 import type { QuestionResponse } from '../domain/types'
 import { CopyIcon, DocumentIcon } from './icons'
@@ -12,14 +12,14 @@ interface Props {
   caseTitle: string
   rounds: readonly CaseRound[]
   current: CaseRound
-  diff: ReviewDiff | null
+  comparison: RoundComparison | null
 }
 
 /** 질문과 답변을 실제 PoC 미팅 산출물로 묶는다. 저장·전송은 하지 않는다. */
-export function ReviewBrief({ check, review, responses, caseTitle, rounds, current, diff }: Props) {
+export function ReviewBrief({ check, review, responses, caseTitle, rounds, current, comparison }: Props) {
   const [status, setStatus] = useState<'idle' | 'done' | 'failed'>('idle')
   const statusId = useId()
-  const text = useMemo(() => buildBriefText(check.input, review, responses, { caseTitle, rounds, current, diff }), [caseTitle, check.input, current, diff, review, responses, rounds])
+  const text = useMemo(() => buildBriefText(check.input, review, responses, { caseTitle, rounds, current, comparison }), [caseTitle, check.input, comparison, current, review, responses, rounds])
 
   const copyAll = async () => {
     try {

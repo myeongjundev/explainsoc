@@ -131,10 +131,20 @@ test.describe('회차별 로컬 PoC 사례 작업대 V3', () => {
   test('공급자 답변으로 해결·추가 규칙을 비교하고 JSON을 다시 연다', async ({ page }) => {
     await startExample(page)
     await expect(page.getByRole('navigation', { name: 'PoC 작업대 바로 가기' })).toBeVisible()
+    await page.getByLabel('답변 상태').selectOption('requested')
+    await page.getByLabel('답변 메모').fill('다음 주 Recall 표를 보내기로 함')
     await page.getByRole('button', { name: '현재 회차 저장 · 다음 답변 추가' }).click()
+
+    await expect(page.getByText(/2회차 · 이번에 새로 받은 자료만 적으세요/)).toBeVisible()
+    await expect(page.getByRole('complementary', { name: '이전 회차에서 이어 쓰는 성능 자료' })).toContainText('Accuracy (정확도) 0.6299')
 
     await page.getByLabel('지표 1').selectOption('attackRecall')
     await page.getByLabel('값 (0부터 1 사이)').fill('0.0007')
+    await page.getByRole('button', { name: '다음: 평가 조건' }).click()
+    const dedup = page.getByRole('group', { name: '3. 중복과 학습·시험 사이의 같은 행을 제거했습니까?' })
+    await expect(dedup).toContainText('이전 값: 예')
+    await dedup.getByLabel('모름').check()
+    await expect(dedup).toContainText('이전 값을 ‘예’에서 ‘모름’으로 바꿉니다')
     await page.getByRole('button', { name: /PoC 검토표/ }).click()
 
     const diff = page.locator('.round-diff')
@@ -142,8 +152,12 @@ test.describe('회차별 로컬 PoC 사례 작업대 V3', () => {
     await expect(diff.locator('.round-diff__group--added')).toContainText('R10')
     await expect(diff.locator('.round-diff__group--added')).toContainText('R14')
     await expect(page.locator('.finding', { hasText: 'R14' })).toBeVisible()
+    await expect(page.getByLabel('PoC 검토표 미리보기')).toContainText('당시 상태: 자료 요청')
+    await expect(page.getByLabel('PoC 검토표 미리보기')).toContainText('당시 메모: 다음 주 Recall 표를 보내기로 함')
+    const sameTrial = page.getByLabel('기존 주장과 같은 시험입니까?')
+    expect(await sameTrial.evaluate((element) => getComputedStyle(element.parentElement!).gridColumnEnd)).toBe('-1')
 
-    await page.getByLabel('기존 주장과 같은 시험입니까?').selectOption('yes')
+    await sameTrial.selectOption('yes')
     await expect(page.locator('.finding', { hasText: 'R14' })).toHaveCount(0)
     await expect(diff.locator('.round-diff__group--added')).not.toContainText('R14')
 
@@ -168,6 +182,9 @@ test.describe('회차별 로컬 PoC 사례 작업대 V3', () => {
     await page.getByLabel('기존 주장과 같은 시험입니까?').selectOption('no')
     await expect(page.locator('.summary__list')).toContainText('공격 Recall (공격 탐지율)0.0007')
     await expect(page.locator('.summary__list')).not.toContainText('FPR')
+    await expect(page.locator('.round-diff')).toContainText('별도 시험 판독')
+    await expect(page.locator('.round-diff')).toContainText('이전 판독은 해결된 것으로 보지 않습니다')
+    await expect(page.locator('.round-diff')).not.toContainText('해결됨')
   })
 })
 

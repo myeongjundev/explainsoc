@@ -8,6 +8,7 @@ import { formatComputed, formatCount, formatRatio, METRIC_LABEL, SPLIT_LABEL, TR
 import { METRIC_KINDS, type FindingStatus, type QuestionResponse, type ReviewInput } from './types'
 import type { CaseRound } from './caseFile'
 import type { RoundSourceKind } from './caseFile'
+import { EVIDENCE, type EvidenceId } from '../data/paperEvidence'
 
 export interface Finding {
   ruleId: RuleId
@@ -59,6 +60,11 @@ export interface ReviewDiff {
   added: Finding[]
 }
 
+export type RoundComparison =
+  | { kind: 'confirmed'; diff: ReviewDiff }
+  | { kind: 'provisional'; diff: ReviewDiff }
+  | { kind: 'separate'; previous: Finding[]; current: Finding[] }
+
 export function compareReviews(previous: Review, current: Review): ReviewDiff {
   const before = new Set(previous.findings.map((finding) => finding.ruleId))
   const after = new Set(current.findings.map((finding) => finding.ruleId))
@@ -67,6 +73,25 @@ export function compareReviews(previous: Review, current: Review): ReviewDiff {
     remaining: current.findings.filter((finding) => before.has(finding.ruleId)),
     added: current.findings.filter((finding) => !before.has(finding.ruleId)),
   }
+}
+
+export function buildRoundComparison(previous: Review, current: Review, sameTrial: CaseRound['sameTrial']): RoundComparison {
+  if (sameTrial === 'no') return { kind: 'separate', previous: previous.findings, current: current.findings }
+  const diff = compareReviews(previous, current)
+  return sameTrial === 'yes' ? { kind: 'confirmed', diff } : { kind: 'provisional', diff }
+}
+
+export const formatFindingReference = (finding: Finding) => `${finding.ruleId} · ${finding.title}`
+export const formatEvidenceReference = (id: EvidenceId) => {
+  const evidence = EVIDENCE[id]
+  return `${evidence.id} · ${evidence.section} · ${evidence.title}`
+}
+
+function appendEvidenceList(lines: string[], evidenceIds: readonly EvidenceId[]) {
+  const unique = [...new Set(evidenceIds)]
+  if (unique.length === 0) return
+  lines.push('[근거 목록]')
+  unique.forEach((id) => lines.push(`- ${formatEvidenceReference(id)}`))
 }
 
 export const REQUEST_ARTIFACT: Record<RuleId, string> = {
@@ -94,8 +119,10 @@ export function buildRequestText(review: Review): string {
     lines.push(`${index + 1}. ${finding.question}`)
     lines.push(`   요청할 자료: ${REQUEST_ARTIFACT[finding.ruleId]}`)
     lines.push(`   이유: ${finding.guidance}`)
-    lines.push(`   근거: ${finding.evidenceIds.join(', ')}`, '')
+    lines.push(`   근거: ${finding.evidenceIds.map(formatEvidenceReference).join(' / ')}`, '')
   })
+  appendEvidenceList(lines, asked.flatMap((finding) => [...finding.evidenceIds]))
+  lines.push('')
   lines.push('※ 이 요청서는 모델 품질 판정이 아니라 평가 조건을 확인하기 위한 목록입니다.')
   return lines.join('\n')
 }
@@ -130,7 +157,7 @@ export interface BriefContext {
   caseTitle: string
   rounds: readonly CaseRound[]
   current: CaseRound
-  diff: ReviewDiff | null
+  comparison: RoundComparison | null
 }
 
 export function buildBriefText(input: ReviewInput, review: Review, responses: Readonly<Record<string, QuestionResponse>>, context?: BriefContext): string {
@@ -140,14 +167,26 @@ export function buildBriefText(input: ReviewInput, review: Review, responses: Re
     for (const round of [...context.rounds, context.current]) {
       lines.push(`- ${round.label} · ${ROUND_SOURCE_LABEL[round.sourceKind]} · 같은 시험: ${round.sameTrial ? SAME_TRIAL_LABEL[round.sameTrial] : '해당 없음'}`)
       if (round.sourceNote.trim()) lines.push(`  출처: ${round.sourceNote.trim()}`)
+      const recorded = Object.entries(round.responses).filter(([, response]) => response.status !== 'unasked' || response.note.trim())
+      for (const [question, response] of recorded) {
+        lines.push(`  질문: ${question}`)
+        lines.push(`  당시 상태: ${RESPONSE_LABEL[response.status]}`)
+        if (response.note.trim()) lines.push(`  당시 메모: ${response.note.trim()}`)
+      }
     }
-    if (context.diff) {
-      const ids = (items: Finding[]) => items.map((item) => item.ruleId).join(', ') || '없음'
+    if (context.comparison?.kind === 'separate') {
+      const findings = (items: Finding[]) => items.map(formatFindingReference).join(', ') || '없음'
+      lines.push('', '[별도 시험 판독]')
+      lines.push('- 이번 자료는 기존 주장과 별도 시험입니다. 이전 회차 판독은 해결된 것으로 보지 않습니다.')
+      lines.push(`- 이전 시험 판독: ${findings(context.comparison.previous)}`)
+      lines.push(`- 이번 별도 시험 판독: ${findings(context.comparison.current)}`)
+    } else if (context.comparison) {
+      const findings = (items: Finding[]) => items.map(formatFindingReference).join(', ') || '없음'
       lines.push('', '[이전 회차와 변화]')
-      lines.push(`- 해결됨: ${ids(context.diff.resolved)}`)
-      lines.push(`- 남음: ${ids(context.diff.remaining)}`)
-      lines.push(`- 새로 생김: ${ids(context.diff.added)}`)
-      if (context.current.sameTrial === 'unknown' || context.current.sameTrial === null) lines.push('- 주의: 같은 시험인지 확인 전인 임시 비교')
+      lines.push(`- 해결됨: ${findings(context.comparison.diff.resolved)}`)
+      lines.push(`- 남음: ${findings(context.comparison.diff.remaining)}`)
+      lines.push(`- 새로 생김: ${findings(context.comparison.diff.added)}`)
+      if (context.comparison.kind === 'provisional') lines.push('- 주의: 같은 시험인지 확인 전인 임시 비교')
     }
     lines.push('')
   }
@@ -183,8 +222,10 @@ export function buildBriefText(input: ReviewInput, review: Review, responses: Re
   if (review.findings.length === 0) lines.push('- 현재 입력에서 추가 판독 항목 없음')
   else for (const finding of review.findings) {
     lines.push(`- ${finding.title}: ${finding.guidance}`)
-    lines.push(`  근거: ${finding.evidenceIds.join(', ')}`)
+    lines.push(`  근거: ${finding.evidenceIds.map(formatEvidenceReference).join(' / ')}`)
   }
+  lines.push('')
+  appendEvidenceList(lines, review.findings.flatMap((finding) => [...finding.evidenceIds]))
   lines.push('', '※ 이 검토표는 모델의 합격·불합격이나 실제 조직망 성능을 판정하지 않습니다.')
   return lines.join('\n')
 }

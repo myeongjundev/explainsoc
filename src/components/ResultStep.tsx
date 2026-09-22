@@ -2,7 +2,7 @@ import type { FormCheck } from '../domain/form'
 import type { Review } from '../domain/review'
 import type { QuestionResponse } from '../domain/types'
 import type { CaseRound } from '../domain/caseFile'
-import type { ReviewDiff } from '../domain/review'
+import type { RoundComparison } from '../domain/review'
 import { ClaimReveal } from './ClaimReveal'
 import { EvaluationMap } from './EvaluationMap'
 import { FindingList } from './FindingList'
@@ -27,7 +27,7 @@ interface Props {
   rounds: readonly CaseRound[]
   roundMeta: RoundDraftMeta
   onRoundMeta: (value: RoundDraftMeta) => void
-  diff: ReviewDiff | null
+  comparison: RoundComparison | null
   onNextRound: () => void
   onDownload: () => void
   caseFileStatus: string
@@ -37,7 +37,7 @@ interface Props {
  * 화면 D·E·F. 데스크톱에서는 숫자가 말하는 것(왼쪽)과 판독·질문(오른쪽)을 나란히 두고,
  * 모바일에서는 위에서 아래로 쌓는다.
  */
-export function ResultStep({ check, review, onEdit, onEditConditions, onRestart, responses, onResponse, caseTitle, onCaseTitle, rounds, roundMeta, onRoundMeta, diff, onNextRound, onDownload, caseFileStatus }: Props) {
+export function ResultStep({ check, review, onEdit, onEditConditions, onRestart, responses, onResponse, caseTitle, onCaseTitle, rounds, roundMeta, onRoundMeta, comparison, onNextRound, onDownload, caseFileStatus }: Props) {
   const { input } = check
   return (
     <div className="step-body">
@@ -64,8 +64,8 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onRestart,
           <FindingList review={review} check={check} />
           <QuestionList questions={review.questions} responses={responses} onResponse={onResponse} />
           <RequestPackage review={review} />
-          <RoundWorkspace caseTitle={caseTitle} onCaseTitle={onCaseTitle} rounds={rounds} current={roundMeta} onCurrent={onRoundMeta} diff={diff} onNextRound={onNextRound} onDownload={onDownload} />
-          <ReviewBrief check={check} review={review} responses={responses} caseTitle={caseTitle} rounds={rounds} current={{ id: `r${rounds.length + 1}`, ...roundMeta, input, responses: { ...responses } }} diff={diff} />
+          <RoundWorkspace caseTitle={caseTitle} onCaseTitle={onCaseTitle} rounds={rounds} current={roundMeta} onCurrent={onRoundMeta} comparison={comparison} onNextRound={onNextRound} onDownload={onDownload} />
+          <ReviewBrief check={check} review={review} responses={responses} caseTitle={caseTitle} rounds={rounds} current={{ id: `r${rounds.length + 1}`, ...roundMeta, input, responses: { ...responses } }} comparison={comparison} />
         </div>
         <div className="result__split"><SplitEvidenceFigure /></div>
       </div>

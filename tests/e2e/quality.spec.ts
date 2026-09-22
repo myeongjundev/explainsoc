@@ -66,6 +66,13 @@ test.describe('키보드만으로 (BRB-C05)', () => {
     await page.keyboard.press('Tab')
     await expect(page.getByRole('link', { name: '본문으로 바로 가기' })).toBeFocused()
   })
+
+  test('검토 파일 입력에 포커스하면 보이는 버튼 전체에 테두리가 생긴다', async ({ page }) => {
+    await openHome(page)
+    await page.getByLabel('검토 파일 열기').focus()
+    const label = page.locator('label[for="case-file"]')
+    expect(await label.evaluate((element) => getComputedStyle(element).outlineStyle)).toBe('solid')
+  })
 })
 
 test.describe('움직임 줄이기', () => {

@@ -9,6 +9,7 @@ import { openHome, startExample } from './helpers'
 test.skip(!process.env.EVIDENCE, 'EVIDENCE=1일 때만 스크린샷을 남긴다')
 
 const DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence/screenshots'
+const V3_DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence'
 
 test('첫 화면 — 데스크톱 1440×900', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 })
@@ -64,4 +65,30 @@ test('평가 조건 — 모름 경로', async ({ page }) => {
   await page.screenshot({ path: `${DIR}/c-conditions-unknown.png`, fullPage: true })
   await page.getByRole('button', { name: '결과 보기' }).click()
   await page.screenshot({ path: `${DIR}/f-result-all-unknown.png`, fullPage: true })
+})
+
+test('V3 결과 — 현재 회차와 검토표', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await startExample(page)
+  await page.screenshot({ path: `${V3_DIR}/v3-result-desktop.png`, fullPage: true })
+})
+
+test('V3 회차 비교 — 데스크톱', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await startExample(page)
+  await page.getByRole('button', { name: '현재 회차 저장 · 다음 답변 추가' }).click()
+  await page.getByLabel('지표 1').selectOption('attackRecall')
+  await page.getByLabel('값 (0부터 1 사이)').fill('0.0007')
+  await page.getByRole('button', { name: /PoC 검토표/ }).click()
+  await page.locator('.rounds').screenshot({ path: `${V3_DIR}/v3-round-diff-desktop.png` })
+})
+
+test('V3 회차 카드 — 모바일', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await startExample(page)
+  await page.getByRole('button', { name: '현재 회차 저장 · 다음 답변 추가' }).click()
+  await page.getByLabel('지표 1').selectOption('attackRecall')
+  await page.getByLabel('값 (0부터 1 사이)').fill('0.0007')
+  await page.getByRole('button', { name: /PoC 검토표/ }).click()
+  await page.locator('.rounds').screenshot({ path: `${V3_DIR}/v3-round-card-mobile.png` })
 })

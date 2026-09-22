@@ -12,17 +12,21 @@ interface Props<T extends string> {
   value: T | null
   onChange: (value: T) => void
   help?: ReactNode
+  context?: ReactNode
 }
 
 /**
  * 예 / 아니오 / 모름 같은 선택. 기본 라디오라서 화살표 키로 고를 수 있다.
  * 도움말은 옆에 두되 읽기를 강요하지 않는다 (설계 6-C).
  */
-export function ChoiceGroup<T extends string>({ legend, name, options, value, onChange, help }: Props<T>) {
+export function ChoiceGroup<T extends string>({ legend, name, options, value, onChange, help, context }: Props<T>) {
   const helpId = useId()
+  const contextId = useId()
+  const describedBy = [context ? contextId : '', help ? helpId : ''].filter(Boolean).join(' ') || undefined
   return (
-    <fieldset className="choice" aria-describedby={help ? helpId : undefined}>
+    <fieldset className="choice" aria-describedby={describedBy}>
       <legend className="choice__legend">{legend}</legend>
+      {context && <div className="choice__context" id={contextId}>{context}</div>}
       <div className="choice__options">
         {options.map((o) => (
           <label key={o.value} className="choice__option">

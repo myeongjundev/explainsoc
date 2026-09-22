@@ -39,6 +39,14 @@ describe('ExplainSOC 로컬 사례 파일', () => {
     expect(parseCaseFileText(' '.repeat(MAX_CASE_FILE_BYTES + 1)).kind).toBe('error')
   })
 
+  it('공백 이름과 후속 회차의 sameTrial null을 거부한다', () => {
+    expect(parseCaseFileText(JSON.stringify({ ...makeCaseFile('검토', [round]), title: '   ' })).kind).toBe('error')
+    const blankRound = makeCaseFile('검토', [{ ...round, label: '   ' }])
+    expect(parseCaseFileText(JSON.stringify(blankRound)).kind).toBe('error')
+    const followup = makeCaseFile('검토', [round, { ...round, id: 'r2', label: '2회차', sameTrial: null }])
+    expect(parseCaseFileText(JSON.stringify(followup)).kind).toBe('error')
+  })
+
   it('같은 시험일 때만 이전 근거를 합치고, 모름은 임시로 합친다', () => {
     const received: ReviewInput = { ...base, claim: { attackRecall: 0.8 }, split: null, unseenIncluded: null, deduplicated: null }
     expect(combineRoundInput(base, received, 'yes').claim).toEqual({ fpr: 0.001, attackRecall: 0.8 })
