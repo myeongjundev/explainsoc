@@ -4081,3 +4081,92 @@ a {
 .hero__title-line {
   display: block;
 }
+
+/* V9 결론 카드 — 결과의 첫 문장. 색은 늘 글자 이름표(믿기 전에 확인 등)와 함께 간다. */
+.conclusion {
+  width: min(960px, 100%);
+  margin: 18px auto 0;
+  display: grid;
+  gap: 12px;
+  padding: 22px 24px;
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-top: 5px solid var(--accent);
+  border-radius: 18px;
+}
+
+.conclusion--early {
+  border-top-color: #c98a00;
+}
+
+.conclusion--partial {
+  border-top-color: #c98a00;
+}
+
+.conclusion__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-2);
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.conclusion__tone {
+  padding: 1px 9px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.8rem;
+  letter-spacing: 0;
+}
+
+.conclusion--early .conclusion__tone,
+.conclusion--partial .conclusion__tone {
+  background: var(--check-bg);
+  color: var(--check-ink);
+}
+
+.conclusion__headline {
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.conclusion__body {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 760px) {
+  .conclusion__body {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.conclusion__label {
+  margin-bottom: 4px;
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.conclusion__reasons {
+  padding-left: 1.1em;
+  display: grid;
+  gap: 6px;
+  color: var(--ink-2);
+}
+
+.conclusion__next {
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.conclusion__boundary {
+  color: var(--muted);
+  font-size: 0.82rem;
+}

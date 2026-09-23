@@ -19,6 +19,10 @@ test.describe('논문 예시 60초 경로 (BRB-C02·C05)', () => {
     await page.getByRole('button', { name: '예시로 바로 보기' }).click()
     await expect(page.getByRole('heading', { level: 2, name: '3. 검토 결과' })).toBeFocused()
 
+    // V9 결론 카드: 결과 첫머리에서 결론 · 왜 · 그래서를 먼저 말한다
+    await expect(page.locator('.conclusion')).toContainText('처음 보는 공격으로 시험한 숫자가 있습니다')
+    await expect(page.locator('.conclusion')).toContainText('100건으로 치면 약 0.07건')
+
     const briefing = page.locator('.investigation-brief')
     await expect(briefing).toContainText('1개의 해석 주의를 먼저 읽어야 합니다')
     await expect(briefing).toContainText('같은 시험에서 공격 Recall은 얼마입니까?')

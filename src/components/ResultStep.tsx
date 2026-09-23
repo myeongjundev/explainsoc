@@ -14,6 +14,8 @@ import { RoundWorkspace, type RoundDraftMeta } from './RoundWorkspace'
 import { TerminologyHelp } from './TerminologyHelp'
 import { WorkbenchNav, type WorkbenchChapter } from './WorkbenchNav'
 import { EvidenceStatusBoard } from './EvidenceStatusBoard'
+import { ConclusionCard } from './ConclusionCard'
+import { buildConclusion } from '../domain/conclusion'
 import { InvestigationBrief } from './InvestigationBrief'
 
 interface Props {
@@ -52,6 +54,7 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onEditBroc
   }
   return (
     <div className="step-body result-step">
+      <ConclusionCard conclusion={buildConclusion(input, review)} onShowQuestions={() => showChapter('output')} />
       <WorkbenchNav active={chapter} onSelect={setChapter} />
       {caseFileStatus && <p className="workbench-file-status" role="status">{caseFileStatus}</p>}
       <InvestigationBrief review={review} roundNumber={rounds.length + 1} caseTitle={caseTitle} errorCount={check.errorCount} onShowQuestions={() => showChapter('output')} />

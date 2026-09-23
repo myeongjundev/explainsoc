@@ -246,6 +246,19 @@ describe('소개서 문장으로 검토 (V9)', () => {
   })
 })
 
+describe('결론 카드 (V9)', () => {
+  it('결과 맨 위에서 결론·왜·그래서를 쉬운 말로 먼저 말하고, 판정이 아니라고 밝힌다', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
+    const card = screen.getByRole('region', { name: /처음 보는 공격으로 시험한 숫자가 있습니다/ })
+    expect(card).toHaveTextContent('100건으로 치면 약 0.07건')
+    expect(card).toHaveTextContent('판매 업체에 아래 질문 1개를 하세요')
+    expect(card).toHaveTextContent('AI 제품이 좋다·나쁘다는 판정이 아닙니다')
+    await user.click(within(card).getByRole('button', { name: '업체에 물을 질문 보기' }))
+    expect(screen.getByRole('region', { name: '공급자에게 물을 질문' })).toBeVisible()
+  })
+})
+
 describe('질문 복사', () => {
   it('질문 문장만 복사하고 입력한 숫자는 담지 않는다', async () => {
     const { user } = setup()
