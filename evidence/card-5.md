@@ -1,5 +1,18 @@
 # 카드 5 증거 — 포트폴리오와 제출
 
+## V8 밝은 문서형 화면 — 2026-09-23 (배포 전)
+
+> `ui-redesign` 브랜치에서 진행 중이다. 배포와 새 실행 묶음이 나오기 전까지 제출 기준은 아래 V7이다.
+
+V8은 기능을 늘리지 않고 화면만 바꿨다. 첫 화면을 포함해 밝은 문서형으로 바꾸고 영어 라벨을 한국어로
+옮겼다. 처음 입력은 질문 여섯 개를 한 화면에 하나씩 묻고, 결과에서 고치거나 다음 회차를 적을 때는 한
+페이지에서 고친다. 결과 1장에 두 번 나오던 근거 목록은 근거 확인표 하나로 합쳤다. 설계 근거는
+`planning/DESIGN.md` 30절이다.
+
+V8 증거 화면은 `evidence/v8-guided-question-desktop.png`, `evidence/v8-guided-question-mobile.png`,
+`evidence/v8-one-page-form-desktop.png`, `evidence/v8-chapter-evidence-desktop.png`,
+`evidence/v8-chapter-evidence-mobile.png`에 있다. `evidence/screenshots/`의 a·b·c·f 장면도 V8 화면으로 다시 찍었다.
+
 ## V7 결과 밀집 해소 제출본 — 2026-09-23
 
 > 이 섹션이 아래 V1~V6 실행 묶음과 검증 값을 대체한다. 관찰 기록은 BRB-C11 절에 그대로 남긴다.
