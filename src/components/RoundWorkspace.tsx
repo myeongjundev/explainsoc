@@ -33,7 +33,7 @@ export function RoundWorkspace({ caseTitle, onCaseTitle, rounds, current, onCurr
     <section className="panel rounds" aria-labelledby="rounds-title">
       <div className="brief__head">
         <div>
-          <p className="brief__eyebrow">EVIDENCE TIMELINE · 회차별 근거</p>
+          <p className="brief__eyebrow">회차별 근거</p>
           <h3 id="rounds-title" className="panel__title">주장이 어떻게 바뀌었습니까?</h3>
         </div>
         <span className="brief__privacy">로컬 파일로만 저장</span>

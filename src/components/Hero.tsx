@@ -42,7 +42,7 @@ export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStar
       </div>
 
       <figure className="hero__figure claim-autopsy">
-        <figcaption className="hero__figure-title"><span>CLAIM AUTOPSY</span> 같은 모델, 다른 시험</figcaption>
+        <figcaption className="hero__figure-title">같은 모델, 다른 시험</figcaption>
         <div className="claim-autopsy__claim">
           <span>공급자 성능 주장</span>
           <strong>99.88%</strong>

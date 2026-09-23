@@ -30,7 +30,7 @@ export function EvidenceStatusBoard({ input, roundCount, sameTrial }: { input: R
 
   return (
     <section className="panel evidence-status" aria-labelledby="evidence-status-title">
-      <p className="board-column__eyebrow">EVIDENCE MAP</p>
+      <p className="board-column__eyebrow">근거 확인표</p>
       <h3 id="evidence-status-title" className="panel__title">주장을 읽는 데 필요한 근거</h3>
       <ul className="evidence-status__grid">
         {items.map((item) => (

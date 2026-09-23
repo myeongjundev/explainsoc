@@ -1,5 +1,5 @@
 import { expect, test } from './fixtures'
-import { openHome, startExample } from './helpers'
+import { openHome, openOwnForm, startExample } from './helpers'
 
 /**
  * 증거 스크린샷. 평소 테스트에서는 건너뛰고 `EVIDENCE=1`일 때만 evidence/screenshots에 남긴다.
@@ -44,7 +44,7 @@ test('결과 — 모바일 전체', async ({ page }) => {
 test('받은 숫자 — 잘못된 입력 화면', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 })
   await openHome(page)
-  await page.getByRole('button', { name: '내 성능표 검토' }).click()
+  await openOwnForm(page)
   await page.getByLabel('지표 1').selectOption('accuracy')
   await page.getByLabel('값 (0부터 1 사이)').fill('99')
   await page.getByRole('button', { name: '혼동행렬로 입력' }).click()
@@ -58,9 +58,8 @@ test('받은 숫자 — 잘못된 입력 화면', async ({ page }) => {
 test('평가 조건 — 모름 경로', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 })
   await openHome(page)
-  await page.getByRole('button', { name: '내 성능표 검토' }).click()
-  await page.getByRole('button', { name: '다음: 평가 조건' }).click()
-  for (const name of [/어떻게 나눴습니까/, /학습 때 없던 공격/, /같은 행을 제거/]) {
+  await openOwnForm(page)
+  for (const name of [/어떻게 나눴나요/, /학습 때 없던 공격/, /중복된 기록과/]) {
     await page.getByRole('group', { name }).getByLabel('모름').check()
   }
   await page.screenshot({ path: `${DIR}/c-conditions-unknown.png`, fullPage: true })
@@ -81,7 +80,7 @@ test('V5 회차 분기 — 데스크톱', async ({ page }) => {
   await page.getByRole('button', { name: '현재 회차 저장 · 다음 답변 추가' }).click()
   await page.getByLabel('지표 1').selectOption('attackRecall')
   await page.getByLabel('값 (0부터 1 사이)').fill('0.0007')
-  await page.getByRole('button', { name: /PoC 검토표/ }).click()
+  await page.getByRole('button', { name: /검토 결과/ }).click()
   await page.getByLabel('기존 주장과 같은 시험입니까?').selectOption('no')
   await page.locator('.rounds').screenshot({ path: `${V5_DIR}/v5-separate-branch-desktop.png` })
 })

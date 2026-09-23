@@ -1,5 +1,5 @@
 import { expect, test } from './fixtures'
-import { collectErrors, openChapter, openHome, questionItems, startExample } from './helpers'
+import { collectErrors, openChapter, openOwnForm, openHome, questionItems, startExample } from './helpers'
 
 test.describe('논문 예시 60초 경로 (BRB-C02·C05)', () => {
   test('첫 화면에서 질문 복사까지 — 서명 장면이 모두 나온다', async ({ page, context }) => {
@@ -14,7 +14,7 @@ test.describe('논문 예시 60초 경로 (BRB-C02·C05)', () => {
     await expect(page.locator('.hero__scenario')).toContainText('처음 보는 공격도 잡는지 알 수 없을 때')
     await expect(page.locator('.hero__story strong')).toHaveText(['받은 성능 숫자를 넣고', '모르는 시험 조건에 답하면', '업체에 물을 질문이 완성됩니다'])
     await page.getByRole('button', { name: '논문 예시로 60초 검토' }).click()
-    await expect(page.getByRole('heading', { level: 2, name: '3. PoC 검토 작업대' })).toBeFocused()
+    await expect(page.getByRole('heading', { level: 2, name: '3. 검토 결과' })).toBeFocused()
 
     const briefing = page.locator('.investigation-brief')
     await expect(briefing).toContainText('1개의 해석 주의를 먼저 읽어야 합니다')
@@ -80,13 +80,15 @@ test.describe('내 성능표로 세 행동 (BRB-C02)', () => {
     await openHome(page)
     await page.getByRole('button', { name: '내 성능표 검토' }).click()
 
-    // 행동 1 — 받은 숫자 하나
+    // 행동 1 — 받은 숫자 하나. 처음 입력은 한 화면에 질문 하나씩 묻는다.
     await page.getByLabel('지표 1').selectOption('accuracy')
     await page.getByLabel('값 (0부터 1 사이)').fill('0.99')
-    await page.getByRole('button', { name: '다음: 평가 조건' }).click()
+    await page.getByRole('button', { name: '다음', exact: true }).click()
+    await page.getByRole('button', { name: '건너뛰고 다음' }).click()
+    await page.getByRole('button', { name: '건너뛰고 다음' }).click()
 
     // 행동 2 — 예 / 아니오 / 모름을 키보드로 고른다
-    const split = page.getByRole('group', { name: '1. 시험 자료는 어떻게 나눴습니까?' })
+    const split = page.getByRole('group', { name: '시험 자료는 어떻게 나눴나요?' })
     await split.getByLabel('무작위').focus()
     await page.keyboard.press('Space')
     await expect(split.getByLabel('무작위')).toBeChecked()
@@ -94,8 +96,10 @@ test.describe('내 성능표로 세 행동 (BRB-C02)', () => {
     await page.keyboard.press('ArrowRight')
     await page.keyboard.press('ArrowRight')
     await expect(split.getByLabel('모름')).toBeChecked()
+    await page.getByRole('button', { name: '다음', exact: true }).click()
     await page.getByRole('group', { name: /학습 때 없던 공격/ }).getByLabel('모름').check()
-    await page.getByRole('group', { name: /같은 행을 제거/ }).getByLabel('아니오').check()
+    await page.getByRole('button', { name: '다음', exact: true }).click()
+    await page.getByRole('group', { name: /중복된 기록과/ }).getByLabel('아니오').check()
     await page.getByRole('button', { name: '결과 보기' }).click()
 
     // 행동 3 — 말하는 것과 말하지 않는 것, 질문 복사
@@ -112,7 +116,7 @@ test.describe('내 성능표로 세 행동 (BRB-C02)', () => {
   test('모든 조건을 모름으로 두어도 질문이 나온다', async ({ page }) => {
     await openHome(page)
     await page.getByRole('button', { name: '내 성능표 검토' }).click()
-    await page.getByRole('button', { name: /PoC 검토표/ }).click()
+    await page.getByRole('button', { name: /검토 결과/ }).click()
     await openChapter(page, '판독')
     await expect(page.locator('.finding__id')).toHaveText(['R02', 'R07', 'R09'])
     await openChapter(page, '다음 행동')
@@ -123,7 +127,7 @@ test.describe('내 성능표로 세 행동 (BRB-C02)', () => {
     await openHome(page)
     await page.getByRole('button', { name: '내 성능표 검토' }).click()
     await page.getByRole('button', { name: /예시 B로 채우기/ }).click()
-    await page.getByRole('button', { name: /PoC 검토표/ }).click()
+    await page.getByRole('button', { name: /검토 결과/ }).click()
     await expect(page.locator('.finding__id')).toHaveText(['R01', 'R08', 'R10'])
     await expect(page.locator('.flip__face--front')).toContainText('정확도 0.9988')
   })
@@ -132,14 +136,14 @@ test.describe('내 성능표로 세 행동 (BRB-C02)', () => {
 test.describe('PoC 검토 작업대 V2', () => {
   test('주장 지표와 혼동행렬이 다르면 R11로 같은 시험인지 묻는다', async ({ page }) => {
     await openHome(page)
-    await page.getByRole('button', { name: '내 성능표 검토' }).click()
+    await openOwnForm(page)
     await page.getByLabel('지표 1').selectOption('accuracy')
     await page.getByLabel('값 (0부터 1 사이)').fill('0.99')
     await page.getByRole('button', { name: '혼동행렬로 입력' }).click()
     for (const [label, value] of [
       [/정상→정상/, '90'], [/정상→공격/, '5'], [/공격→정상/, '3'], [/공격→공격/, '2'],
     ] as const) await page.getByLabel(label).fill(value)
-    await page.getByRole('button', { name: /PoC 검토표/ }).click()
+    await page.getByRole('button', { name: /검토 결과/ }).click()
 
     await openChapter(page, '판독')
     await expect(page.locator('.finding', { hasText: 'R11' })).toBeVisible()
@@ -171,11 +175,11 @@ test.describe('회차별 로컬 PoC 사례 작업대 V4', () => {
     await expect(page.locator('.result__findings')).toBeHidden()
     await expect(page.locator('.result__output')).toBeHidden()
 
-    await page.getByRole('button', { name: '02 판독' }).click()
+    await openChapter(page, '판독')
     await expect(page.locator('.result__evidence')).toBeHidden()
     await expect(page.locator('.result__findings')).toBeVisible()
 
-    await page.getByRole('button', { name: '03 다음 행동' }).click()
+    await openChapter(page, '다음 행동')
     await expect(page.locator('.result__findings')).toBeHidden()
     await expect(page.locator('.result__output')).toBeVisible()
     await expect(page.getByRole('region', { name: '공급자에게 물을 질문' })).toBeVisible()
@@ -183,7 +187,7 @@ test.describe('회차별 로컬 PoC 사례 작업대 V4', () => {
 
   test('공급자 답변으로 해결·추가 규칙을 비교하고 JSON을 다시 연다', async ({ page }) => {
     await startExample(page)
-    await expect(page.getByRole('navigation', { name: 'PoC 작업대 바로 가기' })).toBeVisible()
+    await expect(page.getByRole('navigation', { name: '결과 목차' })).toBeVisible()
     await openChapter(page, '다음 행동')
     await page.getByLabel('답변 상태').selectOption('requested')
     await page.getByLabel('답변 메모').fill('다음 주 Recall 표를 보내기로 함')
@@ -195,12 +199,11 @@ test.describe('회차별 로컬 PoC 사례 작업대 V4', () => {
 
     await page.getByLabel('지표 1').selectOption('attackRecall')
     await page.getByLabel('값 (0부터 1 사이)').fill('0.0007')
-    await page.getByRole('button', { name: '다음: 평가 조건' }).click()
-    const dedup = page.getByRole('group', { name: '3. 중복과 학습·시험 사이의 같은 행을 제거했습니까?' })
+    const dedup = page.getByRole('group', { name: '중복된 기록과 학습·시험에 함께 들어간 기록을 지웠나요?' })
     await expect(dedup).toContainText('이전 값: 예')
     await dedup.getByLabel('모름').check()
     await expect(dedup).toContainText('이전 값을 ‘예’에서 ‘모름’으로 바꿉니다')
-    await page.getByRole('button', { name: /PoC 검토표/ }).click()
+    await page.getByRole('button', { name: /검토 결과/ }).click()
 
     const diff = page.locator('.round-diff')
     await expect(diff.locator('.round-diff__group--resolved')).toContainText('R04')
@@ -233,7 +236,7 @@ test.describe('회차별 로컬 PoC 사례 작업대 V4', () => {
 
     await page.getByRole('button', { name: '처음부터' }).click()
     await page.getByLabel('검토 파일 열기').setInputFiles(path!)
-    await expect(page.getByRole('heading', { level: 2, name: '3. PoC 검토 작업대' })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 2, name: '3. 검토 결과' })).toBeVisible()
     await expect(page.locator('.rounds__timeline li')).toHaveCount(2)
     await expect(page.getByText(/파일을 열었습니다/)).toBeVisible()
     await page.getByLabel('기존 주장과 같은 시험입니까?').selectOption('no')
@@ -264,7 +267,7 @@ test.describe('잘못된 입력에도 멈추지 않는다 (BRB-C05)', () => {
       await expect(page.getByText(message)).toBeVisible()
       await expect(value).toHaveAttribute('aria-invalid', 'true')
     }
-    await page.getByRole('button', { name: /PoC 검토표/ }).click()
+    await page.getByRole('button', { name: /검토 결과/ }).click()
     // 잘못 적은 칸이 있다는 사실은 장을 옮기지 않아도 브리핑에서 먼저 보인다
     await expect(page.locator('.investigation-brief__warn')).toContainText('잘못 적은 칸 1개')
     await openChapter(page, '판독')
@@ -277,7 +280,7 @@ test.describe('잘못된 입력에도 멈추지 않는다 (BRB-C05)', () => {
   test('혼동행렬의 유효·음수·글자·합 0을 차례로 넣어도 앱이 멈추지 않는다', async ({ page }) => {
     const errors = collectErrors(page)
     await openHome(page)
-    await page.getByRole('button', { name: '내 성능표 검토' }).click()
+    await openOwnForm(page)
     await page.getByRole('button', { name: '혼동행렬로 입력' }).click()
     const tn = page.getByLabel(/\(TN\)/)
     const fp = page.getByLabel(/\(FP\)/)
@@ -304,8 +307,8 @@ test.describe('잘못된 입력에도 멈추지 않는다 (BRB-C05)', () => {
     await fp.fill('0')
     await expect(page.locator('.matrix__na')).toContainText('공격 Recall: 공격 표본이 없어 계산할 수 없습니다')
 
-    await page.getByRole('button', { name: /PoC 검토표/ }).click()
-    await expect(page.getByRole('heading', { level: 2, name: '3. PoC 검토 작업대' })).toBeVisible()
+    await page.getByRole('button', { name: /검토 결과/ }).click()
+    await expect(page.getByRole('heading', { level: 2, name: '3. 검토 결과' })).toBeVisible()
     expect(errors).toEqual([])
   })
 })

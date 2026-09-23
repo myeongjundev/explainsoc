@@ -50,14 +50,14 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onRestart,
     window.requestAnimationFrame(() => document.getElementById(target)?.scrollIntoView?.({ block: 'start' }))
   }
   return (
-    <div className="step-body">
+    <div className="step-body result-step">
       <WorkbenchNav active={chapter} onSelect={setChapter} />
       {caseFileStatus && <p className="workbench-file-status" role="status">{caseFileStatus}</p>}
       <InvestigationBrief review={review} roundNumber={rounds.length + 1} caseTitle={caseTitle} errorCount={check.errorCount} onShowQuestions={() => showChapter('output')} />
       <div className="result investigation-board">
         <div className={`result__evidence board-column${chapter === 'evidence' ? ' is-active' : ''}`} id="evidence-column">
           <header className="board-column__head">
-            <span>01</span><div><p>CLAIM &amp; EVIDENCE</p><h3>주장과 근거</h3></div>
+            <span>1</span><div><h3>주장과 근거</h3><p>받은 숫자가 실제로 말하는 것</p></div>
           </header>
           {input.matrix ? (
             <ClaimReveal matrix={input.matrix} claim={input.claim} source={input.source} />
@@ -77,13 +77,13 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onRestart,
         </div>
         <div className={`result__findings board-column${chapter === 'findings' ? ' is-active' : ''}`}>
           <header className="board-column__head">
-            <span>02</span><div><p>INTERPRETATION</p><h3>판독</h3></div>
+            <span>2</span><div><h3>판독</h3><p>논문 결과로 읽은 해석과 주의</p></div>
           </header>
           <FindingList review={review} check={check} />
         </div>
         <div className={`result__output board-column${chapter === 'output' ? ' is-active' : ''}`}>
           <header className="board-column__head">
-            <span>03</span><div><p>NEXT ACTION</p><h3>다음 행동</h3></div>
+            <span>3</span><div><h3>다음 행동</h3><p>공급자에게 물을 질문과 검토표</p></div>
           </header>
           <QuestionList questions={review.questions} responses={responses} onResponse={onResponse} />
           <RequestPackage review={review} />
@@ -99,7 +99,7 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onRestart,
         onToggle={(event) => setRoundsOpen(event.currentTarget.open)}
       >
         <summary>
-          <span>04</span>
+          <span aria-hidden="true">+</span>
           <strong>회차 기록과 다음 답변 관리</strong>
           <em>{rounds.length + 1}회차 · 브라우저 안에서만 작업</em>
         </summary>
@@ -123,7 +123,7 @@ const CHAPTER_ORDER: { id: WorkbenchChapter; label: string }[] = [
   { id: 'output', label: '다음 행동' },
 ]
 
-/** 한 장을 다 읽은 자리에서 다음 장으로 갈 수 있게 둔다. 위쪽 REVIEW MAP을 찾지 못해도 순서가 이어진다. */
+/** 한 장을 다 읽은 자리에서 다음 장으로 갈 수 있게 둔다. 위쪽 결과 목차를 찾지 못해도 순서가 이어진다. */
 function ChapterPager({ chapter, onGo }: { chapter: WorkbenchChapter; onGo: (next: WorkbenchChapter) => void }) {
   const index = CHAPTER_ORDER.findIndex((item) => item.id === chapter)
   const previous = index > 0 ? CHAPTER_ORDER[index - 1] : null

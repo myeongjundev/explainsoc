@@ -28,13 +28,19 @@ export async function openHome(page: Page) {
 export async function startExample(page: Page) {
   await openHome(page)
   await page.getByRole('button', { name: '논문 예시로 60초 검토' }).click()
-  await expect(page.getByRole('heading', { level: 2, name: '3. PoC 검토 작업대' })).toBeFocused()
+  await expect(page.getByRole('heading', { level: 2, name: '3. 검토 결과' })).toBeFocused()
 }
 
-/** V7: 결과는 한 번에 한 장만 보인다. 위쪽 REVIEW MAP으로 그 장을 연다. */
-export async function openChapter(page: Page, chapter: '주장·근거' | '판독' | '다음 행동') {
-  const number = chapter === '주장·근거' ? '01' : chapter === '판독' ? '02' : '03'
-  await page.getByRole('button', { name: `${number} ${chapter}` }).click()
+/** V8: 처음 입력은 한 화면씩 묻는다. 여러 칸을 한꺼번에 채우는 시험은 한 장짜리 폼으로 연다. */
+export async function openOwnForm(page: Page) {
+  await page.getByRole('button', { name: '내 성능표 검토' }).click()
+  await page.getByRole('button', { name: '질문 전체 한 번에 보기' }).click()
+  await expect(page.getByRole('heading', { level: 2, name: '받은 숫자와 평가 조건을 적어 주세요' })).toBeVisible()
+}
+
+/** V7: 결과는 한 번에 한 장만 보인다. 위쪽 결과 목차로 그 장을 연다. */
+export async function openChapter(page: Page, chapter: '주장과 근거' | '판독' | '다음 행동') {
+  await page.getByRole('navigation', { name: '결과 목차' }).getByRole('button', { name: chapter, exact: true }).click()
 }
 
 export function questionItems(page: Page) {

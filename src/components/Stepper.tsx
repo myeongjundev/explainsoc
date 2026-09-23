@@ -3,7 +3,7 @@ export type StepNumber = 1 | 2 | 3
 export const STEP_TITLES: Record<StepNumber, string> = {
   1: '받은 숫자',
   2: '평가 조건',
-  3: 'PoC 검토표',
+  3: '검토 결과',
 }
 
 interface Props {

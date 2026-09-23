@@ -6,9 +6,9 @@ interface Props {
 }
 
 const CHAPTERS: { id: WorkbenchChapter; target: string; number: string; label: string }[] = [
-  { id: 'evidence', target: 'evidence-column', number: '01', label: '주장·근거' },
-  { id: 'findings', target: 'findings-title', number: '02', label: '판독' },
-  { id: 'output', target: 'questions-title', number: '03', label: '다음 행동' },
+  { id: 'evidence', target: 'evidence-column', number: '1', label: '주장과 근거' },
+  { id: 'findings', target: 'findings-title', number: '2', label: '판독' },
+  { id: 'output', target: 'questions-title', number: '3', label: '다음 행동' },
 ]
 
 export function WorkbenchNav({ active, onSelect }: Props) {
@@ -18,8 +18,7 @@ export function WorkbenchNav({ active, onSelect }: Props) {
   }
 
   return (
-    <nav className="workbench-nav" aria-label="PoC 작업대 바로 가기">
-      <span className="workbench-nav__label">REVIEW MAP</span>
+    <nav className="workbench-nav" aria-label="결과 목차">
       {CHAPTERS.map((chapter) => (
         <button
           key={chapter.id}
@@ -27,11 +26,13 @@ export function WorkbenchNav({ active, onSelect }: Props) {
           aria-pressed={active === chapter.id}
           onClick={() => select(chapter.id, chapter.target)}
         >
-          <span>{chapter.number}</span> {chapter.label}
+          <span className="workbench-nav__n" aria-hidden="true">{chapter.number}</span>
+          {chapter.label}
         </button>
       ))}
-      <a href="#round-comparison"><span>04</span> 회차 기록</a>
-      <a href="#brief-title"><span>05</span> 최종 산출물</a>
+      <span className="workbench-nav__spacer" aria-hidden="true" />
+      <a href="#round-comparison">회차 기록</a>
+      <a href="#brief-title">검토표</a>
     </nav>
   )
 }

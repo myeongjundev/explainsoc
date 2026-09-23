@@ -6,6 +6,7 @@ import {
   FORBIDDEN_TERMS,
   horizontalOverflow,
   openHome,
+  openOwnForm,
   startExample,
   visibleTextOutsideQuotes,
 } from './helpers'
@@ -40,7 +41,8 @@ test.describe('키보드만으로 (BRB-C05)', () => {
     const tabTo = async (name: string) => {
       for (let i = 0; i < 40; i++) {
         await page.keyboard.press('Tab')
-        const text = await page.evaluate(() => document.activeElement?.textContent?.trim() ?? '')
+        // 번호 배지는 aria-hidden이므로 접근 가능한 이름과 같도록 그 글자를 뺀다.
+        const text = await page.evaluate(() => { const el = document.activeElement?.cloneNode(true) as Element | undefined; el?.querySelectorAll('[aria-hidden="true"]').forEach((n) => n.remove()); return el?.textContent?.trim() ?? '' })
         if (text === name) return
       }
       throw new Error(`Tab으로 '${name}'에 닿지 못했다`)
@@ -50,14 +52,14 @@ test.describe('키보드만으로 (BRB-C05)', () => {
     const outline = await page.evaluate(() => getComputedStyle(document.activeElement as Element).outlineStyle)
     expect(outline).not.toBe('none')
     await page.keyboard.press('Enter')
-    await expect(page.getByRole('heading', { level: 2, name: '3. PoC 검토 작업대' })).toBeFocused()
+    await expect(page.getByRole('heading', { level: 2, name: '3. 검토 결과' })).toBeFocused()
 
     await tabTo('공격 기준으로 뒤집기')
     await page.keyboard.press('Enter')
     await expect(page.getByRole('button', { name: '받은 주장 다시 보기' })).toHaveAttribute('aria-pressed', 'true')
 
     // V7: 다음 행동 장을 키보드로 연 뒤에야 질문 복사가 나온다
-    await tabTo('03 다음 행동')
+    await tabTo('다음 행동')
     await page.keyboard.press('Enter')
 
     await tabTo('질문만 복사')
@@ -99,7 +101,7 @@ test.describe('접근성 자동 검사 (axe, WCAG 2.2 AA)', () => {
 
   test('받은 숫자 — 오류가 있는 상태', async ({ page }) => {
     await openHome(page)
-    await page.getByRole('button', { name: '내 성능표 검토' }).click()
+    await openOwnForm(page)
     await page.getByLabel('지표 1').selectOption('fpr')
     await page.getByLabel('값 (0부터 1 사이)').fill('abc')
     await page.getByRole('button', { name: '혼동행렬로 입력' }).click()
@@ -108,10 +110,18 @@ test.describe('접근성 자동 검사 (axe, WCAG 2.2 AA)', () => {
     expect(violations.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([])
   })
 
-  test('평가 조건', async ({ page }) => {
+  test('한 화면씩 묻는 평가 조건', async ({ page }) => {
     await openHome(page)
     await page.getByRole('button', { name: '내 성능표 검토' }).click()
-    await page.getByRole('button', { name: '다음: 평가 조건' }).click()
+    await page.getByRole('button', { name: /평가 조건/ }).click()
+    await page.getByRole('group', { name: '시험 자료는 어떻게 나눴나요?' }).getByLabel('모름').check()
+    const { violations } = await new AxeBuilder({ page }).withTags(tags).analyze()
+    expect(violations.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([])
+  })
+
+  test('한 장짜리 폼의 평가 조건', async ({ page }) => {
+    await openHome(page)
+    await openOwnForm(page)
     await page.evaluate(() => document.querySelectorAll('details').forEach((d) => (d.open = true)))
     const { violations } = await new AxeBuilder({ page }).withTags(tags).analyze()
     expect(violations.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([])
@@ -143,7 +153,7 @@ test.describe('보안과 개인정보', () => {
     await page.getByRole('button', { name: '공격 기준으로 뒤집기' }).click()
     await page.getByRole('button', { name: '입력 수정' }).click()
     await page.getByLabel(/\(TP\)/).fill('999')
-    await page.getByRole('button', { name: /PoC 검토표/ }).click()
+    await page.getByRole('button', { name: /검토 결과/ }).click()
     const origin = new URL(baseURL as string).origin
     expect(outsideRequests).toEqual([])
     const nonStatic = requests.filter((u) => u.startsWith(origin) && !/\/explainsoc\/(assets\/[\w.-]+\.(js|css)|favicon\.svg)?$/.test(u))
@@ -172,8 +182,12 @@ test.describe('보안과 개인정보', () => {
     const texts = [await visibleTextOutsideQuotes(page)]
     await page.getByRole('button', { name: '입력 수정' }).click()
     texts.push(await visibleTextOutsideQuotes(page))
-    await page.getByRole('button', { name: '다음: 평가 조건' }).click()
-    texts.push(await visibleTextOutsideQuotes(page))
+    await openHome(page)
+    await page.getByRole('button', { name: '내 성능표 검토' }).click()
+    for (let i = 0; i < 6; i++) {
+      texts.push(await visibleTextOutsideQuotes(page))
+      if (i < 5) await page.getByRole('button', { name: /다음$/ }).click()
+    }
     for (const text of texts) {
       for (const term of FORBIDDEN_TERMS) expect(text, term).not.toContain(term)
     }

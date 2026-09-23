@@ -25,7 +25,7 @@ export function InvestigationBrief({ review, roundNumber, caseTitle, errorCount,
   return (
     <section className="investigation-brief" aria-labelledby="investigation-brief-title">
       <div className="investigation-brief__lead">
-        <p className="investigation-brief__eyebrow">DECISION BRIEF · ROUND {String(roundNumber).padStart(2, '0')}</p>
+        <p className="investigation-brief__eyebrow">검토 요약 · {roundNumber}회차</p>
         <p className="investigation-brief__case">{caseTitle}</p>
         <h3 id="investigation-brief-title">{headline}</h3>
         <p>숫자의 좋고 나쁨을 판정하지 않고, 지금 받은 근거에서 다음에 확인할 일을 앞에 둡니다.</p>
@@ -41,7 +41,7 @@ export function InvestigationBrief({ review, roundNumber, caseTitle, errorCount,
         <div><dt>다음 질문</dt><dd>{questions}</dd></div>
       </dl>
       <div className="investigation-brief__next">
-        <span>FIRST QUESTION</span>
+        <span>가장 먼저 물을 질문</span>
         <strong>{review.questions[0] ?? '현재 입력에서 추가로 물을 질문이 없습니다.'}</strong>
         {questions > 0 && <button type="button" onClick={onShowQuestions}>질문과 답변으로 이동</button>}
       </div>

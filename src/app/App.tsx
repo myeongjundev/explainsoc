@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ClaimStep } from '../components/ClaimStep'
-import { EvaluationQuestions } from '../components/EvaluationQuestions'
+import { OnePageForm } from '../components/OnePageForm'
+import { GUIDED_STEP_START, GuidedInput, guidedStepOf } from '../components/GuidedInput'
 import { Hero } from '../components/Hero'
 import { ResearchScope } from '../components/ResearchScope'
 import { ResultStep } from '../components/ResultStep'
@@ -13,11 +13,12 @@ import type { QuestionResponse } from '../domain/types'
 import type { RoundDraftMeta } from '../components/RoundWorkspace'
 
 type View = 'home' | StepNumber
+type InputMode = 'guided' | 'form'
 
 const STEP_HEADINGS: Record<StepNumber, string> = {
   1: '1. 받은 숫자를 적어 주세요',
   2: '2. 평가 조건에 답해 주세요',
-  3: '3. PoC 검토 작업대',
+  3: '3. 검토 결과',
 }
 
 const SOURCE_NOTE: Record<FormState['source'], string | null> = {
@@ -33,6 +34,8 @@ const SOURCE_NOTE: Record<FormState['source'], string | null> = {
 export function App() {
   const [form, setForm] = useState<FormState>(emptyForm)
   const [view, setView] = useState<View>('home')
+  const [inputMode, setInputMode] = useState<InputMode>('guided')
+  const [guidedIndex, setGuidedIndex] = useState(0)
   const [responses, setResponses] = useState<Record<string, QuestionResponse>>({})
   const [caseTitle, setCaseTitle] = useState('이름 없는 PoC 검토')
   const [rounds, setRounds] = useState<CaseRound[]>([])
@@ -74,11 +77,25 @@ export function App() {
     focusAfterNavigate.current = false
     window.scrollTo({ top: 0 })
     ;(view === 'home' ? heroHeading.current : stepHeading.current)?.focus()
+    if (view === 2 && inputMode === 'form') document.getElementById('form-section-2')?.scrollIntoView()
   }, [view])
+
+  // 처음 입력은 한 화면에 질문 하나씩, 결과를 본 뒤 고치거나 다음 회차를 적을 때는 한 장짜리 폼으로 연다.
+  const editInForm = (step: 1 | 2) => {
+    setInputMode('form')
+    go(step)
+  }
 
   const go = (next: View) => {
     focusAfterNavigate.current = true
+    if (next === 1 || next === 2) setGuidedIndex(GUIDED_STEP_START[next])
     setView(next)
+  }
+
+  // 한 화면씩 묻는 동안에는 질문 번호가 단계를 정한다. 질문 사이 이동은 질문 제목으로 초점을 옮긴다.
+  const goQuestion = (index: number) => {
+    setGuidedIndex(index)
+    setView(guidedStepOf(index))
   }
 
   // 숫자를 고치면 더는 논문 예시가 아니다. 평가 조건만 바꾸면 숫자는 여전히 논문의 것이다.
@@ -110,7 +127,7 @@ export function App() {
     setForm(emptyForm())
     setResponses({ ...saved.responses })
     setRoundMeta({ label: `${rounds.length + 2}회차 · 공급자 답변`, sourceKind: 'vendor-response', sourceNote: '', sameTrial: 'unknown' })
-    go(1)
+    editInForm(1)
   }
 
   const downloadCase = () => {
@@ -173,6 +190,7 @@ export function App() {
             }}
             onStartOwn={() => {
               resetCase()
+              setInputMode('guided')
               go(1)
             }}
             onOpenCase={openCase}
@@ -181,9 +199,9 @@ export function App() {
         ) : (
           <div className="workbench">
             <Stepper current={view} onGo={go} />
-            <div className="step-head">
+            <div className={`step-head${view === 3 ? ' step-head--result' : inputMode === 'guided' ? ' step-head--compact' : ' step-head--sheet'}`}>
               <h2 className="step-title" tabIndex={-1} ref={stepHeading}>
-                {STEP_HEADINGS[view]}
+                {view === 3 ? STEP_HEADINGS[3] : inputMode === 'guided' ? `${view}단계 · ${STEP_TITLES[view]}` : '받은 숫자와 평가 조건을 적어 주세요'}
               </h2>
               {SOURCE_NOTE[form.source] && <p className="step-source">{SOURCE_NOTE[form.source]}</p>}
               {rounds.length > 0 && view !== 3 && (
@@ -193,46 +211,46 @@ export function App() {
               )}
             </div>
 
-            {view === 1 && (
+            {inputMode === 'guided' && view !== 3 && (
+              <GuidedInput
+                form={form}
+                check={rawCheck}
+                index={guidedIndex}
+                onIndex={goQuestion}
+                onFinish={() => go(3)}
+                onBack={() => go('home')}
+                onShowAll={() => setInputMode('form')}
+                onRowsChange={(metricRows) => editNumbers({ metricRows })}
+                onMatrixOpen={(matrixOpen) => editConditions({ matrixOpen })}
+                onMatrixChange={(matrix) => editNumbers({ matrix })}
+                onClaimedBest={(claimedBest) => editConditions({ claimedBest })}
+                onSplit={(split) => editConditions({ split })}
+                onUnseen={(unseenIncluded) => editConditions({ unseenIncluded })}
+                onDedup={(deduplicated) => editConditions({ deduplicated })}
+                onFillExampleB={() => setForm(formFromExample(EXAMPLE_B))}
+                previous={previousInput}
+              />
+            )}
+
+            {inputMode === 'form' && view !== 3 && (
               <>
-                <ClaimStep
+                <OnePageForm
                   form={form}
                   check={rawCheck}
+                  onFinish={() => go(3)}
                   onRowsChange={(metricRows) => editNumbers({ metricRows })}
                   onMatrixOpen={(matrixOpen) => editConditions({ matrixOpen })}
                   onMatrixChange={(matrix) => editNumbers({ matrix })}
                   onClaimedBest={(claimedBest) => editConditions({ claimedBest })}
+                  onSplit={(split) => editConditions({ split })}
+                  onUnseen={(unseenIncluded) => editConditions({ unseenIncluded })}
+                  onDedup={(deduplicated) => editConditions({ deduplicated })}
                   onFillExampleB={() => setForm(formFromExample(EXAMPLE_B))}
                   previous={previousInput}
                 />
                 <p className="visually-hidden" role="status">
                   {rawCheck.errorCount > 0 ? `잘못 적은 칸 ${rawCheck.errorCount}개는 계산에서 뺍니다.` : ''}
                 </p>
-                <div className="step-actions">
-                  <button type="button" className="button button--primary" onClick={() => go(2)}>
-                    다음: {STEP_TITLES[2]}
-                  </button>
-                </div>
-              </>
-            )}
-
-            {view === 2 && (
-              <>
-                <EvaluationQuestions
-                  form={form}
-                  onSplit={(split) => editConditions({ split })}
-                  onUnseen={(unseenIncluded) => editConditions({ unseenIncluded })}
-                  onDedup={(deduplicated) => editConditions({ deduplicated })}
-                  previous={previousInput}
-                />
-                <div className="step-actions">
-                  <button type="button" className="button" onClick={() => go(1)}>
-                    이전
-                  </button>
-                  <button type="button" className="button button--primary" onClick={() => go(3)}>
-                    결과 보기
-                  </button>
-                </div>
               </>
             )}
 
@@ -240,8 +258,8 @@ export function App() {
               <ResultStep
                 check={check}
                 review={review}
-                onEdit={() => go(1)}
-                onEditConditions={() => go(2)}
+                onEdit={() => editInForm(1)}
+                onEditConditions={() => editInForm(2)}
                 responses={responses}
                 onResponse={(question, response) => setResponses((current) => ({ ...current, [question]: response }))}
                 caseTitle={caseTitle}
