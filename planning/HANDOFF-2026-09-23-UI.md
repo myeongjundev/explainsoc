@@ -4,7 +4,8 @@
 > 이전 인계 문서: [`HANDOFF-2026-09-23-ACADEMY.md`](HANDOFF-2026-09-23-ACADEMY.md)는 V6 기준이다. 현재 제출 기준 사실은 [`STATUS.md`](STATUS.md) 맨 위의 V7이다.
 
 > **집 PC 진행 (2026-09-23 저녁):** 1번 화면 확인 끝. 2번은 사용자가 "하나로 합치기"로 정해 `169d89e`에서 합쳤다.
-> 4번 문서(DESIGN 30절·STATUS·체크리스트 12절·README·card-5)와 5번 증거 캡처도 끝났다. 남은 것은 6번 `main` 병합·배포부터다.
+> 4번 문서(DESIGN 30절·STATUS·체크리스트 12절·README·card-5)와 5번 증거 캡처, 6번 병합·배포(run 35859205922), 7번 ZIP(`explainsoc-169d89e.zip`), 8번 T12 카드(`about` `bbc9424`)까지 끝났다.
+> 남은 것은 5절의 사용자 몫(V8 재시험, 제출문 ②, 제출)뿐이다. 최종 값은 `STATUS.md` 맨 위와 `evidence/card-5.md` 맨 위에 있다.
 
 ## 0. 한 줄 상태
 

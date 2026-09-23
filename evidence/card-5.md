@@ -1,8 +1,20 @@
 # 카드 5 증거 — 포트폴리오와 제출
 
-## V8 밝은 문서형 화면 — 2026-09-23 (배포 전)
+## V8 밝은 문서형 화면 제출본 — 2026-09-23
 
-> `ui-redesign` 브랜치에서 진행 중이다. 배포와 새 실행 묶음이 나오기 전까지 제출 기준은 아래 V7이다.
+> 이 섹션이 아래 V7 제출본의 실행 묶음과 검증 값을 대체한다.
+
+| 항목 | V8 제출본 |
+|---|---|
+| 구현 커밋 | `169d89e79d03bb30135ece9ab3a52e253bc0fc4e` (화면 개편 `4bb1a7a` + 근거 패널 통합) |
+| 배포 | GitHub Actions [run 35859205922](https://github.com/myeongjundev/explainsoc/actions/runs/35859205922) 검사·Pages 성공 |
+| 공개 주소 | https://myeongjundev.github.io/explainsoc/ |
+| 실행 묶음 | `explainsoc-169d89e.zip` · 151,986 bytes · 64개 파일 |
+| SHA-256 | `87e956cee7e05486c69d28e56b3bcf4e610e41f5caee254ba47baddab15acb6d` |
+| 재현 | 같은 커밋으로 두 번 생성한 SHA-256 일치 |
+| 빈 폴더 검증 | 저장소 밖 새 임시 폴더에서 `npm ci`(취약점 0), Vitest 99개, 프로덕션 빌드, 안전 검사 11개, Playwright 27개 통과(증거 캡처 17개 건너뜀) |
+| 공개본 검증 | JS `index-q6bbu4Ws.js`, CSS `index-DC9q-JfQ.css` 로컬 빌드와 SHA-256 일치 · 공개 주소에서 브라우저 검사 27개 통과 |
+| 12번 카드 | `about` 커밋 `bbc9424` — 그림 `docs/assets/t13-review-summary-v8.png` 343×483, 검증 문장 99개·27개 |
 
 V8은 기능을 늘리지 않고 화면만 바꿨다. 첫 화면을 포함해 밝은 문서형으로 바꾸고 영어 라벨을 한국어로
 옮겼다. 처음 입력은 질문 여섯 개를 한 화면에 하나씩 묻고, 결과에서 고치거나 다음 회차를 적을 때는 한
