@@ -183,6 +183,36 @@ describe('입력 방식 — 처음은 한 화면씩, 고칠 때는 한 장', () 
   })
 })
 
+describe('근거 확인표 — V8에서 옛 평가 근거 지도를 합침', () => {
+  it('결과 1장에는 근거 패널이 하나만 있고, 평가 조건으로 돌아가는 단추를 품는다', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
+    const board = screen.getByRole('region', { name: '주장을 읽는 데 필요한 근거' })
+    expect(within(board).getAllByRole('listitem')).toHaveLength(6)
+    expect(board).toHaveTextContent('모름은 실패가 아니라 공급자에게 물을 질문이 됩니다.')
+    expect(screen.queryByText('어떤 근거까지 가지고 있습니까?')).not.toBeInTheDocument()
+    // 평가 조건 구역으로 스크롤한다. jsdom에는 scrollIntoView가 없어 이 시험에서만 채운다.
+    const scroll = vi.fn()
+    Element.prototype.scrollIntoView = scroll
+    await user.click(within(board).getByRole('button', { name: '평가 조건 확인' }))
+    expect(screen.getByRole('heading', { level: 2, name: '받은 숫자와 평가 조건을 적어 주세요' })).toBeInTheDocument()
+    expect(scroll).toHaveBeenCalled()
+    delete (Element.prototype as { scrollIntoView?: unknown }).scrollIntoView
+  })
+
+  it('분할과 미관측 공격의 답이 어긋나면 표 안에서 R12 안내를 보인다', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('button', { name: '내 성능표 검토' }))
+    await user.click(screen.getByRole('button', { name: '질문 전체 한 번에 보기' }))
+    await user.click(within(screen.getByRole('group', { name: /시험 자료는 어떻게 나눴나요/ })).getByLabelText(/학습에 없던 공격을 따로 시험/))
+    await user.click(within(screen.getByRole('group', { name: /시험에 학습 때 없던 공격이 들어 있었나요/ })).getByLabelText(/아니오/))
+    await user.click(screen.getByRole('button', { name: '결과 보기' }))
+    const board = screen.getByRole('region', { name: '주장을 읽는 데 필요한 근거' })
+    expect(within(board).getByRole('status')).toHaveTextContent('시험 설계의 두 답이 서로 다르게 읽힙니다.')
+    expect(board.querySelectorAll('.evidence-status__item--alert')).toHaveLength(2)
+  })
+})
+
 describe('질문 복사', () => {
   it('질문 문장만 복사하고 입력한 숫자는 담지 않는다', async () => {
     const { user } = setup()

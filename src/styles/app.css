@@ -900,87 +900,11 @@ a {
   }
 }
 
-/* 평가 근거 지도 */
-.eval-map__eyebrow,
 .brief__eyebrow {
   color: var(--muted);
   font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.04em;
-}
-
-.eval-map__steps {
-  display: grid;
-  gap: 8px;
-  padding: 0;
-  list-style: none;
-}
-
-@media (min-width: 560px) {
-  .eval-map__steps {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.eval-map__item {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 10px;
-  align-items: start;
-  padding: 12px;
-  border: 1px dashed var(--check-line);
-  border-radius: var(--radius-sm);
-  background: var(--check-bg);
-}
-
-.eval-map__item.is-known {
-  border-style: solid;
-  border-color: var(--input-line);
-  background: var(--input-bg);
-}
-
-.eval-map__item.is-alert {
-  border: 2px solid var(--error);
-  background: #fff2f2;
-}
-
-.eval-map__item > span:last-child {
-  display: grid;
-  gap: 2px;
-}
-
-.eval-map__item strong {
-  font-size: 0.9rem;
-}
-
-.eval-map__item span span {
-  color: var(--ink-2);
-  font-size: 0.86rem;
-}
-
-.eval-map__icon {
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: rgb(255 255 255 / 75%);
-}
-
-.eval-map__icon svg {
-  width: 17px;
-  height: 17px;
-}
-
-.eval-map__alert {
-  color: var(--error);
-  font-weight: 700;
-  font-size: 0.92rem;
-}
-
-.eval-map__note {
-  color: var(--muted);
-  font-size: 0.9rem;
 }
 
 /* 뒤집기 카드 */
@@ -2562,6 +2486,21 @@ a {
 .evidence-status__item--na > span {
   background: var(--muted);
   box-shadow: none;
+}
+
+.evidence-status__item--alert {
+  border: 2px solid var(--error);
+}
+
+.evidence-status__item--alert > span {
+  background: var(--error);
+  box-shadow: 0 0 0 3px rgb(163 34 42 / 12%);
+}
+
+.evidence-status__alert {
+  color: var(--error);
+  font-weight: 700;
+  font-size: 0.92rem;
 }
 
 .evidence-status__note {

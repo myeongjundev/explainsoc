@@ -5,7 +5,6 @@ import type { QuestionResponse } from '../domain/types'
 import type { CaseRound } from '../domain/caseFile'
 import type { RoundComparison } from '../domain/review'
 import { ClaimReveal } from './ClaimReveal'
-import { EvaluationMap } from './EvaluationMap'
 import { FindingList } from './FindingList'
 import { QuestionList } from './QuestionList'
 import { ReviewBrief } from './ReviewBrief'
@@ -71,8 +70,7 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onRestart,
               </p>
             </section>
           )}
-          <EvidenceStatusBoard input={input} roundCount={rounds.length + 1} sameTrial={roundMeta.sameTrial} />
-          <EvaluationMap input={input} onEditConditions={onEditConditions} />
+          <EvidenceStatusBoard input={input} roundCount={rounds.length + 1} sameTrial={roundMeta.sameTrial} onEditConditions={onEditConditions} />
           <TerminologyHelp />
         </div>
         <div className={`result__findings board-column${chapter === 'findings' ? ' is-active' : ''}`}>

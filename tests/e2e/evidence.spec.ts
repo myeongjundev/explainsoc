@@ -11,6 +11,7 @@ test.skip(!process.env.EVIDENCE, 'EVIDENCE=1일 때만 스크린샷을 남긴다
 const DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence/screenshots'
 const V5_DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence'
 const V7_DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence'
+const V8_DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence'
 
 test('첫 화면 — 데스크톱 1440×900', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 })
@@ -107,4 +108,40 @@ test('V7 결과 1장 — 모바일', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })
   await startExample(page)
   await page.screenshot({ path: `${V7_DIR}/v7-chapter-evidence-mobile.png`, fullPage: true })
+})
+
+test('V8 한 화면씩 입력 — 평가 조건 질문, 데스크톱', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await openHome(page)
+  await page.getByRole('button', { name: '내 성능표 검토' }).click()
+  for (let i = 0; i < 3; i++) await page.locator('.guided__nav .button--primary').click()
+  await expect(page.getByRole('region', { name: '질문 4 / 6' })).toBeVisible()
+  await page.screenshot({ path: `${V8_DIR}/v8-guided-question-desktop.png`, fullPage: true })
+})
+
+test('V8 한 화면씩 입력 — 모바일', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await openHome(page)
+  await page.getByRole('button', { name: '내 성능표 검토' }).click()
+  for (let i = 0; i < 3; i++) await page.locator('.guided__nav .button--primary').click()
+  await page.screenshot({ path: `${V8_DIR}/v8-guided-question-mobile.png`, fullPage: true })
+})
+
+test('V8 한 페이지 입력 — 결과에서 입력 수정', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await startExample(page)
+  await page.getByRole('button', { name: '입력 수정' }).click()
+  await page.screenshot({ path: `${V8_DIR}/v8-one-page-form-desktop.png`, fullPage: true })
+})
+
+test('V8 결과 1장 — 합친 근거 확인표, 데스크톱', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await startExample(page)
+  await page.screenshot({ path: `${V8_DIR}/v8-chapter-evidence-desktop.png`, fullPage: true })
+})
+
+test('V8 결과 1장 — 모바일', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await startExample(page)
+  await page.screenshot({ path: `${V8_DIR}/v8-chapter-evidence-mobile.png`, fullPage: true })
 })
