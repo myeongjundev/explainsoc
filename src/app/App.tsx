@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { BrochureReader } from '../components/BrochureReader'
 import { OnePageForm } from '../components/OnePageForm'
 import { GUIDED_STEP_START, GuidedInput, guidedStepOf } from '../components/GuidedInput'
 import { Hero } from '../components/Hero'
 import { ResearchScope } from '../components/ResearchScope'
 import { ResultStep } from '../components/ResultStep'
 import { STEP_TITLES, Stepper, type StepNumber } from '../components/Stepper'
-import { EXAMPLE_A, EXAMPLE_B } from '../data/examples'
+import { EXAMPLE_A, EXAMPLE_B, EXAMPLE_BROCHURE } from '../data/examples'
+import { applyBrochure, EMPTY_PATCH, readBrochure, type BrochurePatch } from '../domain/brochure'
 import { checkForm, emptyForm, formFromExample, formFromReviewInput, type FormState } from '../domain/form'
 import { caseFileToText, combineRoundInput, makeCaseFile, MAX_CASE_FILE_BYTES, parseCaseFileText, resolveRoundInputs, type CaseRound } from '../domain/caseFile'
 import { buildReview, buildRoundComparison } from '../domain/review'
@@ -13,7 +15,7 @@ import type { QuestionResponse } from '../domain/types'
 import type { RoundDraftMeta } from '../components/RoundWorkspace'
 
 type View = 'home' | StepNumber
-type InputMode = 'guided' | 'form'
+type InputMode = 'guided' | 'form' | 'brochure'
 
 const STEP_HEADINGS: Record<StepNumber, string> = {
   1: '1. 받은 숫자를 적어 주세요',
@@ -41,6 +43,10 @@ export function App() {
   const [rounds, setRounds] = useState<CaseRound[]>([])
   const [roundMeta, setRoundMeta] = useState<RoundDraftMeta>({ label: '1회차 · 최초 주장', sourceKind: 'proposal', sourceNote: '', sameTrial: null })
   const [caseFileStatus, setCaseFileStatus] = useState('')
+  // V9: 붙여 넣은 소개서 원문. 다른 입력과 같이 이 컴포넌트의 메모리에만 있다.
+  const [brochureText, setBrochureText] = useState('')
+  const brochure = useMemo(() => readBrochure(brochureText), [brochureText])
+  const brochurePatch = useRef<BrochurePatch>(EMPTY_PATCH)
   const rawCheck = useMemo(() => checkForm(form), [form])
   const previousInput = useMemo(() => resolveRoundInputs(rounds), [rounds])
   const effectiveInput = useMemo(
@@ -88,6 +94,8 @@ export function App() {
 
   const go = (next: View) => {
     focusAfterNavigate.current = true
+    // 소개서 판독은 1단계 자리에만 있다. 평가 조건은 한 화면씩 묻는다.
+    if (next === 2 && inputMode === 'brochure') setInputMode('guided')
     if (next === 1 || next === 2) setGuidedIndex(GUIDED_STEP_START[next])
     setView(next)
   }
@@ -102,8 +110,19 @@ export function App() {
   const editNumbers = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch, source: 'user' }))
   const editConditions = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch }))
 
+  // 소개서를 고치면 소개서에서 읽은 칸만 바꾼다. 직접 답한 조건은 남긴다 (brochure.ts의 applyBrochure).
+  const changeBrochure = (text: string) => {
+    const next = readBrochure(text).patch
+    const previous = brochurePatch.current
+    brochurePatch.current = next
+    setForm((f) => applyBrochure(f, previous, next))
+    setBrochureText(text)
+  }
+
   const resetCase = (nextForm: FormState = emptyForm()) => {
     setForm(nextForm)
+    setBrochureText('')
+    brochurePatch.current = EMPTY_PATCH
     setResponses({})
     setRounds([])
     setCaseTitle('이름 없는 PoC 검토')
@@ -193,15 +212,26 @@ export function App() {
               setInputMode('guided')
               go(1)
             }}
+            onStartBrochure={() => {
+              resetCase()
+              setInputMode('brochure')
+              go(1)
+            }}
             onOpenCase={openCase}
             caseFileStatus={caseFileStatus}
           />
         ) : (
           <div className="workbench">
             <Stepper current={view} onGo={go} />
-            <div className={`step-head${view === 3 ? ' step-head--result' : inputMode === 'guided' ? ' step-head--compact' : ' step-head--sheet'}`}>
+            <div className={`step-head${view === 3 ? ' step-head--result' : inputMode === 'guided' ? ' step-head--compact' : inputMode === 'brochure' ? ' step-head--reader' : ' step-head--sheet'}`}>
               <h2 className="step-title" tabIndex={-1} ref={stepHeading}>
-                {view === 3 ? STEP_HEADINGS[3] : inputMode === 'guided' ? `${view}단계 · ${STEP_TITLES[view]}` : '받은 숫자와 평가 조건을 적어 주세요'}
+                {view === 3
+                  ? STEP_HEADINGS[3]
+                  : inputMode === 'guided'
+                    ? `${view}단계 · ${STEP_TITLES[view]}`
+                    : inputMode === 'brochure'
+                      ? '받은 소개서 문장을 붙여 넣어 주세요'
+                      : '받은 숫자와 평가 조건을 적어 주세요'}
               </h2>
               {SOURCE_NOTE[form.source] && <p className="step-source">{SOURCE_NOTE[form.source]}</p>}
               {rounds.length > 0 && view !== 3 && (
@@ -229,6 +259,21 @@ export function App() {
                 onDedup={(deduplicated) => editConditions({ deduplicated })}
                 onFillExampleB={() => setForm(formFromExample(EXAMPLE_B))}
                 previous={previousInput}
+              />
+            )}
+
+            {inputMode === 'brochure' && view !== 3 && (
+              <BrochureReader
+                text={brochureText}
+                onText={changeBrochure}
+                read={brochure}
+                review={review}
+                onUseExample={() => changeBrochure(EXAMPLE_BROCHURE.text)}
+                onFinish={() => go(3)}
+                onAnswerMissing={() => {
+                  setInputMode('guided')
+                  go(2)
+                }}
               />
             )}
 
@@ -260,6 +305,10 @@ export function App() {
                 review={review}
                 onEdit={() => editInForm(1)}
                 onEditConditions={() => editInForm(2)}
+                onEditBrochure={brochureText.trim() ? () => {
+                  setInputMode('brochure')
+                  go(1)
+                } : undefined}
                 responses={responses}
                 onResponse={(question, response) => setResponses((current) => ({ ...current, [question]: response }))}
                 caseTitle={caseTitle}

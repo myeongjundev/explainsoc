@@ -61,3 +61,12 @@ export const EXAMPLE_B: ExampleInput = {
   unseenIncluded: 'no',
   deduplicated: 'yes',
 }
+
+/**
+ * V9 예시 소개서 — 판독을 보여 주려고 만든 가상의 문장이다. 실제 회사·제품의 자료가 아니다.
+ * 숫자는 논문의 계층화 무작위 분할 XGBoost 값(원고 V-2)을 빌렸다: 정확도 0.9988, FPR 0.0009.
+ */
+export const EXAMPLE_BROCHURE = {
+  label: '가상의 예시 소개서',
+  text: `이 제품은 공개 데이터셋 CICIDS2017로 평가한 결과 정확도 ${Number((XGB_RANDOM.reported.accuracy * 100).toFixed(2))}%, 오탐률 ${Number((XGB_RANDOM.reported.fpr * 100).toFixed(2))}%를 기록했습니다. 학습·시험 데이터는 무작위로 나누어 평가했습니다. 알려지지 않은 신종 공격까지 실시간으로 탐지하며, 비교한 모델 가운데 업계 최고 성능을 보였습니다.`,
+} as const

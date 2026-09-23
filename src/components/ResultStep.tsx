@@ -21,6 +21,8 @@ interface Props {
   review: Review
   onEdit: () => void
   onEditConditions: () => void
+  /** 소개서로 시작했을 때만 있다 */
+  onEditBrochure?: () => void
   onRestart: () => void
   responses: Readonly<Record<string, QuestionResponse>>
   onResponse: (question: string, response: QuestionResponse) => void
@@ -38,7 +40,7 @@ interface Props {
 /**
  * V4 수사 보드. 회차를 맨 위에 두고 주장과 근거 / 판독 / 다음 행동을 세 열로 나눈다.
  */
-export function ResultStep({ check, review, onEdit, onEditConditions, onRestart, responses, onResponse, caseTitle, onCaseTitle, rounds, roundMeta, onRoundMeta, comparison, onNextRound, onDownload, caseFileStatus }: Props) {
+export function ResultStep({ check, review, onEdit, onEditConditions, onEditBrochure, onRestart, responses, onResponse, caseTitle, onCaseTitle, rounds, roundMeta, onRoundMeta, comparison, onNextRound, onDownload, caseFileStatus }: Props) {
   const { input } = check
   const [chapter, setChapter] = useState<WorkbenchChapter>('evidence')
   const [roundsOpen, setRoundsOpen] = useState(rounds.length > 0)
@@ -104,6 +106,11 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onRestart,
         <RoundWorkspace caseTitle={caseTitle} onCaseTitle={onCaseTitle} rounds={rounds} current={roundMeta} onCurrent={onRoundMeta} comparison={comparison} onNextRound={onNextRound} onDownload={onDownload} />
       </details>
       <div className="step-actions">
+        {onEditBrochure && (
+          <button type="button" className="button" onClick={onEditBrochure}>
+            소개서 다시 보기
+          </button>
+        )}
         <button type="button" className="button" onClick={onEdit}>
           입력 수정
         </button>

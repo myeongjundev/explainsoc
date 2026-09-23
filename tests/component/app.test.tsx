@@ -213,6 +213,41 @@ describe('근거 확인표 — V8에서 옛 평가 근거 지도를 합침', () 
   })
 })
 
+describe('소개서 문장으로 검토 (V9)', () => {
+  it('첫 화면에서 소개서 판독을 열고, 비어 있을 때는 붙여 넣을 자리와 예시를 안내한다', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('button', { name: '소개서 문장으로 검토' }))
+    expect(screen.getByRole('heading', { level: 2, name: '받은 소개서 문장을 붙여 넣어 주세요' })).toHaveFocus()
+    expect(screen.getByLabelText('받은 소개서·제안서 문장')).toHaveValue('')
+    expect(screen.getByText(/붙여 넣은 글은 이 브라우저 메모리에서만 읽습니다/)).toBeInTheDocument()
+    expect(screen.queryByRole('article', { name: '표시를 붙인 소개서' })).not.toBeInTheDocument()
+  })
+
+  it('예시 소개서의 다섯 표시마다 논문 근거와 질문을 붙이고, 없는 조건은 따로 모은다', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('button', { name: '소개서 문장으로 검토' }))
+    await user.click(screen.getAllByRole('button', { name: '가상의 예시 소개서 넣기' })[0])
+    const sheet = screen.getByRole('article', { name: '표시를 붙인 소개서' })
+    expect(sheet.querySelectorAll('mark')).toHaveLength(5)
+    const notes = within(screen.getByRole('list', { name: '표시별 판독' })).getAllByRole('listitem').filter((li) => li.classList.contains('reader-note'))
+    expect(notes).toHaveLength(5)
+    expect(notes[3]).toHaveTextContent('새 공격 탐지 주장')
+    expect(notes[3]).toHaveTextContent('0.9979에서 0.3871로')
+    expect(within(screen.getByRole('region', { name: '소개서에 없어 질문이 된 것' })).getByText('중복과 학습·시험 사이 같은 행을 검사했습니까?')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '결과 보기 · 질문 6개' })).toBeInTheDocument()
+  })
+
+  it('판독할 표현이 없으면 없다고 말하고, 모든 조건을 질문으로 남긴다', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('button', { name: '소개서 문장으로 검토' }))
+    await user.type(screen.getByLabelText('받은 소개서·제안서 문장'), '보안 운영을 쉽게 만듭니다.')
+    expect(screen.getByText(/판독할 표현을 찾지 못했습니다/)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /결과 보기 · 질문/ }))
+    const questions = screen.getByRole('region', { name: '공급자에게 물을 질문' })
+    expect(within(questions).getAllByRole('listitem')).toHaveLength(3)
+  })
+})
+
 describe('질문 복사', () => {
   it('질문 문장만 복사하고 입력한 숫자는 담지 않는다', async () => {
     const { user } = setup()

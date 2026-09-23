@@ -12,7 +12,7 @@ test.describe('논문 예시 60초 경로 (BRB-C02·C05)', () => {
     await expect(page.locator('.claim-autopsy')).toContainText('220,788건 중 160건 탐지')
     await expect(page.locator('.hero__help')).toContainText('광고 숫자가 실제로 무엇을 시험한 결과인지 확인')
     await expect(page.locator('.hero__scenario')).toContainText('처음 보는 공격도 잡는지 알 수 없을 때')
-    await expect(page.locator('.hero__story strong')).toHaveText(['받은 성능 숫자를 넣고', '모르는 시험 조건에 답하면', '업체에 물을 질문이 완성됩니다'])
+    await expect(page.locator('.hero__story strong')).toHaveText(['받은 소개서 문장이나 숫자를 넣고', '모르는 시험 조건에 답하면', '업체에 물을 질문이 완성됩니다'])
     await page.getByRole('button', { name: '논문 예시로 60초 검토' }).click()
     await expect(page.getByRole('heading', { level: 2, name: '3. 검토 결과' })).toBeFocused()
 
@@ -329,3 +329,44 @@ test.describe('입력은 브라우저 안에만 머문다', () => {
     await expect(page.getByLabel('지표 1')).toHaveValue('')
   })
 })
+
+test.describe('소개서 문장으로 검토 (V9)', () => {
+  test('붙여 넣은 문장 위에 표시가 붙고, 그 판독이 결과의 질문으로 이어진다', async ({ page, context }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+    const errors = collectErrors(page)
+    await openHome(page)
+    await page.getByRole('button', { name: '소개서 문장으로 검토' }).click()
+    await expect(page.getByRole('heading', { level: 2, name: '받은 소개서 문장을 붙여 넣어 주세요' })).toBeFocused()
+
+    await page.getByLabel('받은 소개서·제안서 문장').fill('당사 AI는 정확도 99.8%로 알려지지 않은 신종 공격까지 탐지하며 업계 최고 성능을 입증했습니다.')
+    const sheet = page.getByRole('article', { name: '표시를 붙인 소개서' })
+    await expect(sheet.locator('mark')).toHaveCount(3)
+    const notes = page.getByRole('list', { name: '표시별 판독' }).locator(':scope > li')
+    await expect(notes.nth(0)).toContainText('Accuracy (정확도) = 0.998')
+    await expect(notes.nth(1)).toContainText('그렇게 시험했다는 문장은 없습니다')
+    await expect(notes.nth(2)).toContainText('다른 분할에서도 같은 모델이 가장 높았습니까?')
+    await expect(page.getByRole('region', { name: '소개서에 없어 질문이 된 것' })).toContainText('학습과 시험 자료를 어떤 기준으로 나눴습니까?')
+
+    await page.getByRole('button', { name: /결과 보기 · 질문/ }).click()
+    await openChapter(page, '다음 행동')
+    await expect(questionItems(page)).toContainText(['다른 분할에서도 같은 모델이 가장 높았습니까?', '공격 Recall과 TN·FP·FN·TP를 제공할 수 있습니까?'])
+
+    // 결과에서 소개서로 돌아가 문장을 고치면 소개서에서 읽은 값만 바뀐다
+    await page.getByRole('button', { name: '소개서 다시 보기' }).click()
+    await page.getByLabel('받은 소개서·제안서 문장').fill('정확도 99.8%, 무작위 분할로 평가했습니다.')
+    await expect(page.getByRole('list', { name: '표시별 판독' })).toContainText('학습에 없던 공격만 따로 둔 시험 결과도 있습니까?')
+    expect(errors).toEqual([])
+  })
+
+  test('빠진 조건은 한 화면씩 직접 답하고, 소개서에서 읽은 숫자는 그대로 남는다', async ({ page }) => {
+    await openHome(page)
+    await page.getByRole('button', { name: '소개서 문장으로 검토' }).click()
+    await page.getByRole('button', { name: '가상의 예시 소개서 넣기' }).first().click()
+    await page.getByRole('button', { name: '빠진 조건 직접 답하기' }).click()
+    await expect(page.getByRole('region', { name: '질문 4 / 6' })).toBeVisible()
+    await page.getByRole('button', { name: '질문 전체 한 번에 보기' }).click()
+    await expect(page.getByLabel('값 (0부터 1 사이)').first()).toHaveValue('0.9988')
+    await expect(page.getByRole('group', { name: /시험 자료는 어떻게 나눴나요/ }).getByLabel('무작위')).toBeChecked()
+  })
+})
+

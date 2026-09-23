@@ -6,12 +6,13 @@ import { ExternalIcon, LockIcon } from './icons'
 interface Props {
   onStartExample: () => void
   onStartOwn: () => void
+  onStartBrochure: () => void
   onOpenCase: (file: File) => void
   caseFileStatus: string
 }
 
 /** 화면 A — 누구를 어떻게 돕는지 10초 안에 전달한다. 입력 폼과 긴 연구 한계는 아직 보이지 않는다. */
-export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStartExample, onStartOwn, onOpenCase, caseFileStatus }, headingRef) {
+export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStartExample, onStartOwn, onStartBrochure, onOpenCase, caseFileStatus }, headingRef) {
   return (
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero__copy">
@@ -26,7 +27,7 @@ export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStar
         <p className="hero__scenario"><strong>이럴 때 씁니다.</strong> 회사에서 AI 제품 자료를 받았지만 어떤 공격을 시험했는지,
           처음 보는 공격도 잡는지 알 수 없을 때.</p>
         <ol className="hero__story" aria-label="ExplainSOC가 하는 세 가지">
-          <li><span>01</span><strong>받은 성능 숫자를 넣고</strong></li>
+          <li><span>01</span><strong>받은 소개서 문장이나 숫자를 넣고</strong></li>
           <li><span>02</span><strong>모르는 시험 조건에 답하면</strong></li>
           <li><span>03</span><strong>업체에 물을 질문이 완성됩니다</strong></li>
         </ol>
@@ -34,11 +35,14 @@ export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStar
           <button type="button" className="button button--primary button--large" onClick={onStartExample}>
             논문 예시로 60초 검토
           </button>
+          <button type="button" className="button button--large" onClick={onStartBrochure}>
+            소개서 문장으로 검토
+          </button>
           <button type="button" className="button button--large" onClick={onStartOwn}>
             내 성능표 검토
           </button>
         </div>
-        <p className="hero__example-note">숫자를 준비하지 않아도 됩니다. 논문 예시가 자동으로 채워집니다.</p>
+        <p className="hero__example-note">숫자를 준비하지 않아도 됩니다. 논문 예시가 자동으로 채워집니다. 받은 소개서가 있으면 문장을 그대로 붙여 넣으세요.</p>
       </div>
 
       <figure className="hero__figure claim-autopsy">

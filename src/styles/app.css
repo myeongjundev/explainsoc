@@ -3693,3 +3693,363 @@ a {
   width: min(960px, 100%);
   margin-inline: auto;
 }
+
+/* ─── V9 · 소개서 판독 ─────────────────────────────────────
+ * 받은 문서에 형광펜(공급자 주장)과 밑줄(시험 조건)을 긋고, 여백에 번호 붙은 판독 메모를 단다.
+ * 색만으로 구분하지 않는다: 번호, 이름표, 범례 글자가 함께 간다.
+ */
+
+.step-head--reader {
+  width: min(960px, 100%);
+  margin: 28px auto 0;
+}
+
+.reader {
+  width: min(960px, 100%);
+  margin: 14px auto 0;
+  display: grid;
+  gap: 16px;
+}
+
+.reader__input,
+.reader__review {
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 18px 20px;
+  display: grid;
+  gap: 10px;
+}
+
+.reader__input-head,
+.reader__input-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px 14px;
+}
+
+.reader__input-head label {
+  font-weight: 700;
+}
+
+.reader__textarea {
+  width: 100%;
+  min-height: 7.5em;
+  padding: 12px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--sheet-2);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.reader__textarea:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 1px;
+  background: var(--sheet);
+}
+
+.reader__privacy {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.reader__privacy svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+
+.reader__count {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.reader__review-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.reader__review-head h3 {
+  font-size: 1.05rem;
+}
+
+.reader__review-head [role='status'] {
+  color: var(--ink-2);
+  font-size: 0.92rem;
+}
+
+.reader__legend {
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+  font-size: 0.82rem;
+  color: var(--ink-2);
+}
+
+.reader__key {
+  padding: 0 4px;
+}
+
+.reader__key--claim,
+.reader__mark--claim {
+  background: linear-gradient(transparent 52%, #ffe07a 52%);
+}
+
+.reader__key--condition,
+.reader__mark--condition {
+  background: var(--accent-soft);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.reader__empty {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  padding: 22px 4px 8px;
+  color: var(--muted);
+}
+
+.reader__grid {
+  display: grid;
+  gap: 18px;
+}
+
+@media (min-width: 860px) {
+  .reader__grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.reader__sheet {
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--sheet);
+  font-size: 1.02rem;
+  line-height: 2;
+  white-space: pre-wrap;
+}
+
+@media (min-width: 860px) {
+  .reader__sheet {
+    position: sticky;
+    top: 16px;
+  }
+}
+
+.reader__mark {
+  color: inherit;
+  padding: 0 2px;
+  border-radius: 2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.reader__mark-lead {
+  white-space: nowrap;
+}
+
+.reader__mark sup {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.35em;
+  height: 1.35em;
+  margin-right: 3px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.66rem;
+  font-weight: 700;
+  line-height: 1;
+  vertical-align: 0.55em;
+  font-variant-numeric: tabular-nums;
+}
+
+.reader__none {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  white-space: normal;
+}
+
+.reader__notes {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.reader-note {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--sheet-2);
+  font-size: 0.93rem;
+  line-height: 1.6;
+}
+
+.reader-note--claim {
+  border-left: 4px solid #e2b93b;
+}
+
+.reader-note--condition {
+  border-left: 4px solid var(--accent);
+}
+
+.reader-note__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.reader-note__no {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.reader-note__label {
+  font-weight: 700;
+}
+
+.reader-note__quote {
+  color: var(--ink-2);
+  font-size: 0.88rem;
+}
+
+.reader-note__paper {
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+}
+
+.reader-note__paper > span {
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.reader-note__questions {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.reader-note__questions li {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-weight: 600;
+}
+
+.reader-note__questions li::before {
+  content: '→';
+  color: var(--accent);
+}
+
+.reader-note__rule {
+  order: 2;
+  flex: none;
+  margin-left: auto;
+  white-space: nowrap;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 500;
+}
+
+.reader__missing {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px dashed var(--check-line);
+  border-radius: var(--radius-sm);
+  background: var(--check-bg);
+}
+
+.reader__missing h4 {
+  font-size: 0.95rem;
+  color: var(--check-ink);
+}
+
+.reader__missing ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.reader__missing li {
+  display: grid;
+  gap: 1px;
+  font-size: 0.92rem;
+}
+
+.reader__missing li span {
+  color: var(--ink-2);
+}
+
+.reader__honest {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.reader__actions {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(transparent, var(--paper) 30%);
+}
+
+@media (max-width: 480px) {
+  .reader__input,
+  .reader__review {
+    padding: 16px 14px;
+  }
+  .reader__legend {
+    margin-left: 0;
+  }
+  .reader__actions {
+    position: static;
+    background: none;
+  }
+  .reader__actions .button {
+    flex: 1 1 100%;
+  }
+}
