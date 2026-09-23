@@ -22,18 +22,18 @@ export function collectRequests(page: Page): string[] {
 
 export async function openHome(page: Page) {
   await page.goto('./')
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('보안 AI의 99%, 무엇을 시험한 점수일까요?')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('보안 AI의 99점, 처음 보는 공격에서도 99점일까요?')
 }
 
 export async function startExample(page: Page) {
   await openHome(page)
-  await page.getByRole('button', { name: '논문 예시로 60초 검토' }).click()
+  await page.getByRole('button', { name: '예시로 바로 보기' }).click()
   await expect(page.getByRole('heading', { level: 2, name: '3. 검토 결과' })).toBeFocused()
 }
 
 /** V8: 처음 입력은 한 화면씩 묻는다. 여러 칸을 한꺼번에 채우는 시험은 한 장짜리 폼으로 연다. */
 export async function openOwnForm(page: Page) {
-  await page.getByRole('button', { name: '내 성능표 검토' }).click()
+  await page.getByRole('button', { name: '숫자로 직접 입력' }).click()
   await page.getByRole('button', { name: '질문 전체 한 번에 보기' }).click()
   await expect(page.getByRole('heading', { level: 2, name: '받은 숫자와 평가 조건을 적어 주세요' })).toBeVisible()
 }

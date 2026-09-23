@@ -13,17 +13,15 @@ function setup() {
 describe('첫 화면 (BRB-C03)', () => {
   it('제목, 도움 한 문장, 축약하지 않은 논문 제목, 개인정보 안내가 있다', () => {
     setup()
-    expect(screen.getByRole('heading', { level: 1, name: '보안 AI의 99%, 무엇을 시험한 점수일까요?' })).toBeInTheDocument()
-    expect(
-      screen.getByText(/“정확도 99%” 같은 광고 숫자가 실제로 무엇을 시험한 결과인지 확인하고/),
-    ).toBeInTheDocument()
-    expect(screen.getByText(/회사에서 AI 제품 자료를 받았지만 어떤 공격을 시험했는지/)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: '보안 AI의 99점, 처음 보는 공격에서도 99점일까요?' })).toBeInTheDocument()
+    expect(document.querySelector('.hero__help')).toHaveTextContent('연습문제를 그대로 낸 시험')
+    expect(screen.getByText(/회사에서 보안 AI 제품 자료를 받았을 때 씁니다/)).toBeInTheDocument()
     expect(screen.getByText((_, el) => el?.tagName === 'P' && el.textContent === `반영한 논문 · ${PAPER.title}`)).toBeInTheDocument()
     expect(screen.getByText(/입력한 성능 자료는 브라우저 메모리에서만 계산됩니다/)).toBeInTheDocument()
     expect(screen.getByText(/숫자를 준비하지 않아도 됩니다/)).toBeInTheDocument()
     expect(screen.getByText('검토 파일 열기')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '논문 예시로 60초 검토' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '내 성능표 검토' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '예시로 바로 보기' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '숫자로 직접 입력' })).toBeInTheDocument()
   })
 
   it('논문 링크는 새 탭으로 열고, 외부 링크라는 것을 이름에 담는다', () => {
@@ -42,10 +40,10 @@ describe('첫 화면 (BRB-C03)', () => {
   })
 })
 
-describe('논문 예시로 60초 검토', () => {
+describe('예시로 바로 보기', () => {
   it('결과로 바로 가서 R04와 그 질문을 보여 준다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
+    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
     expect(screen.getByRole('heading', { level: 2, name: '3. 검토 결과' })).toHaveFocus()
     expect(screen.getByText(/R04/)).toBeInTheDocument()
     const questions = screen.getByRole('region', { name: '공급자에게 물을 질문' })
@@ -55,7 +53,7 @@ describe('논문 예시로 60초 검토', () => {
 
   it('긴 판독 목록보다 먼저 현재 회차와 첫 질문을 한눈에 요약한다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
+    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
     const briefing = screen.getByRole('region', { name: '1개의 해석 주의를 먼저 읽어야 합니다' })
     expect(within(briefing).getByText('논문 예시 검토')).toBeInTheDocument()
     expect(within(briefing).getByText('같은 시험에서 공격 Recall은 얼마입니까?')).toBeInTheDocument()
@@ -64,7 +62,7 @@ describe('논문 예시로 60초 검토', () => {
 
   it('정확한 P09 원수치와 두 주장 지표를 넣는다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
+    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
     await user.click(screen.getByRole('button', { name: '입력 수정' }))
     expect(screen.getByLabelText(/정상→정상 \(TN\)/)).toHaveValue('375432')
     expect(screen.getByLabelText(/정상→공격, 오탐 \(FP\)/)).toHaveValue('86')
@@ -78,7 +76,7 @@ describe('논문 예시로 60초 검토', () => {
 
   it('뒤집으면 공격 개수가 보이고, 스크린 리더에도 알린다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
+    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
     const flip = screen.getByRole('button', { name: '공격 기준으로 뒤집기' })
     expect(flip).toHaveAttribute('aria-pressed', 'false')
     await user.click(flip)
@@ -90,14 +88,14 @@ describe('논문 예시로 60초 검토', () => {
 describe('입력 검증 (BRB-C05)', () => {
   it('지표를 고르기 전에는 숫자 칸을 열지 않는다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '내 성능표 검토' }))
+    await user.click(screen.getByRole('button', { name: '숫자로 직접 입력' }))
     expect(screen.getByLabelText('값 (0부터 1 사이)')).toBeDisabled()
     expect(screen.getByText(MESSAGES.metricKindMissing)).toBeInTheDocument()
   })
 
   it('오류는 보이는 label의 칸에 연결되고 무엇을 고칠지 말한다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '내 성능표 검토' }))
+    await user.click(screen.getByRole('button', { name: '숫자로 직접 입력' }))
     await user.selectOptions(screen.getByLabelText('지표 1'), 'accuracy')
     const value = screen.getByLabelText('값 (0부터 1 사이)')
     await user.type(value, '99')
@@ -107,7 +105,7 @@ describe('입력 검증 (BRB-C05)', () => {
 
   it('잘못된 입력 하나가 다른 유효한 입력의 결과를 막지 않는다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '내 성능표 검토' }))
+    await user.click(screen.getByRole('button', { name: '숫자로 직접 입력' }))
     await user.selectOptions(screen.getByLabelText('지표 1'), 'accuracy')
     await user.type(screen.getByLabelText('값 (0부터 1 사이)'), 'abc')
     await user.click(screen.getByRole('button', { name: '+ 지표 하나 더' }))
@@ -121,7 +119,7 @@ describe('입력 검증 (BRB-C05)', () => {
 
   it('혼동행렬의 합이 0이면 계산하지 않고 이유를 말한다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '내 성능표 검토' }))
+    await user.click(screen.getByRole('button', { name: '숫자로 직접 입력' }))
     await user.click(screen.getByRole('button', { name: '질문 전체 한 번에 보기' }))
     await user.click(screen.getByRole('button', { name: '혼동행렬로 입력' }))
     for (const label of [/\(TN\)/, /\(FP\)/, /\(FN\)/, /\(TP\)/]) await user.type(screen.getByLabelText(label), '0')
@@ -130,7 +128,7 @@ describe('입력 검증 (BRB-C05)', () => {
 
   it('혼동행렬에 음수나 글자를 넣으면 그 칸에만 오류를 보인다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '내 성능표 검토' }))
+    await user.click(screen.getByRole('button', { name: '숫자로 직접 입력' }))
     await user.click(screen.getByRole('button', { name: '질문 전체 한 번에 보기' }))
     await user.click(screen.getByRole('button', { name: '혼동행렬로 입력' }))
     await user.type(screen.getByLabelText(/\(TN\)/), '-5')
@@ -144,7 +142,7 @@ describe('입력 검증 (BRB-C05)', () => {
 describe('평가 조건 세 질문', () => {
   it('예 / 아니오 / 모름을 기본 라디오와 보이는 legend로 묻는다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '내 성능표 검토' }))
+    await user.click(screen.getByRole('button', { name: '숫자로 직접 입력' }))
     await user.click(screen.getByRole('button', { name: /평가 조건/ }))
     await user.click(screen.getByRole('button', { name: '건너뛰고 다음' }))
     const group = screen.getByRole('group', { name: '시험에 학습 때 없던 공격이 들어 있었나요?' })
@@ -156,7 +154,7 @@ describe('평가 조건 세 질문', () => {
 
   it('아무것도 고르지 않고 결과로 가도 질문 세 개가 나온다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '내 성능표 검토' }))
+    await user.click(screen.getByRole('button', { name: '숫자로 직접 입력' }))
     await user.click(screen.getByRole('button', { name: /검토 결과/ }))
     const questions = screen.getByRole('region', { name: '공급자에게 물을 질문' })
     expect(within(questions).getAllByRole('listitem')).toHaveLength(3)
@@ -166,7 +164,7 @@ describe('평가 조건 세 질문', () => {
 describe('입력 방식 — 처음은 한 화면씩, 고칠 때는 한 장', () => {
   it('처음 입력은 질문 하나씩 묻고, 다음을 누르면 초점이 새 질문으로 간다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '내 성능표 검토' }))
+    await user.click(screen.getByRole('button', { name: '숫자로 직접 입력' }))
     expect(screen.getByText('제품 자료에 적힌 성능 숫자를 적어 주세요')).toBeInTheDocument()
     expect(screen.queryByRole('group', { name: /시험 자료는 어떻게 나눴나요/ })).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: '건너뛰고 다음' }))
@@ -175,7 +173,7 @@ describe('입력 방식 — 처음은 한 화면씩, 고칠 때는 한 장', () 
 
   it('결과에서 입력 수정을 누르면 여섯 질문을 한 장에 보인다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
+    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
     await user.click(screen.getByRole('button', { name: '입력 수정' }))
     expect(screen.getByRole('heading', { level: 2, name: '받은 숫자와 평가 조건을 적어 주세요' })).toHaveFocus()
     expect(screen.getByRole('group', { name: /시험 자료는 어떻게 나눴나요/ })).toBeInTheDocument()
@@ -186,7 +184,7 @@ describe('입력 방식 — 처음은 한 화면씩, 고칠 때는 한 장', () 
 describe('근거 확인표 — V8에서 옛 평가 근거 지도를 합침', () => {
   it('결과 1장에는 근거 패널이 하나만 있고, 평가 조건으로 돌아가는 단추를 품는다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
+    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
     const board = screen.getByRole('region', { name: '주장을 읽는 데 필요한 근거' })
     expect(within(board).getAllByRole('listitem')).toHaveLength(6)
     expect(board).toHaveTextContent('모름은 실패가 아니라 공급자에게 물을 질문이 됩니다.')
@@ -202,7 +200,7 @@ describe('근거 확인표 — V8에서 옛 평가 근거 지도를 합침', () 
 
   it('분할과 미관측 공격의 답이 어긋나면 표 안에서 R12 안내를 보인다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '내 성능표 검토' }))
+    await user.click(screen.getByRole('button', { name: '숫자로 직접 입력' }))
     await user.click(screen.getByRole('button', { name: '질문 전체 한 번에 보기' }))
     await user.click(within(screen.getByRole('group', { name: /시험 자료는 어떻게 나눴나요/ })).getByLabelText(/학습에 없던 공격을 따로 시험/))
     await user.click(within(screen.getByRole('group', { name: /시험에 학습 때 없던 공격이 들어 있었나요/ })).getByLabelText(/아니오/))
@@ -216,7 +214,7 @@ describe('근거 확인표 — V8에서 옛 평가 근거 지도를 합침', () 
 describe('소개서 문장으로 검토 (V9)', () => {
   it('첫 화면에서 소개서 판독을 열고, 비어 있을 때는 붙여 넣을 자리와 예시를 안내한다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '소개서 문장으로 검토' }))
+    await user.click(screen.getByRole('button', { name: '소개서 문장 붙여 넣기' }))
     expect(screen.getByRole('heading', { level: 2, name: '받은 소개서 문장을 붙여 넣어 주세요' })).toHaveFocus()
     expect(screen.getByLabelText('받은 소개서·제안서 문장')).toHaveValue('')
     expect(screen.getByText(/붙여 넣은 글은 이 브라우저 메모리에서만 읽습니다/)).toBeInTheDocument()
@@ -225,7 +223,7 @@ describe('소개서 문장으로 검토 (V9)', () => {
 
   it('예시 소개서의 다섯 표시마다 논문 근거와 질문을 붙이고, 없는 조건은 따로 모은다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '소개서 문장으로 검토' }))
+    await user.click(screen.getByRole('button', { name: '소개서 문장 붙여 넣기' }))
     await user.click(screen.getAllByRole('button', { name: '가상의 예시 소개서 넣기' })[0])
     const sheet = screen.getByRole('article', { name: '표시를 붙인 소개서' })
     expect(sheet.querySelectorAll('mark')).toHaveLength(5)
@@ -239,7 +237,7 @@ describe('소개서 문장으로 검토 (V9)', () => {
 
   it('판독할 표현이 없으면 없다고 말하고, 모든 조건을 질문으로 남긴다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '소개서 문장으로 검토' }))
+    await user.click(screen.getByRole('button', { name: '소개서 문장 붙여 넣기' }))
     await user.type(screen.getByLabelText('받은 소개서·제안서 문장'), '보안 운영을 쉽게 만듭니다.')
     expect(screen.getByText(/판독할 표현을 찾지 못했습니다/)).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /결과 보기 · 질문/ }))
@@ -252,7 +250,7 @@ describe('질문 복사', () => {
   it('질문 문장만 복사하고 입력한 숫자는 담지 않는다', async () => {
     const { user } = setup()
     const writeText = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue()
-    await user.click(screen.getByRole('button', { name: '내 성능표 검토' }))
+    await user.click(screen.getByRole('button', { name: '숫자로 직접 입력' }))
     await user.selectOptions(screen.getByLabelText('지표 1'), 'accuracy')
     await user.type(screen.getByLabelText('값 (0부터 1 사이)'), '0.8765')
     await user.click(screen.getByRole('button', { name: /검토 결과/ }))
@@ -267,7 +265,7 @@ describe('질문 복사', () => {
   it('복사할 수 없으면 목록을 선택해 두고 직접 복사하라고 알린다', async () => {
     const { user } = setup()
     vi.spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('denied'))
-    await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
+    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
     await user.click(screen.getByRole('button', { name: '질문만 복사' }))
     expect(await screen.findByText('복사하지 못했습니다. 질문 목록을 선택해 두었으니 직접 복사해 주세요.')).toBeInTheDocument()
   })
@@ -277,7 +275,7 @@ describe('PoC 미팅 산출물', () => {
   it('질문 상태와 메모를 검토표에 포함해 복사한다', async () => {
     const { user } = setup()
     const writeText = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue()
-    await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
+    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
     await user.selectOptions(screen.getByLabelText('답변 상태'), 'requested')
     await user.type(screen.getByLabelText('답변 메모'), '공격 유형별 Recall 표를 요청함')
     await user.click(screen.getByRole('button', { name: '검토표 전체 복사' }))
@@ -295,7 +293,7 @@ describe('PoC 미팅 산출물', () => {
 
   it('혼동행렬을 열고 닫아도 예시 출처를 보존한다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
+    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
     await user.click(screen.getByRole('button', { name: '입력 수정' }))
     await user.click(screen.getByRole('button', { name: '혼동행렬 닫기' }))
     await user.click(screen.getByRole('button', { name: '혼동행렬로 입력' }))
@@ -306,7 +304,7 @@ describe('PoC 미팅 산출물', () => {
 
   it('계속 남은 질문은 직전 상태·메모를 이어받되 이전 회차 기록은 바꾸지 않는다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
+    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
     await user.selectOptions(screen.getByLabelText('답변 상태'), 'requested')
     await user.type(screen.getByLabelText('답변 메모'), '1회차 요청 메모')
     await user.click(screen.getByText('회차 기록과 다음 답변 관리'))
@@ -330,7 +328,7 @@ describe('PoC 미팅 산출물', () => {
 describe('결과를 한 장씩 읽는 흐름 (V7)', () => {
   it('처음에는 1 / 3 주장과 근거에서 시작하고, 아래 단추로 다음 장을 연다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
+    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
     const pager = screen.getByRole('navigation', { name: '검토 단계 이동' })
     expect(within(pager).getByText('1 / 3 · 주장과 근거')).toBeInTheDocument()
     expect(document.querySelector('.board-column.is-active .board-column__head h3')).toHaveTextContent('주장과 근거')
@@ -349,7 +347,7 @@ describe('결과를 한 장씩 읽는 흐름 (V7)', () => {
 
   it('공격과 정상의 크기를 실제 비율 그대로 그리고, 보이지 않는 값은 글로 알린다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
+    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
 
     const attacks = screen.getByRole('img', { name: /공격 220,788건 가운데 탐지 160건, 0.072%. 미탐 220,628건./ })
     expect(attacks.querySelector('.scale-row__fill')).toHaveAttribute('width', (160 / 220788 * 100).toString())
@@ -360,7 +358,7 @@ describe('결과를 한 장씩 읽는 흐름 (V7)', () => {
 
   it('잘못 적은 칸은 장을 옮기기 전에 브리핑에서 알린다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '내 성능표 검토' }))
+    await user.click(screen.getByRole('button', { name: '숫자로 직접 입력' }))
     await user.selectOptions(screen.getByLabelText('지표 1'), 'accuracy')
     await user.type(screen.getByLabelText('값 (0부터 1 사이)'), '99')
     await user.click(screen.getByRole('button', { name: /검토 결과/ }))

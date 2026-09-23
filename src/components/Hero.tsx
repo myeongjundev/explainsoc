@@ -1,6 +1,6 @@
 import { forwardRef } from 'react'
-import { PAPER, XGB_RANDOM, XGB_UNSEEN } from '../data/paperEvidence'
-import { formatRatio } from '../domain/format'
+import { PAPER, UNSEEN_TEST_COMPOSITION, XGB_RANDOM, XGB_UNSEEN } from '../data/paperEvidence'
+import { formatCount } from '../domain/format'
 import { ExternalIcon, LockIcon } from './icons'
 
 interface Props {
@@ -11,59 +11,70 @@ interface Props {
   caseFileStatus: string
 }
 
-/** 화면 A — 누구를 어떻게 돕는지 10초 안에 전달한다. 입력 폼과 긴 연구 한계는 아직 보이지 않는다. */
+/**
+ * 화면 A — 누구를 어떻게 돕는지 10초 안에 전달한다. 입력 폼과 긴 연구 한계는 아직 보이지 않는다.
+ * V9: 비전공자도 알아듣게 시험 공부에 빗댄다. 첫 화면에는 분할·지표 같은 전문 용어를 두지 않고,
+ * 점수는 논문 Macro F1을 100점 만점으로 옮긴 값임을 그림 아래에 밝힌다(설계 31절).
+ */
 export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStartExample, onStartOwn, onStartBrochure, onOpenCase, caseFileStatus }, headingRef) {
   return (
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero__copy">
-        <p className="hero__kicker"><span>보안 AI 성능표 검토</span> · 업체에 물을 질문 만들기</p>
+        <p className="hero__kicker"><span>보안 AI 광고 숫자 확인</span> · 판매 업체에 물을 질문 만들기</p>
         <h1 id="hero-title" className="hero__title" tabIndex={-1} ref={headingRef}>
-          보안 AI의 99%, 무엇을 시험한 점수일까요?
+          <span className="hero__title-line">보안 AI의 99점,</span>{' '}
+          <span className="hero__title-line">처음 보는 공격에서도</span>{' '}
+          <span className="hero__title-line">99점일까요?</span>
         </h1>
         <p className="hero__help">
-          이 사이트는 <strong>“정확도 99%” 같은 광고 숫자가 실제로 무엇을 시험한 결과인지 확인하고, 판매 업체에 물어볼 질문을
-          만들어 주는 도구</strong>입니다.
+          광고의 <strong>“정확도 99%”</strong>는 AI가 <strong>이미 배운 종류의 공격</strong>으로 치른 시험 점수일 수 있습니다.
+          시험 공부로 치면 <strong>연습문제를 그대로 낸 시험</strong>입니다.
         </p>
-        <p className="hero__scenario"><strong>이럴 때 씁니다.</strong> 회사에서 AI 제품 자료를 받았지만 어떤 공격을 시험했는지,
-          처음 보는 공격도 잡는지 알 수 없을 때.</p>
+        <p className="hero__scenario"><strong>이 사이트가 하는 일.</strong> 받은 광고 숫자가 어떤 시험의 점수인지 확인하고,
+          판매 업체에 물어볼 질문을 만들어 줍니다. 회사에서 보안 AI 제품 자료를 받았을 때 씁니다.</p>
         <ol className="hero__story" aria-label="ExplainSOC가 하는 세 가지">
-          <li><span>01</span><strong>받은 소개서 문장이나 숫자를 넣고</strong></li>
+          <li><span>01</span><strong>받은 광고 문장이나 숫자를 넣고</strong></li>
           <li><span>02</span><strong>모르는 시험 조건에 답하면</strong></li>
           <li><span>03</span><strong>업체에 물을 질문이 완성됩니다</strong></li>
         </ol>
         <div className="hero__actions">
           <button type="button" className="button button--primary button--large" onClick={onStartExample}>
-            논문 예시로 60초 검토
-          </button>
-          <button type="button" className="button button--large" onClick={onStartBrochure}>
-            소개서 문장으로 검토
-          </button>
-          <button type="button" className="button button--large" onClick={onStartOwn}>
-            내 성능표 검토
+            예시로 바로 보기
           </button>
         </div>
-        <p className="hero__example-note">숫자를 준비하지 않아도 됩니다. 논문 예시가 자동으로 채워집니다. 받은 소개서가 있으면 문장을 그대로 붙여 넣으세요.</p>
+        <p className="hero__example-note">숫자를 준비하지 않아도 됩니다. 논문 속 실제 시험 결과로 한 번 보여 줍니다.</p>
+        <div className="hero__own">
+          <span>내 자료로 해 보기</span>
+          <button type="button" className="button button--quiet" onClick={onStartBrochure}>
+            소개서 문장 붙여 넣기
+          </button>
+          <button type="button" className="button button--quiet" onClick={onStartOwn}>
+            숫자로 직접 입력
+          </button>
+        </div>
       </div>
 
       <figure className="hero__figure claim-autopsy">
-        <figcaption className="hero__figure-title">같은 모델, 다른 시험</figcaption>
+        <figcaption className="hero__figure-title">같은 AI, 두 번의 시험</figcaption>
         <div className="claim-autopsy__claim">
-          <span>공급자 성능 주장</span>
-          <strong>99.88%</strong>
-          <small>정확도 하나만으로는 알 수 없는 것</small>
+          <span>광고에 적힌 숫자 (예)</span>
+          <strong>{percent(XGB_RANDOM.reported.accuracy)}</strong>
+          <small>어떤 시험의 점수인지는 적혀 있지 않습니다</small>
         </div>
-        <div className="claim-autopsy__fork" aria-hidden="true"><span>시험 조건을 열면</span></div>
+        <div className="claim-autopsy__fork" aria-hidden="true"><span>어떤 시험이었는지 열어 보면</span></div>
         <div className="claim-autopsy__trials">
-          <HeroBar index="A" label={XGB_RANDOM.splitLabel} value={XGB_RANDOM.reported.macroF1} tone="high" />
-          <HeroBar index="B" label={XGB_UNSEEN.splitLabel} value={XGB_UNSEEN.reported.macroF1} tone="low" />
+          <HeroBar index="A" label="이미 배운 종류의 공격으로 시험" hint="연습문제를 그대로 낸 시험" value={XGB_RANDOM.reported.macroF1} tone="high" />
+          <HeroBar index="B" label="처음 보는 종류의 공격으로 시험" hint="처음 보는 문제를 낸 시험" value={XGB_UNSEEN.reported.macroF1} tone="low" />
         </div>
         <div className="claim-autopsy__impact">
-          <span>미관측 공격 시험의 운영 의미</span>
-          <strong>220,788건 중 160건 탐지</strong>
-          <small>낮은 오탐률과 공격 탐지 능력은 같은 말이 아닙니다.</small>
+          <span>처음 보는 공격 시험에서</span>
+          <strong>공격 {formatCount(UNSEEN_TEST_COMPOSITION.attack)}건 중 {formatCount(XGB_UNSEEN.matrix.tp)}건만 잡았습니다</strong>
+          <small>정상 흐름을 공격으로 잘못 알린 일은 적었지만, 공격도 거의 다 놓쳤습니다.</small>
         </div>
-        <p className="hero__figure-note">Macro F1 · 0부터 1까지의 같은 축 · 원고 V-2</p>
-        <p className="hero__figure-ask">받은 99%는 어느 시험의 숫자입니까?</p>
+        <p className="hero__figure-note">
+          점수는 논문(원고 V-2)의 Macro F1(0~1)을 100점 만점으로 옮긴 값입니다. {percent(XGB_RANDOM.reported.accuracy)}는 A 시험의 정확도입니다.
+        </p>
+        <p className="hero__figure-ask">받은 99%는 어느 시험의 점수입니까?</p>
       </figure>
 
       <div className="hero__meta">
@@ -108,12 +119,18 @@ export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStar
   )
 })
 
-function HeroBar({ index, label, value, tone }: { index: string; label: string; value: number; tone: 'high' | 'low' }) {
+/** 0부터 1 사이 비율을 백분율로. 논문 숫자에만 쓴다. */
+const percent = (v: number) => `${Number((v * 100).toFixed(2))}%`
+
+/** 100점 만점으로 옮긴 점수. 소수 첫째 자리까지. */
+const score = (v: number) => `${(v * 100).toFixed(1)}점`
+
+function HeroBar({ index, label, hint, value, tone }: { index: string; label: string; hint: string; value: number; tone: 'high' | 'low' }) {
   return (
     <div className={`hero-bar hero-bar--${tone}`}>
       <span className="hero-bar__index">{index}</span>
       <p className="hero-bar__label">
-        {label} <strong>{formatRatio(value)}</strong>
+        {label} <small className="hero-bar__hint">{hint}</small> <strong>{score(value)}</strong>
       </p>
       <span className="hero-bar__track" aria-hidden="true">
         <span className="hero-bar__fill" style={{ width: `${value * 100}%` }} />

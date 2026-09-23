@@ -23,11 +23,11 @@ test.describe('화면 폭 (375×812부터)', () => {
       await page.setViewportSize(vp)
       await openHome(page)
       expect(await horizontalOverflow(page)).toMatchObject({ offenders: [] })
-      await page.getByRole('button', { name: '소개서 문장으로 검토' }).click()
+      await page.getByRole('button', { name: '소개서 문장 붙여 넣기' }).click()
       await page.getByRole('button', { name: '가상의 예시 소개서 넣기' }).first().click()
       expect(await horizontalOverflow(page)).toMatchObject({ offenders: [] })
       await openHome(page)
-      await page.getByRole('button', { name: '논문 예시로 60초 검토' }).click()
+      await page.getByRole('button', { name: '예시로 바로 보기' }).click()
       await page.getByRole('button', { name: '공격 기준으로 뒤집기' }).click()
       await page.evaluate(() => document.querySelectorAll('details').forEach((d) => (d.open = true)))
       const r = await horizontalOverflow(page)
@@ -52,7 +52,7 @@ test.describe('키보드만으로 (BRB-C05)', () => {
       throw new Error(`Tab으로 '${name}'에 닿지 못했다`)
     }
 
-    await tabTo('논문 예시로 60초 검토')
+    await tabTo('예시로 바로 보기')
     const outline = await page.evaluate(() => getComputedStyle(document.activeElement as Element).outlineStyle)
     expect(outline).not.toBe('none')
     await page.keyboard.press('Enter')
@@ -116,7 +116,7 @@ test.describe('접근성 자동 검사 (axe, WCAG 2.2 AA)', () => {
 
   test('한 화면씩 묻는 평가 조건', async ({ page }) => {
     await openHome(page)
-    await page.getByRole('button', { name: '내 성능표 검토' }).click()
+    await page.getByRole('button', { name: '숫자로 직접 입력' }).click()
     await page.getByRole('button', { name: /평가 조건/ }).click()
     await page.getByRole('group', { name: '시험 자료는 어떻게 나눴나요?' }).getByLabel('모름').check()
     const { violations } = await new AxeBuilder({ page }).withTags(tags).analyze()
@@ -133,7 +133,7 @@ test.describe('접근성 자동 검사 (axe, WCAG 2.2 AA)', () => {
 
   test('소개서 판독 — 예시 소개서를 넣은 상태', async ({ page }) => {
     await openHome(page)
-    await page.getByRole('button', { name: '소개서 문장으로 검토' }).click()
+    await page.getByRole('button', { name: '소개서 문장 붙여 넣기' }).click()
     await page.getByRole('button', { name: '가상의 예시 소개서 넣기' }).first().click()
     const { violations } = await new AxeBuilder({ page }).withTags(tags).analyze()
     expect(violations.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([])
@@ -195,13 +195,13 @@ test.describe('보안과 개인정보', () => {
     await page.getByRole('button', { name: '입력 수정' }).click()
     texts.push(await visibleTextOutsideQuotes(page))
     await openHome(page)
-    await page.getByRole('button', { name: '내 성능표 검토' }).click()
+    await page.getByRole('button', { name: '숫자로 직접 입력' }).click()
     for (let i = 0; i < 6; i++) {
       texts.push(await visibleTextOutsideQuotes(page))
       if (i < 5) await page.getByRole('button', { name: /다음$/ }).click()
     }
     await openHome(page)
-    await page.getByRole('button', { name: '소개서 문장으로 검토' }).click()
+    await page.getByRole('button', { name: '소개서 문장 붙여 넣기' }).click()
     await page.getByRole('button', { name: '가상의 예시 소개서 넣기' }).first().click()
     texts.push(await visibleTextOutsideQuotes(page))
     for (const text of texts) {

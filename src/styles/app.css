@@ -4053,3 +4053,31 @@ a {
     flex: 1 1 100%;
   }
 }
+
+/* V9 첫 화면 — 큰 단추는 하나, 내 자료 입력은 그 아래 조용한 줄로. 그림의 비유 한 줄. */
+.hero__own {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line-strong);
+}
+
+.hero__own > span {
+  color: var(--ink-2);
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-right: 2px;
+}
+
+.hero-bar__label .hero-bar__hint {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.hero__title-line {
+  display: block;
+}

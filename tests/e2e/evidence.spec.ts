@@ -113,7 +113,7 @@ test('V7 결과 1장 — 모바일', async ({ page }) => {
 test('V8 한 화면씩 입력 — 평가 조건 질문, 데스크톱', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 })
   await openHome(page)
-  await page.getByRole('button', { name: '내 성능표 검토' }).click()
+  await page.getByRole('button', { name: '숫자로 직접 입력' }).click()
   for (let i = 0; i < 3; i++) await page.locator('.guided__nav .button--primary').click()
   await expect(page.getByRole('region', { name: '질문 4 / 6' })).toBeVisible()
   await page.screenshot({ path: `${V8_DIR}/v8-guided-question-desktop.png`, fullPage: true })
@@ -122,7 +122,7 @@ test('V8 한 화면씩 입력 — 평가 조건 질문, 데스크톱', async ({ 
 test('V8 한 화면씩 입력 — 모바일', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await openHome(page)
-  await page.getByRole('button', { name: '내 성능표 검토' }).click()
+  await page.getByRole('button', { name: '숫자로 직접 입력' }).click()
   for (let i = 0; i < 3; i++) await page.locator('.guided__nav .button--primary').click()
   await page.screenshot({ path: `${V8_DIR}/v8-guided-question-mobile.png`, fullPage: true })
 })

@@ -9,11 +9,14 @@ test.describe('논문 예시 60초 경로 (BRB-C02·C05)', () => {
 
     await openHome(page)
     await expect(page.locator('.claim-autopsy')).toContainText('99.88%')
-    await expect(page.locator('.claim-autopsy')).toContainText('220,788건 중 160건 탐지')
-    await expect(page.locator('.hero__help')).toContainText('광고 숫자가 실제로 무엇을 시험한 결과인지 확인')
-    await expect(page.locator('.hero__scenario')).toContainText('처음 보는 공격도 잡는지 알 수 없을 때')
-    await expect(page.locator('.hero__story strong')).toHaveText(['받은 소개서 문장이나 숫자를 넣고', '모르는 시험 조건에 답하면', '업체에 물을 질문이 완성됩니다'])
-    await page.getByRole('button', { name: '논문 예시로 60초 검토' }).click()
+    await expect(page.locator('.claim-autopsy')).toContainText('공격 220,788건 중 160건만 잡았습니다')
+    await expect(page.locator('.hero__help')).toContainText('연습문제를 그대로 낸 시험')
+    await expect(page.locator('.claim-autopsy')).toContainText('99.8점')
+    await expect(page.locator('.claim-autopsy')).toContainText('38.7점')
+    await expect(page.locator('.claim-autopsy')).toContainText('Macro F1(0~1)을 100점 만점으로 옮긴 값')
+    await expect(page.locator('.hero__scenario')).toContainText('판매 업체에 물어볼 질문을 만들어 줍니다')
+    await expect(page.locator('.hero__story strong')).toHaveText(['받은 광고 문장이나 숫자를 넣고', '모르는 시험 조건에 답하면', '업체에 물을 질문이 완성됩니다'])
+    await page.getByRole('button', { name: '예시로 바로 보기' }).click()
     await expect(page.getByRole('heading', { level: 2, name: '3. 검토 결과' })).toBeFocused()
 
     const briefing = page.locator('.investigation-brief')
@@ -78,7 +81,7 @@ test.describe('내 성능표로 세 행동 (BRB-C02)', () => {
   test('숫자 하나 → 세 질문에 답하기 → 질문 복사', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
     await openHome(page)
-    await page.getByRole('button', { name: '내 성능표 검토' }).click()
+    await page.getByRole('button', { name: '숫자로 직접 입력' }).click()
 
     // 행동 1 — 받은 숫자 하나. 처음 입력은 한 화면에 질문 하나씩 묻는다.
     await page.getByLabel('지표 1').selectOption('accuracy')
@@ -115,7 +118,7 @@ test.describe('내 성능표로 세 행동 (BRB-C02)', () => {
 
   test('모든 조건을 모름으로 두어도 질문이 나온다', async ({ page }) => {
     await openHome(page)
-    await page.getByRole('button', { name: '내 성능표 검토' }).click()
+    await page.getByRole('button', { name: '숫자로 직접 입력' }).click()
     await page.getByRole('button', { name: /검토 결과/ }).click()
     await openChapter(page, '판독')
     await expect(page.locator('.finding__id')).toHaveText(['R02', 'R07', 'R09'])
@@ -125,7 +128,7 @@ test.describe('내 성능표로 세 행동 (BRB-C02)', () => {
 
   test('예시 B는 높은 무작위 분할 점수에서 R01·R08·R10을 보인다', async ({ page }) => {
     await openHome(page)
-    await page.getByRole('button', { name: '내 성능표 검토' }).click()
+    await page.getByRole('button', { name: '숫자로 직접 입력' }).click()
     await page.getByRole('button', { name: /예시 B로 채우기/ }).click()
     await page.getByRole('button', { name: /검토 결과/ }).click()
     await expect(page.locator('.finding__id')).toHaveText(['R01', 'R08', 'R10'])
@@ -254,7 +257,7 @@ test.describe('잘못된 입력에도 멈추지 않는다 (BRB-C05)', () => {
   test('비율 칸의 글자·음수·1 초과는 그 칸에만 오류를 보이고 결과는 이어진다', async ({ page }) => {
     const errors = collectErrors(page)
     await openHome(page)
-    await page.getByRole('button', { name: '내 성능표 검토' }).click()
+    await page.getByRole('button', { name: '숫자로 직접 입력' }).click()
     await page.getByLabel('지표 1').selectOption('accuracy')
     const value = page.getByLabel('값 (0부터 1 사이)')
     for (const [raw, message] of [
@@ -325,7 +328,7 @@ test.describe('입력은 브라우저 안에만 머문다', () => {
     expect(stored).toEqual({ local: 0, session: 0, cookie: '', url: expect.stringMatching(/\/explainsoc\/$/) })
     await page.reload()
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
-    await page.getByRole('button', { name: '내 성능표 검토' }).click()
+    await page.getByRole('button', { name: '숫자로 직접 입력' }).click()
     await expect(page.getByLabel('지표 1')).toHaveValue('')
   })
 })
@@ -335,7 +338,7 @@ test.describe('소개서 문장으로 검토 (V9)', () => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
     const errors = collectErrors(page)
     await openHome(page)
-    await page.getByRole('button', { name: '소개서 문장으로 검토' }).click()
+    await page.getByRole('button', { name: '소개서 문장 붙여 넣기' }).click()
     await expect(page.getByRole('heading', { level: 2, name: '받은 소개서 문장을 붙여 넣어 주세요' })).toBeFocused()
 
     await page.getByLabel('받은 소개서·제안서 문장').fill('당사 AI는 정확도 99.8%로 알려지지 않은 신종 공격까지 탐지하며 업계 최고 성능을 입증했습니다.')
@@ -360,7 +363,7 @@ test.describe('소개서 문장으로 검토 (V9)', () => {
 
   test('빠진 조건은 한 화면씩 직접 답하고, 소개서에서 읽은 숫자는 그대로 남는다', async ({ page }) => {
     await openHome(page)
-    await page.getByRole('button', { name: '소개서 문장으로 검토' }).click()
+    await page.getByRole('button', { name: '소개서 문장 붙여 넣기' }).click()
     await page.getByRole('button', { name: '가상의 예시 소개서 넣기' }).first().click()
     await page.getByRole('button', { name: '빠진 조건 직접 답하기' }).click()
     await expect(page.getByRole('region', { name: '질문 4 / 6' })).toBeVisible()
