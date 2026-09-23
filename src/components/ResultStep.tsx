@@ -46,13 +46,14 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onRestart,
   const showChapter = (next: WorkbenchChapter) => {
     setChapter(next)
     const target = next === 'evidence' ? 'evidence-column' : next === 'findings' ? 'findings-title' : 'questions-title'
-    window.requestAnimationFrame(() => document.getElementById(target)?.scrollIntoView({ block: 'start' }))
+    // scrollIntoView가 없는 환경(테스트 등)에서도 장 전환 자체는 이어진다.
+    window.requestAnimationFrame(() => document.getElementById(target)?.scrollIntoView?.({ block: 'start' }))
   }
   return (
     <div className="step-body">
       <WorkbenchNav active={chapter} onSelect={setChapter} />
       {caseFileStatus && <p className="workbench-file-status" role="status">{caseFileStatus}</p>}
-      <InvestigationBrief review={review} roundNumber={rounds.length + 1} caseTitle={caseTitle} onShowQuestions={() => showChapter('output')} />
+      <InvestigationBrief review={review} roundNumber={rounds.length + 1} caseTitle={caseTitle} errorCount={check.errorCount} onShowQuestions={() => showChapter('output')} />
       <div className="result investigation-board">
         <div className={`result__evidence board-column${chapter === 'evidence' ? ' is-active' : ''}`} id="evidence-column">
           <header className="board-column__head">
@@ -89,6 +90,7 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onRestart,
           <ReviewBrief check={check} review={review} responses={responses} caseTitle={caseTitle} rounds={rounds} current={{ id: `r${rounds.length + 1}`, ...roundMeta, input, responses: { ...responses } }} comparison={comparison} />
         </div>
       </div>
+      <ChapterPager chapter={chapter} onGo={showChapter} />
       <div className="result__split"><SplitEvidenceFigure /></div>
       <details
         className="rounds-disclosure"
@@ -112,5 +114,36 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onRestart,
         </button>
       </div>
     </div>
+  )
+}
+
+const CHAPTER_ORDER: { id: WorkbenchChapter; label: string }[] = [
+  { id: 'evidence', label: '주장과 근거' },
+  { id: 'findings', label: '판독' },
+  { id: 'output', label: '다음 행동' },
+]
+
+/** 한 장을 다 읽은 자리에서 다음 장으로 갈 수 있게 둔다. 위쪽 REVIEW MAP을 찾지 못해도 순서가 이어진다. */
+function ChapterPager({ chapter, onGo }: { chapter: WorkbenchChapter; onGo: (next: WorkbenchChapter) => void }) {
+  const index = CHAPTER_ORDER.findIndex((item) => item.id === chapter)
+  const previous = index > 0 ? CHAPTER_ORDER[index - 1] : null
+  const next = index < CHAPTER_ORDER.length - 1 ? CHAPTER_ORDER[index + 1] : null
+
+  return (
+    <nav className="chapter-pager" aria-label="검토 단계 이동">
+      <p className="chapter-pager__where">{index + 1} / {CHAPTER_ORDER.length} · {CHAPTER_ORDER[index].label}</p>
+      <div className="chapter-pager__buttons">
+        {previous && (
+          <button type="button" className="button" onClick={() => onGo(previous.id)}>
+            이전: {previous.label}
+          </button>
+        )}
+        {next && (
+          <button type="button" className="button button--primary" onClick={() => onGo(next.id)}>
+            다음: {next.label}
+          </button>
+        )}
+      </div>
+    </nav>
   )
 }

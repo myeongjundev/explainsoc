@@ -3,6 +3,7 @@ import { PAPER, UNSEEN_TEST_COMPOSITION, XGB_RANDOM, XGB_UNSEEN } from '../data/
 import { computeMetrics } from '../domain/metrics'
 import { formatComputed, formatCount, formatRatio, METRIC_SHORT } from '../domain/format'
 import { METRIC_KINDS, type ConfusionMatrix, type InputSource, type ReviewInput } from '../domain/types'
+import { DetectionScaleFigure } from './DetectionScaleFigure'
 import { EvidenceDetails } from './EvidenceDetails'
 import { FlipIcon } from './icons'
 
@@ -95,6 +96,8 @@ export function ClaimReveal({ matrix, claim, source }: Props) {
       <p id={liveId} className="visually-hidden" aria-live="polite">
         {flipped ? backText : `${frontCaption}: ${frontItems.map((it) => `${it.label} ${it.value}`).join(', ')}`}
       </p>
+
+      <DetectionScaleFigure matrix={matrix} />
 
       {accuracy !== null && baseline !== null && (
         <figure className="baseline">

@@ -4,11 +4,13 @@ interface Props {
   review: Review
   roundNumber: number
   caseTitle: string
+  /** 계산에서 뺀 칸 수. 판독 장을 열지 않아도 이 사실을 먼저 알린다. */
+  errorCount: number
   onShowQuestions: () => void
 }
 
 /** 결과에 들어온 직후 긴 목록보다 먼저 읽는 현재 회차 브리핑. 점수나 합격 판정은 만들지 않는다. */
-export function InvestigationBrief({ review, roundNumber, caseTitle, onShowQuestions }: Props) {
+export function InvestigationBrief({ review, roundNumber, caseTitle, errorCount, onShowQuestions }: Props) {
   const checks = review.byStatus.check.length
   const cautions = review.byStatus.caution.length
   const questions = review.questions.length
@@ -27,6 +29,11 @@ export function InvestigationBrief({ review, roundNumber, caseTitle, onShowQuest
         <p className="investigation-brief__case">{caseTitle}</p>
         <h3 id="investigation-brief-title">{headline}</h3>
         <p>숫자의 좋고 나쁨을 판정하지 않고, 지금 받은 근거에서 다음에 확인할 일을 앞에 둡니다.</p>
+        {errorCount > 0 && (
+          <p className="investigation-brief__warn">
+            잘못 적은 칸 {errorCount}개는 계산에서 뺐습니다. 아래 ‘입력 수정’에서 고칠 수 있습니다.
+          </p>
+        )}
       </div>
       <dl className="investigation-brief__metrics" aria-label="현재 회차 판독 요약">
         <div><dt>확인 필요</dt><dd>{checks}</dd></div>

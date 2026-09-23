@@ -1052,6 +1052,89 @@ a {
   justify-self: start;
 }
 
+/* V7 — 받은 숫자의 크기를 길이로 보여 주는 그림. 축을 자르거나 최소 너비를 주지 않는다. */
+.scale-figure {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--sheet-2);
+}
+
+.scale-figure__title {
+  font-weight: 800;
+}
+
+.scale-figure__rows {
+  display: grid;
+  gap: 16px;
+}
+
+.scale-row {
+  display: grid;
+  gap: 6px;
+}
+
+.scale-row__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  justify-content: space-between;
+  font-size: 0.92rem;
+}
+
+.scale-row__group {
+  font-weight: 800;
+}
+
+.scale-row__part {
+  color: var(--ink-2);
+  font-family: var(--mono);
+  font-weight: 700;
+}
+
+.scale-row__bar {
+  width: 100%;
+  height: 22px;
+  overflow: visible;
+}
+
+.scale-row__track {
+  fill: #dcd8cf;
+}
+
+.scale-row--attack .scale-row__fill {
+  fill: var(--input-ink);
+}
+
+.scale-row--normal .scale-row__fill {
+  fill: #a66d0a;
+}
+
+.scale-row__tick {
+  stroke: var(--ink);
+  stroke-width: 0.7;
+  vector-effect: non-scaling-stroke;
+}
+
+.scale-row__rest {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.scale-figure__note,
+.scale-figure__scope {
+  color: var(--ink-2);
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.scale-figure__scope {
+  color: var(--muted);
+}
+
 .baseline {
   display: grid;
   gap: 10px;
@@ -2369,6 +2452,28 @@ a {
   margin-top: 22px;
 }
 
+/*
+ * V7 — 결과는 한 번에 한 장(章)만 보인다. 세 열을 동시에 펼치면 처음 보는 사람에게 글상자가
+ * 한꺼번에 쏟아진다는 관찰(evidence/card-5.md)을 반영했다. 인쇄는 아래 print 규칙에서 되살린다.
+ */
+.result.investigation-board {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 900px;
+  margin-inline: auto;
+}
+
+/* 아래쪽 .board-column:nth-child(n) 규칙과 같은 무게가 되도록 선택자를 맞춘다. */
+.investigation-board .board-column,
+.investigation-board .board-column:nth-child(2),
+.investigation-board .board-column:nth-child(3) {
+  display: none;
+}
+
+.investigation-board .board-column.is-active {
+  display: grid;
+  gap: 18px;
+}
+
 .board-column {
   align-content: start;
   padding: 10px;
@@ -2415,11 +2520,40 @@ a {
   font-size: 1rem;
 }
 
+/* 장을 한 번에 하나만 보이므로 넓은 화면에서도 한 열을 크게 쓴다. */
 @media (min-width: 1180px) {
-  .result.investigation-board {
-    grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.08fr) minmax(0, 1.08fr);
-    gap: 14px;
+  .investigation-board .board-column.is-active {
+    gap: 22px;
   }
+
+  .investigation-board .board-column__head h3 {
+    font-size: 1.15rem;
+  }
+}
+
+/* 장 사이를 옮기는 아래쪽 단추. 위쪽 REVIEW MAP을 찾지 못해도 순서대로 갈 수 있다. */
+.chapter-pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 900px;
+  margin: 14px auto 0;
+}
+
+.chapter-pager__where {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.chapter-pager__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .evidence-status {
@@ -2673,11 +2807,23 @@ a {
   letter-spacing: -0.035em;
 }
 
-.investigation-brief__lead > p:last-child {
+.investigation-brief__lead > p:last-child,
+.investigation-brief__lead > h3 ~ p {
   max-width: 48em;
   margin-top: 10px;
   color: #cbd4e1;
   font-size: 0.9rem;
+}
+
+/* 잘못 적은 칸이 있다는 사실은 장을 옮기기 전에 이 자리에서 먼저 보인다. */
+.investigation-brief__lead > p.investigation-brief__warn {
+  display: inline-block;
+  padding: 8px 12px;
+  border: 1px solid #f0c674;
+  border-radius: 10px;
+  background: rgb(240 198 116 / 14%);
+  color: #ffe3a6;
+  font-weight: 700;
 }
 
 .investigation-brief__metrics {
@@ -3035,14 +3181,6 @@ a {
     white-space: normal;
   }
 
-  .investigation-board .board-column {
-    display: none;
-  }
-
-  .investigation-board .board-column.is-active {
-    display: grid;
-  }
-
   .rounds-disclosure > summary {
     grid-template-columns: auto 1fr;
     padding: 13px 14px;
@@ -3103,11 +3241,17 @@ a {
 
   .workbench-nav,
   .workbench-file-status,
+  .chapter-pager,
   .request-package,
   .rounds-disclosure,
   .rounds,
   .terminology {
     display: none !important;
+  }
+
+  /* 화면에서는 한 장씩 보이지만, 인쇄에는 어느 장을 보고 있든 검토표가 나와야 한다. */
+  .investigation-board .board-column.result__output {
+    display: block !important;
   }
 
   .site-main,

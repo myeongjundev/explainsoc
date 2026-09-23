@@ -10,6 +10,7 @@ test.skip(!process.env.EVIDENCE, 'EVIDENCE=1일 때만 스크린샷을 남긴다
 
 const DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence/screenshots'
 const V5_DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence'
+const V7_DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence'
 
 test('첫 화면 — 데스크톱 1440×900', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 })
@@ -89,4 +90,22 @@ test('V5 결과 브리핑 — 모바일', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })
   await startExample(page)
   await page.locator('.investigation-brief').screenshot({ path: `${V5_DIR}/v5-briefing-mobile.png` })
+})
+
+test('V7 결과 1장 — 주장과 근거, 데스크톱', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await startExample(page)
+  await page.screenshot({ path: `${V7_DIR}/v7-chapter-evidence-desktop.png`, fullPage: true })
+})
+
+test('V7 크기 그림 — 탐지와 오탐의 실제 비율', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await startExample(page)
+  await page.locator('.scale-figure').screenshot({ path: `${V7_DIR}/v7-scale-figure-desktop.png` })
+})
+
+test('V7 결과 1장 — 모바일', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await startExample(page)
+  await page.screenshot({ path: `${V7_DIR}/v7-chapter-evidence-mobile.png`, fullPage: true })
 })

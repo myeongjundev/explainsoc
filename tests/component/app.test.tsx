@@ -238,3 +238,44 @@ describe('PoC 미팅 산출물', () => {
     expect(brief).toHaveTextContent('메모: 2회차 답변 메모')
   })
 })
+
+describe('결과를 한 장씩 읽는 흐름 (V7)', () => {
+  it('처음에는 1 / 3 주장과 근거에서 시작하고, 아래 단추로 다음 장을 연다', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
+    const pager = screen.getByRole('navigation', { name: '검토 단계 이동' })
+    expect(within(pager).getByText('1 / 3 · 주장과 근거')).toBeInTheDocument()
+    expect(document.querySelector('.board-column.is-active .board-column__head h3')).toHaveTextContent('주장과 근거')
+
+    await user.click(within(pager).getByRole('button', { name: '다음: 판독' }))
+    expect(within(pager).getByText('2 / 3 · 판독')).toBeInTheDocument()
+    expect(document.querySelector('.board-column.is-active .board-column__head h3')).toHaveTextContent('판독')
+
+    await user.click(within(pager).getByRole('button', { name: '다음: 다음 행동' }))
+    expect(within(pager).getByText('3 / 3 · 다음 행동')).toBeInTheDocument()
+    expect(within(pager).queryByRole('button', { name: /다음:/ })).not.toBeInTheDocument()
+
+    await user.click(within(pager).getByRole('button', { name: '이전: 판독' }))
+    expect(within(pager).getByText('2 / 3 · 판독')).toBeInTheDocument()
+  })
+
+  it('공격과 정상의 크기를 실제 비율 그대로 그리고, 보이지 않는 값은 글로 알린다', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('button', { name: '논문 예시로 60초 검토' }))
+
+    const attacks = screen.getByRole('img', { name: /공격 220,788건 가운데 탐지 160건, 0.072%. 미탐 220,628건./ })
+    expect(attacks.querySelector('.scale-row__fill')).toHaveAttribute('width', (160 / 220788 * 100).toString())
+    expect(screen.getByRole('img', { name: /정상 375,518건 가운데 오탐 86건, 0.023%. 정상으로 판정 375,432건./ })).toBeInTheDocument()
+    expect(screen.getByText(/막대에서 거의 보이지 않는 값이 있습니다/)).toHaveTextContent('공격 탐지 160건, 정상 오탐 86건')
+    expect(screen.getByText(/합격선이나 다른 제품과의 비교가 아닙니다/)).toBeInTheDocument()
+  })
+
+  it('잘못 적은 칸은 장을 옮기기 전에 브리핑에서 알린다', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('button', { name: '내 성능표 검토' }))
+    await user.selectOptions(screen.getByLabelText('지표 1'), 'accuracy')
+    await user.type(screen.getByLabelText('값 (0부터 1 사이)'), '99')
+    await user.click(screen.getByRole('button', { name: /PoC 검토표/ }))
+    expect(document.querySelector('.investigation-brief__warn')).toHaveTextContent('잘못 적은 칸 1개는 계산에서 뺐습니다')
+  })
+})

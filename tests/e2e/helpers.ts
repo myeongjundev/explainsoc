@@ -31,6 +31,12 @@ export async function startExample(page: Page) {
   await expect(page.getByRole('heading', { level: 2, name: '3. PoC 검토 작업대' })).toBeFocused()
 }
 
+/** V7: 결과는 한 번에 한 장만 보인다. 위쪽 REVIEW MAP으로 그 장을 연다. */
+export async function openChapter(page: Page, chapter: '주장·근거' | '판독' | '다음 행동') {
+  const number = chapter === '주장·근거' ? '01' : chapter === '판독' ? '02' : '03'
+  await page.getByRole('button', { name: `${number} ${chapter}` }).click()
+}
+
 export function questionItems(page: Page) {
   return page.getByRole('region', { name: '공급자에게 물을 질문' }).locator('.question-card__text')
 }

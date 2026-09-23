@@ -14,7 +14,7 @@ const CHAPTERS: { id: WorkbenchChapter; target: string; number: string; label: s
 export function WorkbenchNav({ active, onSelect }: Props) {
   const select = (chapter: WorkbenchChapter, target: string) => {
     onSelect(chapter)
-    window.requestAnimationFrame(() => document.getElementById(target)?.scrollIntoView({ block: 'start' }))
+    window.requestAnimationFrame(() => document.getElementById(target)?.scrollIntoView?.({ block: 'start' }))
   }
 
   return (

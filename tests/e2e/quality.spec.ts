@@ -56,6 +56,10 @@ test.describe('키보드만으로 (BRB-C05)', () => {
     await page.keyboard.press('Enter')
     await expect(page.getByRole('button', { name: '받은 주장 다시 보기' })).toHaveAttribute('aria-pressed', 'true')
 
+    // V7: 다음 행동 장을 키보드로 연 뒤에야 질문 복사가 나온다
+    await tabTo('03 다음 행동')
+    await page.keyboard.press('Enter')
+
     await tabTo('질문만 복사')
     await page.keyboard.press('Enter')
     await expect(page.getByText(/질문 1개를 복사했습니다/)).toBeVisible()

@@ -1,5 +1,5 @@
 import { expect, test } from './fixtures'
-import { collectErrors, openHome, questionItems, startExample } from './helpers'
+import { collectErrors, openChapter, openHome, questionItems, startExample } from './helpers'
 
 test.describe('논문 예시 60초 경로 (BRB-C02·C05)', () => {
   test('첫 화면에서 질문 복사까지 — 서명 장면이 모두 나온다', async ({ page, context }) => {
@@ -20,8 +20,10 @@ test.describe('논문 예시 60초 경로 (BRB-C02·C05)', () => {
     await expect(briefing).toContainText('1개의 해석 주의를 먼저 읽어야 합니다')
     await expect(briefing).toContainText('같은 시험에서 공격 Recall은 얼마입니까?')
 
-    // V4 수사 보드: 근거 → 판독 → 다음 행동과 회의용 앞장이 한 흐름에 있다
-    await expect(page.locator('.board-column__head h3')).toHaveText(['주장과 근거', '판독', '다음 행동'])
+    // V7 수사 보드: 세 장을 한 번에 쌓지 않고 한 장씩 읽는다
+    await expect(page.locator('.board-column.is-active .board-column__head h3')).toHaveText('주장과 근거')
+    await expect(page.locator('.result__findings')).toBeHidden()
+    await expect(page.locator('.chapter-pager__where')).toHaveText('1 / 3 · 주장과 근거')
     await expect(page.locator('.evidence-status__item')).toHaveCount(6)
     await expect(page.locator('.evidence-status__note')).toContainText('완성도 점수가 아닙니다')
     await expect(page.locator('.dossier__cover')).toContainText('다음 회의에서 확인할 것')
@@ -46,12 +48,20 @@ test.describe('논문 예시 60초 경로 (BRB-C02·C05)', () => {
     await expect(split.locator('.split__side--test').getByRole('listitem')).toHaveCount(3)
     await expect(split).toContainText('공격 유형 겹침 0')
 
+    // 공격 개수의 크기를 길이로 본다 — 탐지 160건은 막대에서 거의 보이지 않는다
+    const scale = page.locator('.scale-figure')
+    await expect(scale).toContainText('공격 220,788건')
+    await expect(scale).toContainText('탐지 160건 · 0.072%')
+    await expect(scale).toContainText('막대에서 거의 보이지 않는 값이 있습니다')
+
     // 40~50초: 세 상태
+    await openChapter(page, '판독')
     for (const label of ['확인 필요', '해석 주의', '입력한 근거']) {
       await expect(page.locator('.group__title', { hasText: label })).toBeVisible()
     }
 
     // 50~60초: 질문과 복사
+    await openChapter(page, '다음 행동')
     await expect(questionItems(page)).toHaveText(['같은 시험에서 공격 Recall은 얼마입니까?'])
     await page.getByRole('button', { name: '질문만 복사' }).click()
     await expect(page.getByText('질문 1개를 복사했습니다. 입력한 숫자는 담지 않았습니다.')).toBeVisible()
@@ -89,7 +99,9 @@ test.describe('내 성능표로 세 행동 (BRB-C02)', () => {
     await page.getByRole('button', { name: '결과 보기' }).click()
 
     // 행동 3 — 말하는 것과 말하지 않는 것, 질문 복사
+    await openChapter(page, '판독')
     await expect(page.locator('.finding__id')).toHaveText(['R02', 'R09', 'R03', 'R06'])
+    await openChapter(page, '다음 행동')
     await expect(questionItems(page)).toHaveCount(4)
     await page.getByRole('button', { name: '질문만 복사' }).click()
     const copied = await page.evaluate(() => navigator.clipboard.readText())
@@ -101,7 +113,9 @@ test.describe('내 성능표로 세 행동 (BRB-C02)', () => {
     await openHome(page)
     await page.getByRole('button', { name: '내 성능표 검토' }).click()
     await page.getByRole('button', { name: /PoC 검토표/ }).click()
+    await openChapter(page, '판독')
     await expect(page.locator('.finding__id')).toHaveText(['R02', 'R07', 'R09'])
+    await openChapter(page, '다음 행동')
     await expect(questionItems(page)).toHaveCount(3)
   })
 
@@ -127,13 +141,16 @@ test.describe('PoC 검토 작업대 V2', () => {
     ] as const) await page.getByLabel(label).fill(value)
     await page.getByRole('button', { name: /PoC 검토표/ }).click()
 
+    await openChapter(page, '판독')
     await expect(page.locator('.finding', { hasText: 'R11' })).toBeVisible()
+    await openChapter(page, '다음 행동')
     await expect(page.locator('.question-card__text', { hasText: '이 성능 지표와 혼동행렬은 같은 시험 결과입니까?' })).toBeVisible()
   })
 
   test('미팅 상태·메모를 포함한 검토표를 복사한다', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
     await startExample(page)
+    await openChapter(page, '다음 행동')
     await page.getByLabel('답변 상태').selectOption('requested')
     await page.getByLabel('답변 메모').fill('공격 유형별 표를 추가로 요청')
     await page.getByRole('button', { name: '검토표 전체 복사' }).click()
@@ -167,6 +184,7 @@ test.describe('회차별 로컬 PoC 사례 작업대 V4', () => {
   test('공급자 답변으로 해결·추가 규칙을 비교하고 JSON을 다시 연다', async ({ page }) => {
     await startExample(page)
     await expect(page.getByRole('navigation', { name: 'PoC 작업대 바로 가기' })).toBeVisible()
+    await openChapter(page, '다음 행동')
     await page.getByLabel('답변 상태').selectOption('requested')
     await page.getByLabel('답변 메모').fill('다음 주 Recall 표를 보내기로 함')
     await page.getByText('회차 기록과 다음 답변 관리').click()
@@ -188,7 +206,9 @@ test.describe('회차별 로컬 PoC 사례 작업대 V4', () => {
     await expect(diff.locator('.round-diff__group--resolved')).toContainText('R04')
     await expect(diff.locator('.round-diff__group--added')).toContainText('R10')
     await expect(diff.locator('.round-diff__group--added')).toContainText('R14')
+    await openChapter(page, '판독')
     await expect(page.locator('.finding', { hasText: 'R14' })).toBeVisible()
+    await openChapter(page, '다음 행동')
     await expect(page.getByLabel('PoC 검토표 미리보기')).toContainText('당시 상태: 자료 요청')
     await expect(page.getByLabel('PoC 검토표 미리보기')).toContainText('당시 메모: 다음 주 Recall 표를 보내기로 함')
     const sameTrial = page.getByLabel('기존 주장과 같은 시험입니까?')
@@ -245,7 +265,11 @@ test.describe('잘못된 입력에도 멈추지 않는다 (BRB-C05)', () => {
       await expect(value).toHaveAttribute('aria-invalid', 'true')
     }
     await page.getByRole('button', { name: /PoC 검토표/ }).click()
+    // 잘못 적은 칸이 있다는 사실은 장을 옮기지 않아도 브리핑에서 먼저 보인다
+    await expect(page.locator('.investigation-brief__warn')).toContainText('잘못 적은 칸 1개')
+    await openChapter(page, '판독')
     await expect(page.getByText('잘못 적은 칸 1개는 계산에서 뺐습니다. 입력 수정에서 고칠 수 있습니다.')).toBeVisible()
+    await openChapter(page, '다음 행동')
     await expect(questionItems(page)).toHaveCount(3)
     expect(errors).toEqual([])
   })
