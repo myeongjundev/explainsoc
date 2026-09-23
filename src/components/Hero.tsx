@@ -7,6 +7,7 @@ interface Props {
   onStartExample: () => void
   onStartOwn: () => void
   onStartBrochure: () => void
+  onOpenLab: () => void
   onOpenCase: (file: File) => void
   caseFileStatus: string
 }
@@ -16,7 +17,7 @@ interface Props {
  * V9: 비전공자도 알아듣게 시험 공부에 빗댄다. 첫 화면에는 분할·지표 같은 전문 용어를 두지 않고,
  * 점수는 논문 Macro F1을 100점 만점으로 옮긴 값임을 그림 아래에 밝힌다(설계 31절).
  */
-export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStartExample, onStartOwn, onStartBrochure, onOpenCase, caseFileStatus }, headingRef) {
+export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStartExample, onStartOwn, onStartBrochure, onOpenLab, onOpenCase, caseFileStatus }, headingRef) {
   return (
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero__copy">
@@ -75,6 +76,9 @@ export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStar
           점수는 논문(원고 V-2)의 Macro F1(0~1)을 100점 만점으로 옮긴 값입니다. {percent(XGB_RANDOM.reported.accuracy)}는 A 시험의 정확도입니다.
         </p>
         <p className="hero__figure-ask">받은 99%는 어느 시험의 점수입니까?</p>
+        <button type="button" className="hero__lab-link" onClick={onOpenLab}>
+          논문 실험실 — 세 모델의 순위와 설명(SHAP)이 시험마다 어떻게 바뀌는지 직접 바꿔 보기 →
+        </button>
       </figure>
 
       <div className="hero__meta">

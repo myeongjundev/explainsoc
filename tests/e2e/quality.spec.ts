@@ -27,6 +27,10 @@ test.describe('화면 폭 (375×812부터)', () => {
       await page.getByRole('button', { name: '가상의 예시 소개서 넣기' }).first().click()
       expect(await horizontalOverflow(page)).toMatchObject({ offenders: [] })
       await openHome(page)
+      await page.getByRole('button', { name: /논문 실험실/ }).click()
+      await page.evaluate(() => document.querySelectorAll('details').forEach((d) => (d.open = true)))
+      expect(await horizontalOverflow(page)).toMatchObject({ offenders: [] })
+      await openHome(page)
       await page.getByRole('button', { name: '예시로 바로 보기' }).click()
       await page.getByRole('button', { name: '공격 기준으로 뒤집기' }).click()
       await page.evaluate(() => document.querySelectorAll('details').forEach((d) => (d.open = true)))
@@ -139,6 +143,14 @@ test.describe('접근성 자동 검사 (axe, WCAG 2.2 AA)', () => {
     expect(violations.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([])
   })
 
+  test('논문 실험실 — 근거를 모두 펼친 상태', async ({ page }) => {
+    await openHome(page)
+    await page.getByRole('button', { name: /논문 실험실/ }).click()
+    await page.evaluate(() => document.querySelectorAll('details').forEach((d) => (d.open = true)))
+    const { violations } = await new AxeBuilder({ page }).withTags(tags).analyze()
+    expect(violations.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([])
+  })
+
   test('결과 — 모든 근거를 펼친 상태', async ({ page }) => {
     await startExample(page)
     await page.getByRole('button', { name: '공격 기준으로 뒤집기' }).click()
@@ -203,6 +215,9 @@ test.describe('보안과 개인정보', () => {
     await openHome(page)
     await page.getByRole('button', { name: '소개서 문장 붙여 넣기' }).click()
     await page.getByRole('button', { name: '가상의 예시 소개서 넣기' }).first().click()
+    texts.push(await visibleTextOutsideQuotes(page))
+    await openHome(page)
+    await page.getByRole('button', { name: /논문 실험실/ }).click()
     texts.push(await visibleTextOutsideQuotes(page))
     for (const text of texts) {
       for (const term of FORBIDDEN_TERMS) expect(text, term).not.toContain(term)

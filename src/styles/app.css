@@ -4170,3 +4170,501 @@ a {
   color: var(--muted);
   font-size: 0.82rem;
 }
+
+/* ─── V9 · 논문 실험실 ───────────────────────────────────
+ * 실험 하나가 카드 하나. 조작(시험·기준)은 카드 위, 결과 한 줄은 카드 아래에 둔다.
+ */
+
+.hero__lab-link {
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.lab {
+  width: min(960px, 100%);
+  margin: 28px auto 0;
+  display: grid;
+  gap: 18px;
+}
+
+.lab__head {
+  display: grid;
+  gap: 8px;
+}
+
+.lab__kicker {
+  color: var(--accent);
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.lab__lead {
+  color: var(--ink-2);
+  max-width: 68ch;
+}
+
+.lab-card {
+  display: grid;
+  gap: 14px;
+  padding: 22px 24px;
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+
+.lab-card h3 {
+  font-size: clamp(1.15rem, 2.4vw, 1.4rem);
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.lab-card__no {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+
+.lab-card__lead {
+  color: var(--ink-2);
+}
+
+.lab-card__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+
+.lab-card__takeaway {
+  padding: 12px 14px;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--accent-soft);
+  font-weight: 600;
+}
+
+.lab-card__note {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.lab-card--ask ol {
+  padding-left: 1.3em;
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.lab__actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.segmented {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.segmented__legend {
+  padding: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.segmented__options {
+  display: inline-flex;
+  flex-wrap: wrap;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.segmented__option {
+  position: relative;
+  display: grid;
+  gap: 1px;
+  padding: 8px 14px;
+  background: var(--sheet);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.segmented__option + .segmented__option {
+  border-left: 1px solid var(--line-strong);
+}
+
+.segmented__option small {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 500;
+}
+
+.segmented__option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.segmented__option.is-on {
+  background: var(--ink);
+  color: #fff;
+}
+
+.segmented__option.is-on small {
+  color: #d5dbe4;
+}
+
+.segmented__option:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.rank {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.rank__row {
+  display: grid;
+  grid-template-columns: 3.2em minmax(8.5em, 11em) minmax(0, 1fr) 5.5em;
+  grid-template-areas:
+    "place model bar value"
+    ". move move move";
+  align-items: center;
+  gap: 2px 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--sheet-2);
+}
+
+.rank__row.is-top {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.rank__place {
+  grid-area: place;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.rank__model {
+  grid-area: model;
+  font-weight: 700;
+}
+
+.rank__bar {
+  grid-area: bar;
+  height: 10px;
+  border-radius: 999px;
+  background: #e6e9ee;
+  overflow: hidden;
+}
+
+.rank__bar span {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+  transition: width 260ms ease;
+}
+
+.rank__row.is-top .rank__bar span {
+  background: var(--accent);
+}
+
+.rank__value {
+  grid-area: value;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.rank__move {
+  grid-area: move;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.rank__move.is-up::before {
+  content: "▲ ";
+  color: var(--positive);
+}
+
+.rank__move.is-down::before {
+  content: "▼ ";
+  color: var(--error);
+}
+
+@media (max-width: 560px) {
+  .rank__row {
+    grid-template-columns: 3em minmax(0, 1fr) 4.8em;
+    grid-template-areas:
+      "place model value"
+      "bar bar bar"
+      "move move move";
+  }
+}
+
+.lab-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.92rem;
+}
+
+.lab-table th,
+.lab-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+}
+
+.lab-table th:first-child {
+  text-align: left;
+}
+
+.lab-table thead th {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.shift {
+  display: grid;
+  gap: 14px;
+}
+
+@media (min-width: 720px) {
+  .shift {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.shift__title {
+  display: grid;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.shift__title small {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.shift__col ol {
+  padding-left: 1.6em;
+  display: grid;
+  gap: 6px;
+}
+
+.shift__item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--sheet-2);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.shift__item code {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+
+.shift__item span {
+  grid-column: 1;
+  color: var(--ink-2);
+  font-size: 0.86rem;
+}
+
+.shift__item em {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: center;
+  font-style: normal;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.shift__item.is-new {
+  border-color: var(--branch);
+}
+
+.shift__item.is-new em {
+  color: var(--branch);
+}
+
+.shift__item.is-out {
+  border-style: dashed;
+}
+
+.shift__item.is-up em {
+  color: var(--positive);
+}
+
+.shift__item.is-down em {
+  color: var(--error);
+}
+
+.shift__item.is-focus {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+.shift__item.is-focus span,
+.shift__item.is-focus em {
+  color: #e6ebf2;
+}
+
+.blind__slider {
+  display: grid;
+  gap: 6px;
+  max-width: 420px;
+}
+
+.blind__slider input {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.blind {
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 720px) {
+  .blind {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.blind__card {
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--sheet-2);
+}
+
+.blind__title {
+  display: grid;
+  font-weight: 700;
+}
+
+.blind__title small {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.blind__facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.blind__facts div {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--sheet);
+  border: 1px solid var(--line);
+}
+
+.blind__facts dt {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.blind__facts dd {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.blind__flip-label {
+  color: var(--ink-2);
+  font-size: 0.84rem;
+}
+
+.blind__bar {
+  height: 12px;
+  border-radius: 999px;
+  background: #e6e9ee;
+  overflow: hidden;
+}
+
+.blind__bar span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 220ms ease;
+}
+
+.blind__card--unseen .blind__bar span {
+  background: var(--error);
+}
+
+.blind__flip {
+  font-variant-numeric: tabular-nums;
+}
+
+.lab-teaser {
+  width: min(960px, 100%);
+  margin: 18px auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  padding: 18px 22px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 18px;
+  background: var(--sheet);
+}
+
+.lab-teaser h3 {
+  font-size: 1.05rem;
+}
+
+.lab-teaser p {
+  color: var(--ink-2);
+  font-size: 0.92rem;
+  max-width: 60ch;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rank__bar span,
+  .blind__bar span {
+    transition: none;
+  }
+}

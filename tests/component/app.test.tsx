@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { App } from '../../src/app/App'
 import { PAPER } from '../../src/data/paperEvidence'
@@ -256,6 +256,31 @@ describe('결론 카드 (V9)', () => {
     expect(card).toHaveTextContent('AI 제품이 좋다·나쁘다는 판정이 아닙니다')
     await user.click(within(card).getByRole('button', { name: '업체에 물을 질문 보기' }))
     expect(screen.getByRole('region', { name: '공급자에게 물을 질문' })).toBeVisible()
+  })
+})
+
+describe('논문 실험실 (V9)', () => {
+  it('첫 화면에서 열고, 시험을 바꾸면 Macro F1 1위가 XGBoost에서 Logistic Regression으로 바뀐다', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('button', { name: /논문 실험실/ }))
+    expect(screen.getByRole('heading', { level: 2, name: '광고 숫자 뒤에 있던 실험을 직접 바꿔 보세요' })).toHaveFocus()
+    const rank = () => within(screen.getByRole('list', { name: /순위$/ })).getAllByRole('listitem').map((li) => li.querySelector('.rank__model')?.textContent)
+    expect(rank()).toEqual(['XGBoost', 'Random Forest', 'Logistic Regression'])
+    await user.click(within(screen.getByRole('group', { name: '시험' })).getByLabelText(/처음 보는 공격 유형으로 시험/))
+    expect(rank()).toEqual(['Logistic Regression', 'Random Forest', 'XGBoost'])
+    expect(screen.getByText(/다른 시험에서 1위였던 모델은 XGBoost입니다/)).toBeInTheDocument()
+  })
+
+  it('상위 특징을 지운 수를 바꾸면 두 모델의 예측 변화가 함께 바뀐다', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('button', { name: /논문 실험실/ }))
+    const slider = screen.getByLabelText(/지운 상위 특징 수/)
+    expect(screen.getByText(/예측 35.5%가 바뀌었고/)).toBeInTheDocument()
+    fireEvent.change(slider, { target: { value: '3' } })
+    expect(screen.getByText(/상위 3개를 지우자/)).toHaveTextContent('예측 17.3%가 바뀌었고')
+    expect(screen.getByText(/상위 3개를 지우자/)).toHaveTextContent('0.15%만 바뀌었습니다')
+    await user.click(screen.getByRole('button', { name: '첫 화면으로' }))
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 })
 

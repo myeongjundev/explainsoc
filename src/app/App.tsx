@@ -3,6 +3,7 @@ import { BrochureReader } from '../components/BrochureReader'
 import { OnePageForm } from '../components/OnePageForm'
 import { GUIDED_STEP_START, GuidedInput, guidedStepOf } from '../components/GuidedInput'
 import { Hero } from '../components/Hero'
+import { PaperLab } from '../components/PaperLab'
 import { ResearchScope } from '../components/ResearchScope'
 import { ResultStep } from '../components/ResultStep'
 import { STEP_TITLES, Stepper, type StepNumber } from '../components/Stepper'
@@ -14,7 +15,7 @@ import { buildReview, buildRoundComparison } from '../domain/review'
 import type { QuestionResponse } from '../domain/types'
 import type { RoundDraftMeta } from '../components/RoundWorkspace'
 
-type View = 'home' | StepNumber
+type View = 'home' | StepNumber | 'lab'
 type InputMode = 'guided' | 'form' | 'brochure'
 
 const STEP_HEADINGS: Record<StepNumber, string> = {
@@ -36,6 +37,8 @@ const SOURCE_NOTE: Record<FormState['source'], string | null> = {
 export function App() {
   const [form, setForm] = useState<FormState>(emptyForm)
   const [view, setView] = useState<View>('home')
+  // 논문 실험실을 연 곳. 돌아갈 곳을 정한다.
+  const [labFrom, setLabFrom] = useState<'home' | 3>('home')
   const [inputMode, setInputMode] = useState<InputMode>('guided')
   const [guidedIndex, setGuidedIndex] = useState(0)
   const [responses, setResponses] = useState<Record<string, QuestionResponse>>({})
@@ -76,13 +79,19 @@ export function App() {
 
   const heroHeading = useRef<HTMLHeadingElement>(null)
   const stepHeading = useRef<HTMLHeadingElement>(null)
+  const labHeading = useRef<HTMLHeadingElement>(null)
+
+  const openLab = (from: 'home' | 3) => {
+    setLabFrom(from)
+    go('lab')
+  }
   const focusAfterNavigate = useRef(false)
 
   useEffect(() => {
     if (!focusAfterNavigate.current) return
     focusAfterNavigate.current = false
     window.scrollTo({ top: 0 })
-    ;(view === 'home' ? heroHeading.current : stepHeading.current)?.focus()
+    ;(view === 'home' ? heroHeading.current : view === 'lab' ? labHeading.current : stepHeading.current)?.focus()
     if (view === 2 && inputMode === 'form') document.getElementById('form-section-2')?.scrollIntoView()
   }, [view])
 
@@ -218,8 +227,11 @@ export function App() {
               go(1)
             }}
             onOpenCase={openCase}
+            onOpenLab={() => openLab('home')}
             caseFileStatus={caseFileStatus}
           />
+        ) : view === 'lab' ? (
+          <PaperLab ref={labHeading} onBack={() => go(labFrom)} backLabel={labFrom === 3 ? '검토 결과로 돌아가기' : '첫 화면으로'} />
         ) : (
           <div className="workbench">
             <Stepper current={view} onGo={go} />
@@ -318,6 +330,7 @@ export function App() {
                 onRoundMeta={setRoundMeta}
                 comparison={comparison}
                 onNextRound={nextRound}
+                onOpenLab={() => openLab(3)}
                 onDownload={downloadCase}
                 caseFileStatus={caseFileStatus}
                 onRestart={() => {
@@ -329,7 +342,7 @@ export function App() {
           </div>
         )}
 
-        {view !== 'home' && <ResearchScope />}
+        {view !== 'home' && view !== 'lab' && <ResearchScope />}
       </main>
 
       <footer className="site-footer">

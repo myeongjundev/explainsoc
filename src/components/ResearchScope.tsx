@@ -76,7 +76,7 @@ export function ResearchScope() {
         </section>
 
         <section aria-labelledby="scope-evidence">
-          <h3 id="scope-evidence">근거 P01~P10</h3>
+          <h3 id="scope-evidence">근거 P01~P{String(ALL_IDS.length).padStart(2, '0')}</h3>
           <ol className="scope__evidence">
             {ALL_IDS.map((id) => {
               const e = EVIDENCE[id]

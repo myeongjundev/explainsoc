@@ -25,6 +25,7 @@ interface Props {
   onEditConditions: () => void
   /** 소개서로 시작했을 때만 있다 */
   onEditBrochure?: () => void
+  onOpenLab: () => void
   onRestart: () => void
   responses: Readonly<Record<string, QuestionResponse>>
   onResponse: (question: string, response: QuestionResponse) => void
@@ -42,7 +43,7 @@ interface Props {
 /**
  * V4 수사 보드. 회차를 맨 위에 두고 주장과 근거 / 판독 / 다음 행동을 세 열로 나눈다.
  */
-export function ResultStep({ check, review, onEdit, onEditConditions, onEditBrochure, onRestart, responses, onResponse, caseTitle, onCaseTitle, rounds, roundMeta, onRoundMeta, comparison, onNextRound, onDownload, caseFileStatus }: Props) {
+export function ResultStep({ check, review, onEdit, onEditConditions, onEditBrochure, onOpenLab, onRestart, responses, onResponse, caseTitle, onCaseTitle, rounds, roundMeta, onRoundMeta, comparison, onNextRound, onDownload, caseFileStatus }: Props) {
   const { input } = check
   const [chapter, setChapter] = useState<WorkbenchChapter>('evidence')
   const [roundsOpen, setRoundsOpen] = useState(rounds.length > 0)
@@ -95,6 +96,13 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onEditBroc
       </div>
       <ChapterPager chapter={chapter} onGo={showChapter} />
       <div className="result__split"><SplitEvidenceFigure /></div>
+      <section className="lab-teaser" aria-labelledby="lab-teaser-title">
+        <div>
+          <h3 id="lab-teaser-title">논문 실험실</h3>
+          <p>같은 자료로 학습한 세 모델의 1위가 시험마다 바뀌고, 설명(SHAP)이 안정적인 모델이 공격을 거의 못 잡은 실험을 직접 바꿔 봅니다.</p>
+        </div>
+        <button type="button" className="button" onClick={onOpenLab}>논문 실험실 열기</button>
+      </section>
       <details
         className="rounds-disclosure"
         id="round-comparison"
