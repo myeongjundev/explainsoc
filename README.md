@@ -1,27 +1,80 @@
 # ExplainSOC — 성능표에 없는 질문
 
+[![Verify and deploy to GitHub Pages](https://github.com/myeongjundev/explainsoc/actions/workflows/deploy.yml/badge.svg)](https://github.com/myeongjundev/explainsoc/actions/workflows/deploy.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![React 19](https://img.shields.io/badge/React-19-149eca)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
+![Backend](https://img.shields.io/badge/backend-none-555)
+
 **보안 AI의 99점, 처음 보는 공격에서도 99점일까요?**
 
-회사에서 침입 탐지 같은 보안 AI 제품의 소개서를 받았을 때, “정확도 99%” 같은 숫자가 어떤 시험의
-점수인지 확인하고 판매 업체에 물어볼 질문을 만들어 주는 도구입니다. 10번 과제 논문
-[ExplainSOC Research](https://github.com/myeongjundev/explainsoc-research)에서 확인한 **평가 방식에 따른
-성능 착시**를 실제 제품 검토 질문으로 바꾼 앱이며, SKT ALEPH 마지막 과제 B로 만들었습니다.
+보안 AI 제품 소개서의 “정확도 99%”가 어떤 시험의 점수인지 확인하고, 판매 업체에 물어볼 질문으로 바꿔 주는
+웹 도구입니다. 10번 과제에서 쓴 논문 [ExplainSOC Research](https://github.com/myeongjundev/explainsoc-research)의
+결과 — 같은 AI가 이미 배운 종류의 공격 시험에서는 99.8점, 처음 보는 공격 시험에서는 38.7점(Macro F1 × 100) —
+를 제품 검토 규칙 15개로 옮겼습니다. SKT ALEPH 마지막 과제 B입니다.
 
-- 공개 주소: https://myeongjundev.github.io/explainsoc/ — 로그인 없이 열립니다
-- 입력한 성능 자료는 브라우저 안에서만 계산되며 서버로 전송하지 않습니다. 사례 JSON은 사용자가 직접 눌렀을 때만 기기에 저장합니다.
-- 만들며 부딪힌 문제와 해결: [트러블슈팅 기록](https://github.com/myeongjundev/explainsoc/blob/main/TROUBLESHOOTING.md)
+**[공개 사이트에서 바로 써 보기 →](https://myeongjundev.github.io/explainsoc/)** 로그인·설치 없이, `예시로 바로 보기`
+한 번이면 결론과 업체 질문까지 갑니다.
+
+| 첫 화면 | 결과 맨 위 — 결론 · 왜? · 그래서? |
+|---|---|
+| ![첫 화면: 보안 AI의 99점 질문과 같은 AI의 두 시험 점수](https://raw.githubusercontent.com/myeongjundev/explainsoc/main/evidence/v10-first-screen-laptop.png) | ![결과 맨 위 결론 카드: 광고 숫자만으로는 아직 믿기 이릅니다](https://raw.githubusercontent.com/myeongjundev/explainsoc/main/evidence/v10-result-top-laptop.png) |
 
 ---
 
-## 한눈에 — 문제에서 검증까지
+## 30초 요약
 
 | | |
 |---|---|
 | **문제** | 보안 AI 제품은 “정확도 99%” 같은 높은 숫자를 앞세우지만, 그 숫자가 어떤 시험에서 나왔는지는 잘 적지 않습니다. |
-| **연구** | 10번 논문에서 같은 XGBoost가 무작위로 나눈 시험에서는 Macro F1 0.9979, 학습에 없던 공격만 둔 시험에서는 0.3871이었습니다. 공격 220,788건 가운데 160건만 잡았고, 설명(SHAP)의 상위 특징도 시험마다 바뀌었습니다. |
-| **판단** | 숫자의 좋고 나쁨을 판정하지 않고, 숫자를 만든 시험 조건을 먼저 확인하게 합니다. |
-| **구현** | 소개서 문장과 성능표에서 빠진 시험 조건을 판독 규칙 15개로 찾아 공급자에게 물을 질문으로 바꾸고, 논문 결과를 직접 바꿔 보는 실험실을 붙였습니다. |
-| **검증** | 처음 보는 사람들의 반응을 다섯 번 기록해 화면을 고쳤고(V6~V9, [`evidence/card-5.md`](evidence/card-5.md)), 화면 결과가 논문 규칙과 어긋나지 않는지 자동 검증을 통과한 커밋만 배포합니다. |
+| **연구** | 논문에서 같은 XGBoost가 무작위로 나눈 시험에서는 Macro F1 0.9979, 학습에 없던 공격만 둔 시험에서는 0.3871이었습니다. 공격 220,788건 가운데 160건만 잡았고, 설명(SHAP)의 상위 특징도 시험마다 바뀌었습니다. |
+| **판단** | 숫자의 좋고 나쁨을 판정하지 않고, 숫자를 만든 시험 조건을 먼저 확인하게 합니다. 점수·등급·합격선은 만들지 않습니다. |
+| **구현** | 소개서 문장과 성능표에서 빠진 시험 조건을 판독 규칙 15개로 찾아 공급자 질문으로 바꾸고, 논문 결과를 직접 바꿔 보는 실험실을 붙였습니다. 서버 없이 브라우저 안에서만 동작합니다. |
+| **검증** | 처음 보는 사람들의 반응을 여섯 번 기록하며 화면을 고쳤고, 마지막에는 ALEPH 동기가 휴대폰에서 도움 없이 업체 질문까지 갔습니다. 논문 수치·판독 규칙·접근성·외부 요청 없음을 자동 검사로 고정하고, 통과한 커밋만 배포합니다. |
+
+## 화면으로 보기
+
+| 업체에 물을 질문 — 왜 묻는지까지 | 소개서 판독 — 받은 문장 위에 표시와 메모 |
+|---|---|
+| ![질문 카드마다 상태, 규칙 번호, 왜 묻나요 한 줄](https://raw.githubusercontent.com/myeongjundev/explainsoc/main/evidence/v10-questions-why.png) | ![가상의 소개서 문장 위 번호 표시와 논문 근거 메모](https://raw.githubusercontent.com/myeongjundev/explainsoc/main/evidence/readme/brochure-reader.png) |
+| 질문마다 확인 필요·해석 주의 상태, 판독 규칙 번호, **왜 묻나요** 한 줄이 붙습니다. 질문만 복사해 회의나 메일에 옮깁니다. | 소개서 문장을 붙여 넣으면 성능 주장과 시험 조건 위에 번호가 붙고, 번호마다 논문 근거와 생긴 질문이 달립니다. AI를 부르지 않는 규칙 판독입니다. |
+
+| 논문 실험실 — 광고 숫자 뒤의 실험을 직접 | 휴대폰 첫 화면 |
+|---|---|
+| ![논문 실험실: 실험 네 개와 시험·순위 기준 전환](https://raw.githubusercontent.com/myeongjundev/explainsoc/main/evidence/readme/paper-lab.png) | <img src="https://raw.githubusercontent.com/myeongjundev/explainsoc/main/evidence/v10-first-screen-phone.png" alt="휴대폰 첫 화면: 스크롤 없이 예시로 바로 보기 단추" width="260"> |
+| 시험과 순위 기준을 바꾸면 세 모델의 1위가 바뀝니다. 새로 계산한 숫자 없이 논문과 연구 보고서의 숫자만 옮깁니다. | 390px 폭에서도 스크롤 없이 첫 행동 단추가 보입니다. |
+
+## 처음 보는 사람이 혼자 쓰게 되기까지
+
+기능을 늘리기보다, 처음 보는 사람이 막힌 곳을 하나씩 고쳤습니다. 관찰은 모두 이름 없이
+[`evidence/card-5.md`](https://github.com/myeongjundev/explainsoc/blob/main/evidence/card-5.md)에 있는 그대로 적었습니다.
+
+| 버전 | 관찰 | 바꾼 것 |
+|---|---|---|
+| V6 · 09-22 | 비전공자: 무엇을 하는 사이트인지 모르겠다 | 제목에 `보안 AI`를 넣고, 쓰는 상황 한 줄과 세 단계를 쉬운 말로 |
+| V7 · 09-23 | 두 사람: 결과가 너무 밀집해 보기 힘들다 | 결과를 `주장과 근거 → 판독 → 다음 행동` 세 장으로 나눠 한 번에 한 장 |
+| V9 · 09-24 | 비전공 지인: 결과가 좋은 건지 나쁜 건지, 그래서 뭐? | 결과 맨 위에 결론 카드(결론 · 왜? · 그래서?) |
+| V10 · 09-24 | 직접 재어 보니 노트북 첫 화면에 누를 단추가 없었다(주 단추 y=863px) | 첫 화면 순서와 크기, 99.88% 예시로 시작, 질문마다 왜 묻나요 |
+| 09-25 | 독립 검토: “새 공격이 들어 있었다”는 답만으로 “따로 시험했다”는 결론이 나왔다 | 결론 분기를 고치고 회귀 테스트 6개를 더함 |
+| 09-25 | ALEPH 동기, 휴대폰 크롬: 1분 안에 목적을 말하고 도움 없이 업체 질문까지, 막힌 곳 없음 | 모바일 질문 단추를 옮기는 안은 하지 않기로 |
+
+> “아, 보안 AI 업체가 99%라고 했을 때 그 숫자를 그냥 믿지 말고 어떤 테스트인지 확인하게 해주는 거구나”
+> — 앱을 처음 본 ALEPH 동기(이름 기록 안 함)
+
+## 기술과 만든 방식
+
+| 영역 | 사용한 것 |
+|---|---|
+| 화면 | React 19, TypeScript, Vite 8 — 정적 단일 페이지, 서버·로그인·데이터베이스 없음 |
+| 판독 | `src/domain`의 순수 함수: 판독 규칙 R01~R15, 소개서 규칙 판독, 결론, 혼동행렬 계산, 입력 검증 |
+| 검사 | Vitest(단위·컴포넌트), Playwright(실제 Chrome, 접근성·키보드·375px·외부 요청 없음), 비밀값·개인정보 검사 스크립트 |
+| 배포 | GitHub Actions가 전체 검사를 통과한 `main`만 GitHub Pages로 배포, 같은 커밋에서 늘 같은 ZIP |
+| 보안 | 콘텐츠 보안 정책 `connect-src 'none'`, 입력은 브라우저 메모리에만 |
+
+설계 초안과 독립 검토는 Codex, 구현·테스트·배포 자동화와 증거 기록은 Claude에게 맡겼습니다. 앱의 방향과 범위,
+사람들의 반응을 보고 무엇을 고치고 무엇을 하지 않을지는 직접 정했습니다. 구분은
+[`evidence/card-5.md`의 제출문 세 줄](https://github.com/myeongjundev/explainsoc/blob/main/evidence/card-5.md#제출문-세-줄--brb-c14)에 있습니다.
+만들며 부딪힌 문제와 해결은 [트러블슈팅 기록](https://github.com/myeongjundev/explainsoc/blob/main/TROUBLESHOOTING.md)에 있습니다.
 
 ## 보안 업무에서 이 앱이 맡는 구간
 
@@ -230,15 +283,16 @@ LIVE_URL=https://myeongjundev.github.io/explainsoc/ npm run test:e2e
 
 ```text
 src/
-  domain/      계산(metrics), 입력 검증(validation), 판독 규칙(reviewRules), 회차·로컬 파일(caseFile), 결과 조립(review)
+  domain/      판독 규칙(reviewRules), 소개서 판독(brochure), 결론(conclusion), 계산(metrics),
+               입력 검증(validation·form), 회차·로컬 파일(caseFile), 결과 조립(review)
   data/        논문 근거와 수치(paperEvidence), 예시 데이터(examples)
-  components/  화면 A~G
+  components/  첫 화면, 입력, 소개서 판독, 결론 카드, 결과 세 장, 질문, 논문 실험실
   app/         단계형 작업대
 tests/
-  unit/        계산·검증·규칙·근거
+  unit/        계산·검증·규칙·근거·결론
   component/   화면 동작
   e2e/         실제 브라우저
 scripts/       안전 검사(check-safety), 실행 묶음 만들기(make-release-zip)
-evidence/      과제 카드별 증거 — 저장소에만 있음
+evidence/      과제 카드별 증거와 화면 — 저장소에만 있음
 planning/      과제 원문, 설계, 구현 체크리스트, 진행 기록 — 저장소에만 있음
 ```
