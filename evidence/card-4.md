@@ -1,7 +1,7 @@
 # 카드 4 증거 — 공개와 재현
 
-> **현재 제출본(2026-09-25):** 기준 커밋 `3ae1312`, 실행 묶음 `explainsoc-3ae1312.zip`,
-> SHA-256 `e0429ac2e1696c3fd95b791e11a279ed776bdf0feabe46e8d9f1d0bb6c511ac6`. 배포·빈 폴더 검증·공개본 대조 값은
+> **현재 제출본(2026-09-25):** 기준 커밋 `f34f7d5`(앱 코드는 `3ae1312`, README 포트폴리오판), 실행 묶음
+> `explainsoc-f34f7d5.zip`, SHA-256 `9b30bbd2ca626065cb025262fd92775c93b227b619ddfe158b23a724f4903e57`. 배포·빈 폴더 검증·공개본 대조 값은
 > `evidence/card-5.md` 맨 위에 있다. 아래 V2 갱신과 본문은 그 당시의 기록이다.
 
 > **V2 갱신(2026-09-22):** 구현 커밋 `720dc76`, [Actions run 35675622887](https://github.com/myeongjundev/explainsoc/actions/runs/35675622887)

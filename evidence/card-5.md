@@ -1,8 +1,24 @@
 # 카드 5 증거 — 포트폴리오와 제출
 
+## README 포트폴리오판 제출본 — 2026-09-25
+
+> 이 섹션이 아래 V10 결론 수정판(`3ae1312`)의 실행 묶음 값을 대체한다. 앱 코드는 `3ae1312`와 같고 README만 바뀌었다.
+
+| 항목 | README 포트폴리오판 제출본 |
+|---|---|
+| 기준 커밋 | `f34f7d5` (앱 코드 `3ae1312` + README 포트폴리오판 `dfbbc61`·`f34f7d5`) |
+| 배포 | GitHub Actions [run 36029761981](https://github.com/myeongjundev/explainsoc/actions/runs/36029761981) 검사·Pages 성공 |
+| 공개 주소 | https://myeongjundev.github.io/explainsoc/ |
+| 실행 묶음 | `explainsoc-f34f7d5.zip` · 198,111 bytes · 71개 파일 |
+| SHA-256 | `9b30bbd2ca626065cb025262fd92775c93b227b619ddfe158b23a724f4903e57` |
+| 재현 | 같은 커밋으로 두 번 생성한 SHA-256 일치 |
+| 빈 폴더 검증 | 저장소 밖 새 임시 폴더에서 `npm ci`(취약점 0), Vitest 152개, 프로덕션 빌드, 안전 검사 11개, Playwright 35개 통과(증거 캡처 26개 건너뜀) |
+| 공개본 검증 | JS `index-DfnmrLxk.js`, CSS `index-DhJb78PJ.css` 로컬 빌드와 SHA-256 일치(`3ae1312`와 같은 자산) |
+| README | 저장소 첫 화면에서 배지 5개와 화면 6장이 모두 불러와짐. 저장소에만 있는 화면·문서는 ZIP 안 README에서도 열리도록 절대 주소 |
+
 ## V10 결론 수정판 제출본 — 2026-09-25
 
-> 이 섹션이 아래 V10 제출본(`5690d62`)의 실행 묶음과 검증 값을 대체한다.
+> 이 섹션은 위 README 포트폴리오판으로 대체됐다. 아래 V10 제출본(`5690d62`)의 실행 묶음과 검증 값을 대체했던 기록이다.
 
 | 항목 | V10 결론 수정판 제출본 |
 |---|---|
