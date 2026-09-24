@@ -1,8 +1,12 @@
 # 카드 4 증거 — 공개와 재현
 
+> **현재 제출본(2026-09-25):** 기준 커밋 `3ae1312`, 실행 묶음 `explainsoc-3ae1312.zip`,
+> SHA-256 `e0429ac2e1696c3fd95b791e11a279ed776bdf0feabe46e8d9f1d0bb6c511ac6`. 배포·빈 폴더 검증·공개본 대조 값은
+> `evidence/card-5.md` 맨 위에 있다. 아래 V2 갱신과 본문은 그 당시의 기록이다.
+
 > **V2 갱신(2026-09-22):** 구현 커밋 `720dc76`, [Actions run 35675622887](https://github.com/myeongjundev/explainsoc/actions/runs/35675622887)
 > 검사·배포 성공. 공개본 자산 `index-DDzNqu6T.js`, `index-DY_sn3fI.css`; 공개본 Playwright 22개 통과.
-> 현재 실행 묶음은 `explainsoc-720dc76.zip`, SHA-256 `7dc9812c4528ddd47f6354ebcb359686bbd8f81989b14914399c242f213503c5`.
+> 당시 실행 묶음은 `explainsoc-720dc76.zip`, SHA-256 `7dc9812c4528ddd47f6354ebcb359686bbd8f81989b14914399c242f213503c5`.
 > 세부 기록은 `evidence/card-5.md` 맨 위에 있다.
 
 > 통과 기준: BRB-C08 · BRB-C09 · BRB-C22. BRB-C15는 이 앱의 주소와 앱이 여는 링크를 확인했고,
