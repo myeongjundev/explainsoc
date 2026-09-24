@@ -13,6 +13,7 @@ const V5_DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence'
 const V7_DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence'
 const V8_DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence'
 const V9_DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence'
+const V10_DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence'
 
 test('첫 화면 — 데스크톱 1440×900', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 })
@@ -188,3 +189,30 @@ test('V9 논문 실험실 — 모바일 첫머리', async ({ page }) => {
   await page.getByRole('button', { name: /논문 실험실/ }).click()
   await page.screenshot({ path: `${V9_DIR}/v9-paper-lab-mobile.png` })
 })
+
+test('V10 첫 화면 — 노트북 1280×800 첫 화면', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await openHome(page)
+  await page.screenshot({ path: `${V10_DIR}/v10-first-screen-laptop.png` })
+})
+
+test('V10 첫 화면 — 휴대폰 390×844 첫 화면', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await openHome(page)
+  await page.screenshot({ path: `${V10_DIR}/v10-first-screen-phone.png` })
+})
+
+test('V10 결과 첫 화면 — 99.88% 예시의 결론과 한 줄 요약', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await startExample(page)
+  await page.screenshot({ path: `${V10_DIR}/v10-result-top-laptop.png`, fullPage: false })
+})
+
+test('V10 질문 — 상태와 왜 묻나요', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await startExample(page)
+  await page.getByRole('button', { name: '업체에 물을 질문 보기' }).click()
+  await expect(page.getByRole('heading', { level: 3, name: '공급자에게 물을 질문' })).toBeFocused()
+  await page.getByRole('region', { name: '공급자에게 물을 질문' }).screenshot({ path: `${V10_DIR}/v10-questions-why.png` })
+})
+
