@@ -4082,95 +4082,6 @@ a {
   display: block;
 }
 
-/* V9 결론 카드 — 결과의 첫 문장. 색은 늘 글자 이름표(믿기 전에 확인 등)와 함께 간다. */
-.conclusion {
-  width: min(960px, 100%);
-  margin: 18px auto 0;
-  display: grid;
-  gap: 12px;
-  padding: 22px 24px;
-  background: var(--sheet);
-  border: 1px solid var(--line);
-  border-top: 5px solid var(--accent);
-  border-radius: 18px;
-}
-
-.conclusion--early {
-  border-top-color: #c98a00;
-}
-
-.conclusion--partial {
-  border-top-color: #c98a00;
-}
-
-.conclusion__eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--ink-2);
-  font-size: 0.86rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-}
-
-.conclusion__tone {
-  padding: 1px 9px;
-  border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-size: 0.8rem;
-  letter-spacing: 0;
-}
-
-.conclusion--early .conclusion__tone,
-.conclusion--partial .conclusion__tone {
-  background: var(--check-bg);
-  color: var(--check-ink);
-}
-
-.conclusion__headline {
-  font-size: clamp(1.35rem, 3vw, 1.75rem);
-  line-height: 1.35;
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-}
-
-.conclusion__body {
-  display: grid;
-  gap: 16px;
-}
-
-@media (min-width: 760px) {
-  .conclusion__body {
-    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-    align-items: start;
-  }
-}
-
-.conclusion__label {
-  margin-bottom: 4px;
-  color: var(--accent);
-  font-size: 0.82rem;
-  font-weight: 800;
-}
-
-.conclusion__reasons {
-  padding-left: 1.1em;
-  display: grid;
-  gap: 6px;
-  color: var(--ink-2);
-}
-
-.conclusion__next {
-  margin-bottom: 10px;
-  font-weight: 600;
-}
-
-.conclusion__boundary {
-  color: var(--muted);
-  font-size: 0.82rem;
-}
-
 /* ─── V9 · 논문 실험실 ───────────────────────────────────
  * 실험 하나가 카드 하나. 조작(시험·기준)은 카드 위, 결과 한 줄은 카드 아래에 둔다.
  */
@@ -4669,14 +4580,6 @@ a {
   }
 }
 
-.conclusion__lab {
-  list-style: none;
-  padding: 10px 0 0;
-  display: grid;
-  gap: 4px;
-  border-top: 1px dashed var(--line-strong);
-  font-size: 0.9rem;
-}
 
 .reader-note__lab {
   justify-self: start;
@@ -4686,4 +4589,599 @@ a {
 
 .lab-card h3 {
   scroll-margin-top: 24px;
+}
+
+/* ─── V9 디자인 · 결론 카드 ──────────────────────────────
+ * 결과의 첫 장. 위: 결론 한 문장 / 가운데: 왜?(시험 조건·받은 숫자)와 막대 / 아래 짙은 띠: 그래서?
+ * 색은 늘 글자 이름표(믿기 전에 확인 등)와 함께 간다. 막대는 논문 숫자이거나 입력한 숫자다.
+ */
+.conclusion {
+  --tone: var(--accent);
+  --tone-soft: var(--accent-soft);
+  width: min(960px, 100%);
+  margin: 18px auto 0;
+  display: grid;
+  overflow: hidden;
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+}
+
+.conclusion--early,
+.conclusion--partial {
+  --tone: #c98a00;
+  --tone-soft: #fff6df;
+}
+
+.conclusion__top {
+  display: grid;
+  gap: 8px;
+  padding: 22px 24px 18px;
+  border-top: 5px solid var(--tone);
+  background: linear-gradient(180deg, var(--tone-soft), var(--sheet));
+}
+
+.conclusion__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-2);
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.conclusion__tone {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--sheet);
+  border: 1px solid var(--tone);
+  color: var(--ink);
+  font-size: 0.8rem;
+  letter-spacing: 0;
+}
+
+.conclusion__tone::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--tone);
+}
+
+.conclusion__headline {
+  font-size: clamp(1.45rem, 3.4vw, 2rem);
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.conclusion__body {
+  display: grid;
+  gap: 18px;
+  padding: 18px 24px 20px;
+}
+
+@media (min-width: 760px) {
+  .conclusion__body.has-figure {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.conclusion__label {
+  margin-bottom: 6px;
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.conclusion__reasons {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.conclusion__reasons li {
+  display: grid;
+  gap: 4px;
+  padding-left: 12px;
+  border-left: 2px solid var(--line-strong);
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+
+.conclusion__tag {
+  justify-self: start;
+  color: var(--ink);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.conclusion__figure {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--sheet-2);
+}
+
+.conclusion__figure-title {
+  color: var(--ink-2);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.conclusion__bars {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.conclusion__bars li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+
+.conclusion__bar-label {
+  font-size: 0.86rem;
+  color: var(--ink-2);
+}
+
+.conclusion__bar-value {
+  font-size: 1.3rem;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.conclusion__bar {
+  grid-column: 1 / -1;
+  height: 10px;
+  border-radius: 999px;
+  background: #e3e7ed;
+  overflow: hidden;
+}
+
+.conclusion__bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ink);
+}
+
+.conclusion__bars li.is-low .conclusion__bar-value {
+  color: var(--check-ink);
+}
+
+.conclusion__bars li.is-low .conclusion__bar span {
+  background: #c98a00;
+}
+
+.conclusion__figure-note {
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.conclusion__next-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 16px 24px;
+  background: var(--midnight);
+  color: #fff;
+}
+
+.conclusion__next-row .conclusion__label {
+  margin-bottom: 2px;
+  color: var(--electric);
+}
+
+.conclusion__next {
+  font-weight: 700;
+  max-width: 52ch;
+}
+
+.conclusion__next-row .button--primary {
+  background: #fff;
+  border-color: #fff;
+  color: var(--ink);
+}
+
+.conclusion__next-row .button--primary:hover {
+  background: #e8edf5;
+}
+
+.conclusion__next-row .button:focus-visible {
+  outline-color: var(--electric);
+}
+
+.conclusion__lab {
+  list-style: none;
+  margin: 0;
+  padding: 16px 24px 0;
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 640px) {
+  .conclusion__lab {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+}
+
+.conclusion__boundary {
+  padding: 14px 24px 18px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+/* 실험실로 가는 작은 카드. 결론 카드와 소개서 판독 메모에서 같이 쓴다. */
+.lab-link {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--sheet);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.lab-link:hover {
+  border-color: var(--accent);
+  box-shadow: 0 6px 18px rgb(36 80 199 / 10%);
+  transform: translateY(-1px);
+}
+
+.lab-link__no {
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.lab-link__title {
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.lab-link__go {
+  margin-top: 4px;
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .conclusion__top,
+  .conclusion__body,
+  .conclusion__next-row,
+  .conclusion__lab,
+  .conclusion__boundary {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .conclusion__next-row .button {
+    flex: 1 1 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-link {
+    transition: none;
+  }
+  .lab-link:hover {
+    transform: none;
+  }
+}
+
+/* ─── V9 디자인 · 논문 실험실 ────────────────────────────
+ * 첫머리는 짙은 띠와 실험 목차 네 칸, 각 실험은 번호 배지로 시작한다.
+ * 짙은 색은 실험실 첫머리와 마지막 질문 카드에만 써서 시작과 끝을 묶는다.
+ */
+.lab__head {
+  gap: 10px;
+  padding: 28px 28px 24px;
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 140% at 100% 0%, #1d3a68 0%, transparent 55%),
+    var(--midnight);
+  color: #fff;
+}
+
+.lab__head .step-title {
+  color: #fff;
+}
+
+.lab__head .lab__kicker {
+  color: var(--electric);
+}
+
+.lab__head .lab__lead {
+  color: #c9d3e3;
+}
+
+.lab__head :focus-visible {
+  outline-color: var(--electric);
+}
+
+.lab__index {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 560px) {
+  .lab__index {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .lab__index {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.lab__index-item {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: start;
+  gap: 2px 10px;
+  padding: 12px 14px;
+  border: 1px solid rgb(255 255 255 / 16%);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 6%);
+  color: #fff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease;
+}
+
+.lab__index-item:hover {
+  background: rgb(255 255 255 / 12%);
+  border-color: var(--electric);
+}
+
+.lab__index-no {
+  grid-row: 1 / 3;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid var(--electric);
+  border-radius: 8px;
+  color: var(--electric);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.lab__index-title {
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.lab__index-line {
+  color: #b7c3d6;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.lab-card {
+  box-shadow: var(--shadow);
+}
+
+.lab-card__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.lab-card__head > div {
+  display: grid;
+  gap: 2px;
+}
+
+.lab-card__badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--midnight);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.lab-table th.is-unseen,
+.lab-table td.is-unseen {
+  background: #fff6df;
+}
+
+.lab-table thead th.is-unseen {
+  color: var(--check-ink);
+}
+
+.lab-table td.is-unseen {
+  font-weight: 700;
+}
+
+.lab-card--ask {
+  background: var(--midnight);
+  border-color: var(--midnight);
+  color: #fff;
+}
+
+.lab-card--ask .lab-card__no {
+  color: var(--electric);
+}
+
+.lab-card--ask ol {
+  list-style: none;
+  counter-reset: ask;
+  padding: 0;
+  gap: 8px;
+}
+
+.lab-card--ask li {
+  counter-increment: ask;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 10px;
+  background: rgb(255 255 255 / 5%);
+}
+
+.lab-card--ask li::before {
+  content: 'Q' counter(ask);
+  color: var(--electric);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .lab__head {
+    padding: 22px 16px 18px;
+  }
+  .lab-card {
+    padding: 18px 16px;
+  }
+  .lab-card__badge {
+    width: 36px;
+    height: 36px;
+    font-size: 1.05rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab__index-item {
+    transition: none;
+  }
+}
+
+/* ─── V9 디자인 · 소개서 판독 ────────────────────────────
+ * 왼쪽은 받은 종이 한 장, 오른쪽은 그 위에 붙인 메모. 표시와 메모는 짝끼리 같이 밝아진다.
+ */
+.reader__sheet {
+  box-shadow: var(--stack);
+}
+
+.reader__mark {
+  transition: outline-color 140ms ease;
+  outline: 2px solid transparent;
+  outline-offset: 1px;
+}
+
+.reader__mark.is-active {
+  outline-color: var(--ink);
+}
+
+.reader__mark.is-active sup {
+  background: var(--accent);
+}
+
+.reader-note {
+  transition:
+    background 140ms ease,
+    box-shadow 140ms ease,
+    border-color 140ms ease;
+}
+
+.reader-note.is-active {
+  border-top-color: var(--ink);
+  border-right-color: var(--ink);
+  border-bottom-color: var(--ink);
+  background: var(--sheet);
+  box-shadow: var(--shadow);
+}
+
+.reader-note.is-active .reader-note__no {
+  background: var(--accent);
+}
+
+.reader-note__label {
+  padding: 0 7px;
+  border-radius: 5px;
+  font-size: 0.86rem;
+}
+
+.reader-note--claim .reader-note__label {
+  background: #fff1b8;
+  color: #5c4300;
+}
+
+.reader-note--condition .reader-note__label {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.reader-note__lab {
+  justify-self: stretch;
+  margin-top: 2px;
+  font-size: 0.92rem;
+}
+
+.reader__actions {
+  z-index: 2;
+  align-items: center;
+  margin-top: -4px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: 16px 16px 0 0;
+  background: rgb(255 255 255 / 94%);
+  box-shadow: 0 -8px 24px rgb(27 31 36 / 8%);
+  backdrop-filter: blur(8px);
+}
+
+@media (max-width: 480px) {
+  .reader__actions {
+    border-bottom: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reader__mark,
+  .reader-note {
+    transition: none;
+  }
 }

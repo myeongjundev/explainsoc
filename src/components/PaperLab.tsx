@@ -46,12 +46,23 @@ const METRIC_NAME: Record<Metric, string> = {
 const pct = (v: number) => `${Number((v * 100).toFixed(2))}%`
 
 /** 화면 D — 논문 실험실. 원고 V-2~V-5의 결과를 직접 바꿔 보며 확인한다(설계 31절). 새 수치를 만들지 않는다. */
+/** 실험실 첫머리의 목차. 제목·한 줄은 각 실험 카드의 제목과 결과를 줄인 말이다. */
+const INDEX: readonly { section: LabSection; no: number; title: string; line: string }[] = [
+  { section: 'rank', no: 1, title: '1위는 시험이 정합니다', line: '같은 세 모델도 시험을 바꾸면 1위가 바뀝니다' },
+  { section: 'seed', no: 2, title: '운이 아니었습니다', line: '세 번 학습해도 처음 보는 공격에서 같은 결과' },
+  { section: 'shift', no: 3, title: '설명도 시험을 탑니다', line: 'SHAP 상위 특징이 시험마다 달라집니다' },
+  { section: 'blind', no: 4, title: '안정된 설명 ≠ 잘 잡는 모델', line: '설명은 세 번 같았지만 공격은 거의 못 잡았습니다' },
+]
+
+function goTo(section: LabSection) {
+  const heading = document.getElementById(SECTION_TITLE_ID[section])
+  heading?.scrollIntoView?.({ block: 'start' })
+  heading?.focus()
+}
+
 export const PaperLab = forwardRef<HTMLHeadingElement, Props>(function PaperLab({ onBack, backLabel, section }, headingRef) {
   useEffect(() => {
-    if (!section) return
-    const heading = document.getElementById(SECTION_TITLE_ID[section])
-    heading?.scrollIntoView?.({ block: 'start' })
-    heading?.focus()
+    if (section) goTo(section)
   }, [section])
   return (
     <div className="lab">
@@ -61,12 +72,26 @@ export const PaperLab = forwardRef<HTMLHeadingElement, Props>(function PaperLab(
         <p className="lab__lead">
           10번 논문의 실험 결과를 그대로 옮겼습니다. 새로 계산하거나 추정한 숫자는 없습니다. 각 실험 아래 ‘논문 근거 보기’에서 원문과 한계를 확인할 수 있습니다.
         </p>
+        <nav aria-label="실험 목록">
+          <ol className="lab__index">
+            {INDEX.map((item) => (
+              <li key={item.section}>
+                <button type="button" className="lab__index-item" onClick={() => goTo(item.section)}>
+                  <span className="lab__index-no" aria-hidden="true">{item.no}</span>
+                  <span className="lab__index-title">{item.title}</span>
+                  <span className="lab__index-line">{item.line}</span>
+                </button>
+              </li>
+            ))}
+          </ol>
+        </nav>
       </header>
       <RankFlip />
       <SeedCheck />
       <ExplanationShift />
       <StableButBlind />
       <section className="lab-card lab-card--ask" aria-labelledby="lab-ask-title">
+        <p className="lab-card__no">실험을 마치면</p>
         <h3 id="lab-ask-title">이 실험들이 공급자에게 묻게 하는 것</h3>
         <ol>
           <li>다른 분할에서도 같은 모델이 가장 높았습니까?</li>
@@ -80,6 +105,18 @@ export const PaperLab = forwardRef<HTMLHeadingElement, Props>(function PaperLab(
     </div>
   )
 })
+
+function CardHead({ no, source, id, title }: { no: number; source: string; id: string; title: string }) {
+  return (
+    <div className="lab-card__head">
+      <span className="lab-card__badge" aria-hidden="true">{no}</span>
+      <div>
+        <p className="lab-card__no">실험 {no} · {source}</p>
+        <h3 id={id} tabIndex={-1}>{title}</h3>
+      </div>
+    </div>
+  )
+}
 
 function Segmented<T extends string>({ legend, name, value, options, onChange }: {
   legend: string
@@ -122,8 +159,7 @@ function RankFlip() {
   const max = Math.max(...MODEL_TABLE.map((r) => r[metric]))
   return (
     <section className="lab-card" aria-labelledby="lab-rank-title">
-      <p className="lab-card__no">실험 1 · 원고 V-2</p>
-      <h3 id="lab-rank-title" tabIndex={-1}>1위는 시험이 정합니다</h3>
+      <CardHead no={1} source="원고 V-2" id="lab-rank-title" title="1위는 시험이 정합니다" />
       <p className="lab-card__lead">같은 자료로 학습한 세 모델입니다. 시험을 바꾸면 순위가 어떻게 되는지 보세요.</p>
       <div className="lab-card__controls">
         <Segmented legend="시험" name="rank-split" value={split} options={SPLIT_OPTIONS} onChange={setSplit} />
@@ -165,22 +201,21 @@ function SeedCheck() {
   const f6 = (v: number) => v.toFixed(6)
   return (
     <section className="lab-card" aria-labelledby="lab-seed-title">
-      <p className="lab-card__no">실험 2 · 원고 V-2</p>
-      <h3 id="lab-seed-title" tabIndex={-1}>운이 아니었습니다 — 세 번 학습해도 같은 결과</h3>
+      <CardHead no={2} source="원고 V-2" id="lab-seed-title" title="운이 아니었습니다 — 세 번 학습해도 같은 결과" />
       <p className="lab-card__lead">XGBoost를 초기화만 바꿔 세 번 학습했습니다. 처음 보는 공격 시험의 붕괴는 세 번 모두 같았습니다.</p>
       <div className="table-wrap">
         <table className="lab-table">
           <caption className="visually-hidden">학습 시드별 XGBoost 성능</caption>
           <thead>
-            <tr><th scope="col">학습 시드</th><th scope="col">학습에 있던 공격 · Macro F1</th><th scope="col">처음 보는 공격 · Macro F1</th><th scope="col">처음 보는 공격 · 공격 Recall</th></tr>
+            <tr><th scope="col">학습 시드</th><th scope="col">학습에 있던 공격 · Macro F1</th><th scope="col" className="is-unseen">처음 보는 공격 · Macro F1</th><th scope="col" className="is-unseen">처음 보는 공격 · 공격 Recall</th></tr>
           </thead>
           <tbody>
             {SEED_TABLE.map((r) => (
               <tr key={r.seed}>
                 <th scope="row">{r.seed}</th>
                 <td>{f6(r.randomMacroF1)}</td>
-                <td>{f6(r.unseenMacroF1)}</td>
-                <td>{f6(r.unseenRecall)}</td>
+                <td className="is-unseen">{f6(r.unseenMacroF1)}</td>
+                <td className="is-unseen">{f6(r.unseenRecall)}</td>
               </tr>
             ))}
           </tbody>
@@ -229,8 +264,7 @@ function ExplanationShift() {
   )
   return (
     <section className="lab-card" aria-labelledby="lab-shift-title">
-      <p className="lab-card__no">실험 3 · 원고 V-3</p>
-      <h3 id="lab-shift-title" tabIndex={-1}>“AI가 이것을 보고 판단합니다” — 그 설명도 시험을 탑니다</h3>
+      <CardHead no={3} source="원고 V-3" id="lab-shift-title" title="“AI가 이것을 보고 판단합니다” — 그 설명도 시험을 탑니다" />
       <p className="lab-card__lead">SHAP으로 뽑은 전역 중요도 상위 5개 특징입니다. 특징을 누르면 두 시험에서 같은 특징이 함께 표시됩니다.</p>
       <div className="lab-card__controls">
         <Segmented
@@ -263,8 +297,7 @@ function StableButBlind() {
   })
   return (
     <section className="lab-card" aria-labelledby="lab-blind-title">
-      <p className="lab-card__no">실험 4 · 원고 V-4 · V-5</p>
-      <h3 id="lab-blind-title" tabIndex={-1}>설명이 안정적이라고, 공격을 잘 잡는 것은 아닙니다</h3>
+      <CardHead no={4} source="원고 V-4 · V-5" id="lab-blind-title" title="설명이 안정적이라고, 공격을 잘 잡는 것은 아닙니다" />
       <p className="lab-card__lead">
         같은 XGBoost를 세 번 학습해 설명 상위 5개가 얼마나 같은지(Top-5 Jaccard, 1이면 완전히 같음) 쟀습니다. 그리고 상위 특징을 하나씩 지우면(학습 자료의 중앙값으로 바꾸면) 예측이 얼마나 바뀌는지 봤습니다.
       </p>

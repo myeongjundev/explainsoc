@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import { EVIDENCE, EXPLANATION_STABILITY, MODEL_TABLE, PERMUTATION, XGB_RANDOM, XGB_UNSEEN } from '../data/paperEvidence'
 import { MAX_BROCHURE_CHARS, type BrochureMark, type BrochureRead } from '../domain/brochure'
 import { formatCount, formatRatio, METRIC_LABEL } from '../domain/format'
@@ -32,6 +32,12 @@ interface Note {
 }
 
 const f = formatRatio
+
+/** 메모에서 실험실로 가는 카드의 번호·제목. 실험실(PaperLab)의 카드 제목과 같다. */
+const LAB_LINK: Partial<Record<LabSection, { no: string; title: string }>> = {
+  rank: { no: '실험 1', title: '1위는 시험이 정합니다' },
+  blind: { no: '실험 4', title: '설명이 안정적이라고, 공격을 잘 잡는 것은 아닙니다' },
+}
 
 const PAPER_BY_METRIC: Record<MetricKind, string> = {
   accuracy: `논문에서 같은 XGBoost의 정확도는 ${XGB_RANDOM.splitLabel} ${f(XGB_RANDOM.reported.accuracy)}, ${XGB_UNSEEN.splitLabel} ${f(XGB_UNSEEN.reported.accuracy)}였습니다. 어느 시험의 숫자인지가 먼저입니다.`,
@@ -142,6 +148,9 @@ export function BrochureReader({ text, onText, read, review, onUseExample, onFin
   const linked = new Set(notes.flatMap((note) => note.rules))
   const unlinked = review.findings.filter((finding) => finding.asked && !linked.has(finding.ruleId))
   const shown = text.slice(0, MAX_BROCHURE_CHARS)
+  // 표시와 메모를 잇는다: 한쪽에 마우스를 올리거나 메모 안으로 초점이 들어오면 짝이 같이 밝아진다.
+  const [active, setActive] = useState<number | null>(null)
+  const hold = (i: number) => ({ onMouseEnter: () => setActive(i), onMouseLeave: () => setActive(null) })
 
   return (
     <div className="reader">
@@ -194,7 +203,11 @@ export function BrochureReader({ text, onText, read, review, onUseExample, onFin
                   segment.mark === null ? (
                     <Fragment key={i}>{segment.text}</Fragment>
                   ) : (
-                    <mark key={i} className={`reader__mark reader__mark--${notes[segment.mark].tone}`}>
+                    <mark
+                      key={i}
+                      className={`reader__mark reader__mark--${notes[segment.mark].tone}${active === segment.mark ? ' is-active' : ''}`}
+                      {...hold(segment.mark)}
+                    >
                       <MarkText no={segment.mark + 1} text={segment.text} />
                       <span className="visually-hidden"> (표시 {segment.mark + 1})</span>
                     </mark>
@@ -209,7 +222,13 @@ export function BrochureReader({ text, onText, read, review, onUseExample, onFin
             {notes.length > 0 && (
               <ol className="reader__notes" aria-label="표시별 판독">
                 {notes.map((note, i) => (
-                  <li key={i} className={`reader-note reader-note--${note.tone}`}>
+                  <li
+                    key={i}
+                    className={`reader-note reader-note--${note.tone}${active === i ? ' is-active' : ''}`}
+                    {...hold(i)}
+                    onFocus={() => setActive(i)}
+                    onBlur={() => setActive(null)}
+                  >
                     <p className="reader-note__head">
                       <span className="reader-note__no" aria-hidden="true">{i + 1}</span>
                       <span className="reader-note__label">{note.label}</span>
@@ -224,8 +243,10 @@ export function BrochureReader({ text, onText, read, review, onUseExample, onFin
                     )}
                     <RuleQuestions ids={note.rules} findingById={findingById} />
                     {note.lab && (
-                      <button type="button" className="link-button reader-note__lab" onClick={() => onOpenLab(note.lab!)}>
-                        논문 실험실에서 직접 보기 →
+                      <button type="button" className="lab-link reader-note__lab" onClick={() => onOpenLab(note.lab!)}>
+                        <span className="lab-link__no">{LAB_LINK[note.lab]?.no}</span>
+                        <span className="lab-link__title">{LAB_LINK[note.lab]?.title}</span>
+                        <span className="lab-link__go">논문 실험실에서 직접 보기 →</span>
                       </button>
                     )}
                   </li>

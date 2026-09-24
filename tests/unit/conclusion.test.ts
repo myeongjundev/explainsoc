@@ -43,6 +43,17 @@ describe('결론 카드 — 판정이 아니라 믿을 근거와 숫자의 뜻',
     expect(conclude(inputOf(form)).tone).toBe('early')
   })
 
+  it('믿기 이르면 논문의 두 시험 막대를, 받은 숫자가 있으면 그 숫자 막대를 그린다', () => {
+    const early = conclude(inputOf(formFromExample(EXAMPLE_B))).figure
+    expect(early?.title).toBe('논문에서 같은 AI, 두 번의 시험')
+    expect(early?.bars.map((b) => b.display)).toEqual(['99.8점', '38.7점'])
+    expect(early?.caption).toContain('입력한 제품의 점수가 아닙니다')
+    const shown = conclude(inputOf(formFromExample(EXAMPLE_A))).figure
+    expect(shown?.bars.map((b) => b.display)).toEqual(['약 0.07건'])
+    const partial = { ...emptyForm(), metricRows: [{ id: 'x', kind: 'accuracy' as const, raw: '0.99' }], split: 'unseen' as const, unseenIncluded: 'yes' as const }
+    expect(conclude(inputOf(partial)).figure).toBeNull()
+  })
+
   it('100건으로 옮길 때 아주 작은 값을 0으로 뭉개지 않는다', () => {
     expect(per100(160, 220_788)).toBe('약 0.07건')
     expect(per100(1, 1_000_000)).toBe('0.01건 미만')
