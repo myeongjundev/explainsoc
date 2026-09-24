@@ -76,8 +76,11 @@ export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStar
           점수는 논문(원고 V-2)의 Macro F1(0~1)을 100점 만점으로 옮긴 값입니다. {percent(XGB_RANDOM.reported.accuracy)}는 A 시험의 정확도입니다.
         </p>
         <p className="hero__figure-ask">받은 99%는 어느 시험의 점수입니까?</p>
-        <button type="button" className="hero__lab-link" onClick={onOpenLab}>
-          논문 실험실 — 세 모델의 순위와 설명(SHAP)이 시험마다 어떻게 바뀌는지 직접 바꿔 보기 →
+        <button type="button" className="hero-lab" onClick={onOpenLab}>
+          <span className="hero-lab__kicker">논문 실험실 · 실험 4개</span>
+          <span className="hero-lab__title">광고 숫자 뒤의 실험을 직접 바꿔 보기</span>
+          <span className="hero-lab__line">세 모델의 순위와 설명(SHAP)이 시험마다 어떻게 바뀌는지 봅니다</span>
+          <span className="hero-lab__go" aria-hidden="true">열기 →</span>
         </button>
       </figure>
 
