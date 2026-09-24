@@ -81,6 +81,13 @@ describe('소개서에서 주장과 시험 조건을 가린다', () => {
     expect(readBrochure('중복 제거하지 않은 원본으로 평가').patch.deduplicated).toBe('no')
   })
 
+  it('설명 가능한 AI·XAI·SHAP·탐지 근거 제시를 설명 주장으로 읽는다', () => {
+    for (const text of ['설명 가능한 AI로 만들었습니다', 'XAI 대시보드', 'SHAP 값을 보여 줍니다', '탐지 근거를 제시합니다']) {
+      expect(readBrochure(text).patch.claimedExplanation, text).toBe('yes')
+    }
+    expect(readBrochure('XAIR 장비').patch.claimedExplanation).toBeNull()
+  })
+
   it('판독할 표현이 없으면 아무것도 읽지 않는다', () => {
     expect(readBrochure('보안 운영을 더 쉽게 만드는 솔루션입니다.')).toEqual({ marks: [], patch: EMPTY_PATCH })
   })
@@ -99,17 +106,17 @@ describe('소개서에서 주장과 시험 조건을 가린다', () => {
 })
 
 describe('예시 소개서 — 논문의 무작위 분할 숫자를 빌린 가상의 문장', () => {
-  it('정확도·오탐률, 무작위 분할, 신종 공격 주장, 최고 성능을 읽는다', () => {
+  it('정확도·오탐률, 무작위 분할, 신종 공격 주장, 최고 성능, 설명 가능 AI 주장을 읽는다', () => {
     const { marks, patch } = readBrochure(EXAMPLE_BROCHURE.text)
-    expect(kinds(EXAMPLE_BROCHURE.text)).toEqual(['metric', 'metric', 'split', 'unseenClaim', 'best'])
+    expect(kinds(EXAMPLE_BROCHURE.text)).toEqual(['metric', 'metric', 'split', 'unseenClaim', 'best', 'xaiClaim'])
     expect(marks.filter((m) => m.kind === 'metric').map((m) => m.metric)).toEqual(['accuracy', 'fpr'])
-    expect(patch).toMatchObject({ claimedBest: 'yes', split: 'random', unseenIncluded: null, deduplicated: null })
+    expect(patch).toMatchObject({ claimedBest: 'yes', split: 'random', unseenIncluded: null, deduplicated: null, claimedExplanation: 'yes' })
   })
 
-  it('판독 규칙에 넣으면 무작위 분할·신종 공격·최고 성능·중복 질문이 나온다', () => {
+  it('판독 규칙에 넣으면 무작위 분할·신종 공격·최고 성능·중복·설명 주장 질문이 나온다', () => {
     const form = applyBrochure(emptyForm(), EMPTY_PATCH, readBrochure(EXAMPLE_BROCHURE.text).patch)
     const ids = buildReview(checkForm(form).input).findings.map((f) => f.ruleId).sort()
-    expect(ids).toEqual(['R01', 'R03', 'R04', 'R05', 'R07', 'R09'])
+    expect(ids).toEqual(['R01', 'R03', 'R04', 'R05', 'R07', 'R09', 'R15'])
   })
 })
 

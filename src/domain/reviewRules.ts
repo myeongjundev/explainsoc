@@ -1,5 +1,5 @@
 /**
- * 판독 규칙 R01~R10(설계 7절) + V2 정합성 규칙 R11~R13(설계 23절).
+ * 판독 규칙 R01~R10(설계 7절) + V2 정합성 규칙 R11~R13(설계 23절) + V3 출처 R14 + V9 설명 주장 R15(설계 31절).
  * 규칙 하나에 조건·상태·문구·질문·근거를 함께 둔다.
  *
  * - 임계값으로 등급을 매기지 않는다. 숫자가 높은지 낮은지 판정하지 않는다.
@@ -27,6 +27,7 @@ export type RuleId =
   | 'R12'
   | 'R13'
   | 'R14'
+  | 'R15'
 
 export interface ReviewContext {
   isFollowup: boolean
@@ -212,6 +213,15 @@ export const REVIEW_RULES: readonly ReviewRule[] = [
       && (context.sameTrial === null || context.sameTrial === 'unknown')
       && (context.hasReceivedEvidence ?? (Object.keys(i.claim).length > 0 || Boolean(i.matrix))),
     ),
+  },
+  {
+    id: 'R15',
+    status: 'check',
+    title: '설명 가능한 AI라는 주장',
+    guidance: '탐지 근거를 설명해 준다는 것과 공격을 잘 잡는다는 것은 다른 이야기입니다. 설명이 늘 같게 나와도 공격을 거의 놓칠 수 있습니다.',
+    question: '보여 준 설명은 어떤 시험 자료로 학습한 모델의 것이고, 같은 시험에서 공격 Recall은 얼마입니까?',
+    evidenceIds: ['P14', 'P08'],
+    applies: (i) => i.claimedExplanation === 'yes',
   },
 ]
 

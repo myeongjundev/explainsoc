@@ -109,6 +109,7 @@ export const REQUEST_ARTIFACT: Record<RuleId, string> = {
   R12: '분할 정의와 시험 공격 유형 구성표',
   R13: '구체적인 분할 기준과 학습·시험 공격 유형 표',
   R14: '기존 주장과 새 자료의 시험 ID·버전·실행 조건',
+  R15: '설명 그림을 만든 모델의 학습·시험 자료 정의와 같은 시험의 TN·FP·FN·TP 원수치',
 }
 
 export function buildRequestText(review: Review): string {

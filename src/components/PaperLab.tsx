@@ -1,4 +1,4 @@
-import { forwardRef, useId, useState } from 'react'
+import { forwardRef, useEffect, useId, useState } from 'react'
 import {
   EXPLANATION_STABILITY,
   FEATURE_LABEL,
@@ -13,9 +13,21 @@ import {
 import { formatRatio } from '../domain/format'
 import { EvidenceDetails } from './EvidenceDetails'
 
+/** 다른 화면에서 실험 하나로 바로 들어올 때 쓰는 이름 */
+export type LabSection = 'rank' | 'seed' | 'shift' | 'blind'
+
+const SECTION_TITLE_ID: Record<LabSection, string> = {
+  rank: 'lab-rank-title',
+  seed: 'lab-seed-title',
+  shift: 'lab-shift-title',
+  blind: 'lab-blind-title',
+}
+
 interface Props {
   onBack: () => void
   backLabel: string
+  /** 있으면 그 실험의 제목으로 초점을 옮긴다 */
+  section?: LabSection | null
 }
 
 const SPLIT_NAME: Record<LabSplit, { plain: string; paper: string }> = {
@@ -34,7 +46,13 @@ const METRIC_NAME: Record<Metric, string> = {
 const pct = (v: number) => `${Number((v * 100).toFixed(2))}%`
 
 /** 화면 D — 논문 실험실. 원고 V-2~V-5의 결과를 직접 바꿔 보며 확인한다(설계 31절). 새 수치를 만들지 않는다. */
-export const PaperLab = forwardRef<HTMLHeadingElement, Props>(function PaperLab({ onBack, backLabel }, headingRef) {
+export const PaperLab = forwardRef<HTMLHeadingElement, Props>(function PaperLab({ onBack, backLabel, section }, headingRef) {
+  useEffect(() => {
+    if (!section) return
+    const heading = document.getElementById(SECTION_TITLE_ID[section])
+    heading?.scrollIntoView?.({ block: 'start' })
+    heading?.focus()
+  }, [section])
   return (
     <div className="lab">
       <header className="lab__head">
@@ -105,7 +123,7 @@ function RankFlip() {
   return (
     <section className="lab-card" aria-labelledby="lab-rank-title">
       <p className="lab-card__no">실험 1 · 원고 V-2</p>
-      <h3 id="lab-rank-title">1위는 시험이 정합니다</h3>
+      <h3 id="lab-rank-title" tabIndex={-1}>1위는 시험이 정합니다</h3>
       <p className="lab-card__lead">같은 자료로 학습한 세 모델입니다. 시험을 바꾸면 순위가 어떻게 되는지 보세요.</p>
       <div className="lab-card__controls">
         <Segmented legend="시험" name="rank-split" value={split} options={SPLIT_OPTIONS} onChange={setSplit} />
@@ -126,7 +144,7 @@ function RankFlip() {
               <span className="rank__model">{r.model}</span>
               <span className="rank__bar" aria-hidden="true"><span style={{ width: `${(r[metric] / max) * 100}%` }} /></span>
               <strong className="rank__value">{formatRatio(r[metric])}</strong>
-              <span className={`rank__move${was === i + 1 ? '' : was > i + 1 ? ' is-up' : ' is-down'}`}>
+              <span className={`rank__move${was === i + 1 ? '' : was > i + 1 ? ' is-down' : ' is-up'}`}>
                 {split === 'random' ? '처음 보는 공격 시험' : '학습에 있던 공격 시험'}에서 {was}위
               </span>
             </li>
@@ -148,7 +166,7 @@ function SeedCheck() {
   return (
     <section className="lab-card" aria-labelledby="lab-seed-title">
       <p className="lab-card__no">실험 2 · 원고 V-2</p>
-      <h3 id="lab-seed-title">운이 아니었습니다 — 세 번 학습해도 같은 결과</h3>
+      <h3 id="lab-seed-title" tabIndex={-1}>운이 아니었습니다 — 세 번 학습해도 같은 결과</h3>
       <p className="lab-card__lead">XGBoost를 초기화만 바꿔 세 번 학습했습니다. 처음 보는 공격 시험의 붕괴는 세 번 모두 같았습니다.</p>
       <div className="table-wrap">
         <table className="lab-table">
@@ -212,7 +230,7 @@ function ExplanationShift() {
   return (
     <section className="lab-card" aria-labelledby="lab-shift-title">
       <p className="lab-card__no">실험 3 · 원고 V-3</p>
-      <h3 id="lab-shift-title">“AI가 이것을 보고 판단합니다” — 그 설명도 시험을 탑니다</h3>
+      <h3 id="lab-shift-title" tabIndex={-1}>“AI가 이것을 보고 판단합니다” — 그 설명도 시험을 탑니다</h3>
       <p className="lab-card__lead">SHAP으로 뽑은 전역 중요도 상위 5개 특징입니다. 특징을 누르면 두 시험에서 같은 특징이 함께 표시됩니다.</p>
       <div className="lab-card__controls">
         <Segmented
@@ -246,7 +264,7 @@ function StableButBlind() {
   return (
     <section className="lab-card" aria-labelledby="lab-blind-title">
       <p className="lab-card__no">실험 4 · 원고 V-4 · V-5</p>
-      <h3 id="lab-blind-title">설명이 안정적이라고, 공격을 잘 잡는 것은 아닙니다</h3>
+      <h3 id="lab-blind-title" tabIndex={-1}>설명이 안정적이라고, 공격을 잘 잡는 것은 아닙니다</h3>
       <p className="lab-card__lead">
         같은 XGBoost를 세 번 학습해 설명 상위 5개가 얼마나 같은지(Top-5 Jaccard, 1이면 완전히 같음) 쟀습니다. 그리고 상위 특징을 하나씩 지우면(학습 자료의 중앙값으로 바꾸면) 예측이 얼마나 바뀌는지 봤습니다.
       </p>

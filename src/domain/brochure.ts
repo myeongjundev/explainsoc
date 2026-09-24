@@ -10,7 +10,7 @@
 import { newRowId, type FormState, type MetricRow } from './form'
 import type { MetricKind, SplitAnswer, TriAnswer } from './types'
 
-export type MarkKind = 'metric' | 'best' | 'split' | 'unseenTest' | 'unseenClaim' | 'dedup'
+export type MarkKind = 'metric' | 'best' | 'split' | 'unseenTest' | 'unseenClaim' | 'dedup' | 'xaiClaim'
 
 export interface BrochureMark {
   kind: MarkKind
@@ -36,6 +36,7 @@ export interface BrochurePatch {
   split: SplitAnswer | null
   unseenIncluded: TriAnswer | null
   deduplicated: TriAnswer | null
+  claimedExplanation: TriAnswer | null
 }
 
 export interface BrochureRead {
@@ -43,7 +44,7 @@ export interface BrochureRead {
   patch: BrochurePatch
 }
 
-export const EMPTY_PATCH: BrochurePatch = { metrics: [], claimedBest: null, split: null, unseenIncluded: null, deduplicated: null }
+export const EMPTY_PATCH: BrochurePatch = { metrics: [], claimedBest: null, split: null, unseenIncluded: null, deduplicated: null, claimedExplanation: null }
 
 /** 붙여 넣을 수 있는 소개서 길이. 판독은 입력마다 다시 돌므로 한도를 둔다. */
 export const MAX_BROCHURE_CHARS = 5000
@@ -67,6 +68,8 @@ const UNSEEN_CLAIM = /(?:알려지지\s?않은|신종|미지의|처음\s?보는|
 const SPLIT_RANDOM = /무작위|랜덤(?!\s?포레스트)|random(?:ly)?[\s-]?split|층화|stratified|교차\s?검증|cross[\s-]?validation|k[\s-]?fold/gi
 const SPLIT_OTHER = /시간\s?순|시간\s?기준|날짜\s?(?:별|기준)|기간별|time[\s-]based|temporal\s?split/gi
 const DEDUP = /중복(?:된\s?(?:기록|데이터|행))?(?:을|를)?\s?(?:제거|삭제)|dedup(?:licat\w*)?|duplicates?\s(?:were\s)?removed/gi
+/** 설명 가능한 AI(XAI) 주장. 탐지 근거를 보여 준다는 표현도 같이 본다. */
+const XAI_CLAIM = /설명\s?가능한\s?(?:AI|인공지능)|설명\s?가능성|\bXAI\b|\bSHAP\b|(?:탐지|판단)\s?근거를?\s?(?:제시|제공|설명|보여)|explainab\w*/gi
 const NEGATION = /^\s?(?:하지\s?않|없이|안\s?(?:했|한))/
 
 function toRatio(raw: string, percent: boolean): { value: number; assumed?: BrochureMark['assumed'] } | null {
@@ -131,6 +134,7 @@ export function readBrochure(input: string): BrochureRead {
     ...findAll(text, UNSEEN_CLAIM, () => ({ kind: 'unseenClaim' })),
     ...findAll(text, SPLIT_RANDOM, () => ({ kind: 'split', split: 'random' })),
     ...findAll(text, SPLIT_OTHER, () => ({ kind: 'split', split: 'other' })),
+    ...findAll(text, XAI_CLAIM, () => ({ kind: 'xaiClaim' })),
     ...findAll(text, DEDUP, (m) => ({ kind: 'dedup', dedup: NEGATION.test(text.slice(m.index! + m[0].length)) ? 'no' : 'yes' })),
   ]
   const marks = dropOverlaps(found)
@@ -153,6 +157,7 @@ export function readBrochure(input: string): BrochureRead {
       patch.unseenIncluded = 'yes'
     }
     if (mark.kind === 'dedup' && patch.deduplicated === null) patch.deduplicated = mark.dedup ?? null
+    if (mark.kind === 'xaiClaim') patch.claimedExplanation = 'yes'
   }
   return { marks, patch }
 }
@@ -180,6 +185,7 @@ export function applyBrochure(form: FormState, previous: BrochurePatch, next: Br
     split: pick(form.split, previous.split, next.split),
     unseenIncluded: pick(form.unseenIncluded, previous.unseenIncluded, next.unseenIncluded),
     deduplicated: pick(form.deduplicated, previous.deduplicated, next.deduplicated),
+    claimedExplanation: pick(form.claimedExplanation, previous.claimedExplanation, next.claimedExplanation),
     source: 'user',
   }
 }

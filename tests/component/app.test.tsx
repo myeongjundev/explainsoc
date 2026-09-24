@@ -221,18 +221,20 @@ describe('소개서 문장으로 검토 (V9)', () => {
     expect(screen.queryByRole('article', { name: '표시를 붙인 소개서' })).not.toBeInTheDocument()
   })
 
-  it('예시 소개서의 다섯 표시마다 논문 근거와 질문을 붙이고, 없는 조건은 따로 모은다', async () => {
+  it('예시 소개서의 여섯 표시마다 논문 근거와 질문을 붙이고, 없는 조건은 따로 모은다', async () => {
     const { user } = setup()
     await user.click(screen.getByRole('button', { name: '소개서 문장 붙여 넣기' }))
     await user.click(screen.getAllByRole('button', { name: '가상의 예시 소개서 넣기' })[0])
     const sheet = screen.getByRole('article', { name: '표시를 붙인 소개서' })
-    expect(sheet.querySelectorAll('mark')).toHaveLength(5)
+    expect(sheet.querySelectorAll('mark')).toHaveLength(6)
     const notes = within(screen.getByRole('list', { name: '표시별 판독' })).getAllByRole('listitem').filter((li) => li.classList.contains('reader-note'))
-    expect(notes).toHaveLength(5)
+    expect(notes).toHaveLength(6)
+    expect(notes[5]).toHaveTextContent('설명 가능 AI 주장')
+    expect(notes[5]).toHaveTextContent('Jaccard 1.0000')
     expect(notes[3]).toHaveTextContent('새 공격 탐지 주장')
     expect(notes[3]).toHaveTextContent('0.9979에서 0.3871로')
     expect(within(screen.getByRole('region', { name: '소개서에 없어 질문이 된 것' })).getByText('중복과 학습·시험 사이 같은 행을 검사했습니까?')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '결과 보기 · 질문 6개' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '결과 보기 · 질문 7개' })).toBeInTheDocument()
   })
 
   it('판독할 표현이 없으면 없다고 말하고, 모든 조건을 질문으로 남긴다', async () => {
@@ -281,6 +283,35 @@ describe('논문 실험실 (V9)', () => {
     expect(screen.getByText(/상위 3개를 지우자/)).toHaveTextContent('0.15%만 바뀌었습니다')
     await user.click(screen.getByRole('button', { name: '첫 화면으로' }))
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
+  })
+})
+
+describe('실험실로 바로 가기 (V9)', () => {
+  it('소개서의 설명 주장 메모에서 실험 4로 바로 가고, 돌아오면 소개서가 그대로다', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('button', { name: '소개서 문장 붙여 넣기' }))
+    await user.click(screen.getAllByRole('button', { name: '가상의 예시 소개서 넣기' })[0])
+    const notes = within(screen.getByRole('list', { name: '표시별 판독' })).getAllByRole('listitem').filter((li) => li.classList.contains('reader-note'))
+    await user.click(within(notes[5]).getByRole('button', { name: /논문 실험실에서 직접 보기/ }))
+    expect(screen.getByRole('heading', { level: 3, name: '설명이 안정적이라고, 공격을 잘 잡는 것은 아닙니다' })).toHaveFocus()
+    await user.click(screen.getByRole('button', { name: '소개서 판독으로 돌아가기' }))
+    expect((screen.getByLabelText('받은 소개서·제안서 문장') as HTMLTextAreaElement).value).toContain('SHAP 설명')
+  })
+
+  it('결론 카드에서 최고 성능·설명 주장에 맞는 실험으로 가는 길을 보인다', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('button', { name: '소개서 문장 붙여 넣기' }))
+    await user.click(screen.getAllByRole('button', { name: '가상의 예시 소개서 넣기' })[0])
+    await user.click(screen.getByRole('button', { name: /결과 보기 · 질문/ }))
+    const links = screen.getByRole('list', { name: '논문 실험실에서 직접 보기' })
+    expect(within(links).getAllByRole('button').map((b) => b.textContent)).toEqual([
+      expect.stringContaining('실험 1'),
+      expect.stringContaining('실험 4'),
+    ])
+    await user.click(within(links).getAllByRole('button')[0])
+    expect(screen.getByRole('heading', { level: 3, name: '1위는 시험이 정합니다' })).toHaveFocus()
+    await user.click(screen.getByRole('button', { name: '검토 결과로 돌아가기' }))
+    expect(screen.getByRole('heading', { level: 2, name: '3. 검토 결과' })).toHaveFocus()
   })
 })
 

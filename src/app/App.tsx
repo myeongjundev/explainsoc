@@ -3,7 +3,7 @@ import { BrochureReader } from '../components/BrochureReader'
 import { OnePageForm } from '../components/OnePageForm'
 import { GUIDED_STEP_START, GuidedInput, guidedStepOf } from '../components/GuidedInput'
 import { Hero } from '../components/Hero'
-import { PaperLab } from '../components/PaperLab'
+import { PaperLab, type LabSection } from '../components/PaperLab'
 import { ResearchScope } from '../components/ResearchScope'
 import { ResultStep } from '../components/ResultStep'
 import { STEP_TITLES, Stepper, type StepNumber } from '../components/Stepper'
@@ -38,7 +38,8 @@ export function App() {
   const [form, setForm] = useState<FormState>(emptyForm)
   const [view, setView] = useState<View>('home')
   // 논문 실험실을 연 곳. 돌아갈 곳을 정한다.
-  const [labFrom, setLabFrom] = useState<'home' | 3>('home')
+  const [labFrom, setLabFrom] = useState<'home' | 1 | 3>('home')
+  const [labSection, setLabSection] = useState<LabSection | null>(null)
   const [inputMode, setInputMode] = useState<InputMode>('guided')
   const [guidedIndex, setGuidedIndex] = useState(0)
   const [responses, setResponses] = useState<Record<string, QuestionResponse>>({})
@@ -81,8 +82,9 @@ export function App() {
   const stepHeading = useRef<HTMLHeadingElement>(null)
   const labHeading = useRef<HTMLHeadingElement>(null)
 
-  const openLab = (from: 'home' | 3) => {
+  const openLab = (from: 'home' | 1 | 3, section: LabSection | null = null) => {
     setLabFrom(from)
+    setLabSection(section)
     go('lab')
   }
   const focusAfterNavigate = useRef(false)
@@ -90,6 +92,8 @@ export function App() {
   useEffect(() => {
     if (!focusAfterNavigate.current) return
     focusAfterNavigate.current = false
+    // 실험 하나로 바로 들어오면 PaperLab이 그 실험 제목으로 스크롤하고 초점을 옮긴다.
+    if (view === 'lab' && labSection) return
     window.scrollTo({ top: 0 })
     ;(view === 'home' ? heroHeading.current : view === 'lab' ? labHeading.current : stepHeading.current)?.focus()
     if (view === 2 && inputMode === 'form') document.getElementById('form-section-2')?.scrollIntoView()
@@ -231,7 +235,7 @@ export function App() {
             caseFileStatus={caseFileStatus}
           />
         ) : view === 'lab' ? (
-          <PaperLab ref={labHeading} onBack={() => go(labFrom)} backLabel={labFrom === 3 ? '검토 결과로 돌아가기' : '첫 화면으로'} />
+          <PaperLab ref={labHeading} section={labSection} onBack={() => go(labFrom)} backLabel={labFrom === 3 ? '검토 결과로 돌아가기' : labFrom === 1 ? '소개서 판독으로 돌아가기' : '첫 화면으로'} />
         ) : (
           <div className="workbench">
             <Stepper current={view} onGo={go} />
@@ -282,6 +286,7 @@ export function App() {
                 review={review}
                 onUseExample={() => changeBrochure(EXAMPLE_BROCHURE.text)}
                 onFinish={() => go(3)}
+                onOpenLab={(section) => openLab(1, section)}
                 onAnswerMissing={() => {
                   setInputMode('guided')
                   go(2)
@@ -330,7 +335,7 @@ export function App() {
                 onRoundMeta={setRoundMeta}
                 comparison={comparison}
                 onNextRound={nextRound}
-                onOpenLab={() => openLab(3)}
+                onOpenLab={(section) => openLab(3, section)}
                 onDownload={downloadCase}
                 caseFileStatus={caseFileStatus}
                 onRestart={() => {

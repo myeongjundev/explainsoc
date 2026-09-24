@@ -49,5 +49,10 @@ export interface ReviewInput {
   split: SplitAnswer | null
   unseenIncluded: TriAnswer | null
   deduplicated: TriAnswer | null
+  /**
+   * V9: 소개서가 "설명 가능한 AI(XAI)로 탐지 근거를 보여 준다"고 주장했는지. 소개서 판독에서만 채운다.
+   * 이전 사례 파일에는 없을 수 있어 선택 항목이다.
+   */
+  claimedExplanation?: TriAnswer | null
   source: InputSource
 }

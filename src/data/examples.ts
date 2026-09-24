@@ -68,5 +68,5 @@ export const EXAMPLE_B: ExampleInput = {
  */
 export const EXAMPLE_BROCHURE = {
   label: '가상의 예시 소개서',
-  text: `이 제품은 공개 데이터셋 CICIDS2017로 평가한 결과 정확도 ${Number((XGB_RANDOM.reported.accuracy * 100).toFixed(2))}%, 오탐률 ${Number((XGB_RANDOM.reported.fpr * 100).toFixed(2))}%를 기록했습니다. 학습·시험 데이터는 무작위로 나누어 평가했습니다. 알려지지 않은 신종 공격까지 실시간으로 탐지하며, 비교한 모델 가운데 업계 최고 성능을 보였습니다.`,
+  text: `이 제품은 공개 데이터셋 CICIDS2017로 평가한 결과 정확도 ${Number((XGB_RANDOM.reported.accuracy * 100).toFixed(2))}%, 오탐률 ${Number((XGB_RANDOM.reported.fpr * 100).toFixed(2))}%를 기록했습니다. 학습·시험 데이터는 무작위로 나누어 평가했습니다. 알려지지 않은 신종 공격까지 실시간으로 탐지하며, 비교한 모델 가운데 업계 최고 성능을 보였습니다. SHAP 설명으로 탐지 결과마다 이유를 보여 줍니다.`,
 } as const

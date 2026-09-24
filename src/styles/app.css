@@ -4668,3 +4668,22 @@ a {
     transition: none;
   }
 }
+
+.conclusion__lab {
+  list-style: none;
+  padding: 10px 0 0;
+  display: grid;
+  gap: 4px;
+  border-top: 1px dashed var(--line-strong);
+  font-size: 0.9rem;
+}
+
+.reader-note__lab {
+  justify-self: start;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.lab-card h3 {
+  scroll-margin-top: 24px;
+}

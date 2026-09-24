@@ -173,10 +173,17 @@ describe('결과는 판정이 아니라 다음 행동 순서다', () => {
     }
   })
 
-  it('기존 규칙 R01~R10, V2 정합성 규칙 R11~R13, V3 출처 규칙 R14가 있다', () => {
+  it('기존 규칙 R01~R10, V2 정합성 규칙 R11~R13, V3 출처 규칙 R14, V9 설명 주장 규칙 R15가 있다', () => {
     expect(REVIEW_RULES.map((r) => r.id)).toEqual([
-      'R01', 'R02', 'R03', 'R04', 'R05', 'R06', 'R07', 'R08', 'R09', 'R10', 'R11', 'R12', 'R13', 'R14',
+      'R01', 'R02', 'R03', 'R04', 'R05', 'R06', 'R07', 'R08', 'R09', 'R10', 'R11', 'R12', 'R13', 'R14', 'R15',
     ])
+  })
+
+  it('R15는 설명 가능 AI 주장이 있을 때만 나오고, 설명과 탐지 능력을 함께 묻는다', () => {
+    expect(fired(quiet({ claimedExplanation: 'yes' }))).toContain('R15')
+    expect(fired(quiet({ claimedExplanation: null }))).not.toContain('R15')
+    expect(fired(quiet({}))).not.toContain('R15')
+    expect(RULE_BY_ID.R15.question).toContain('공격 Recall')
   })
 })
 

@@ -15,6 +15,7 @@ import { TerminologyHelp } from './TerminologyHelp'
 import { WorkbenchNav, type WorkbenchChapter } from './WorkbenchNav'
 import { EvidenceStatusBoard } from './EvidenceStatusBoard'
 import { ConclusionCard } from './ConclusionCard'
+import type { LabSection } from './PaperLab'
 import { buildConclusion } from '../domain/conclusion'
 import { InvestigationBrief } from './InvestigationBrief'
 
@@ -25,7 +26,7 @@ interface Props {
   onEditConditions: () => void
   /** 소개서로 시작했을 때만 있다 */
   onEditBrochure?: () => void
-  onOpenLab: () => void
+  onOpenLab: (section?: LabSection) => void
   onRestart: () => void
   responses: Readonly<Record<string, QuestionResponse>>
   onResponse: (question: string, response: QuestionResponse) => void
@@ -55,7 +56,7 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onEditBroc
   }
   return (
     <div className="step-body result-step">
-      <ConclusionCard conclusion={buildConclusion(input, review)} onShowQuestions={() => showChapter('output')} />
+      <ConclusionCard conclusion={buildConclusion(input, review)} onShowQuestions={() => showChapter('output')} onOpenLab={onOpenLab} />
       <WorkbenchNav active={chapter} onSelect={setChapter} />
       {caseFileStatus && <p className="workbench-file-status" role="status">{caseFileStatus}</p>}
       <InvestigationBrief review={review} roundNumber={rounds.length + 1} caseTitle={caseTitle} errorCount={check.errorCount} onShowQuestions={() => showChapter('output')} />
@@ -101,7 +102,7 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onEditBroc
           <h3 id="lab-teaser-title">논문 실험실</h3>
           <p>같은 자료로 학습한 세 모델의 1위가 시험마다 바뀌고, 설명(SHAP)이 안정적인 모델이 공격을 거의 못 잡은 실험을 직접 바꿔 봅니다.</p>
         </div>
-        <button type="button" className="button" onClick={onOpenLab}>논문 실험실 열기</button>
+        <button type="button" className="button" onClick={() => onOpenLab()}>논문 실험실 열기</button>
       </section>
       <details
         className="rounds-disclosure"

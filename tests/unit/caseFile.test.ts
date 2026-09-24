@@ -30,6 +30,17 @@ describe('ExplainSOC 로컬 사례 파일', () => {
     if (parsed.kind === 'ok') expect(parsed.value.rounds[0].sourceNote).toBe('<b>문자열 그대로</b>')
   })
 
+  it('V9의 설명 주장(claimedExplanation)을 담아 다시 열고, 이 항목이 없는 이전 파일도 연다', () => {
+    const withClaim = makeCaseFile('설명 주장', [{ ...round, input: { ...base, claimedExplanation: 'yes' } }])
+    expect(parseCaseFileText(caseFileToText(withClaim))).toEqual({ kind: 'ok', value: withClaim })
+    const before = makeCaseFile('V8 파일', [round])
+    expect(JSON.stringify(before)).not.toContain('claimedExplanation')
+    expect(parseCaseFileText(caseFileToText(before)).kind).toBe('ok')
+    const wrong = structuredClone(withClaim) as unknown as { rounds: { input: Record<string, unknown> }[] }
+    wrong.rounds[0].input.claimedExplanation = 'maybe'
+    expect(parseCaseFileText(JSON.stringify(wrong)).kind).toBe('error')
+  })
+
   it('알 수 없는 키, 잘못된 행렬, 과대 파일을 거부한다', () => {
     const file = makeCaseFile('검토', [round])
     expect(parseCaseFileText(JSON.stringify({ ...file, surprise: true })).kind).toBe('error')

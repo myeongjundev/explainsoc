@@ -21,6 +21,7 @@ export interface FormState {
   split: SplitAnswer | null
   unseenIncluded: TriAnswer | null
   deduplicated: TriAnswer | null
+  claimedExplanation: TriAnswer | null
   source: InputSource
 }
 
@@ -38,6 +39,7 @@ export function emptyForm(): FormState {
     split: null,
     unseenIncluded: null,
     deduplicated: null,
+    claimedExplanation: null,
     source: 'user',
   }
 }
@@ -51,6 +53,7 @@ export function formFromExample(example: ExampleInput): FormState {
     split: example.split,
     unseenIncluded: example.unseenIncluded,
     deduplicated: example.deduplicated,
+    claimedExplanation: null,
     source: example.id,
   }
 }
@@ -70,6 +73,7 @@ export function formFromReviewInput(input: ReviewInput): FormState {
     split: input.split,
     unseenIncluded: input.unseenIncluded,
     deduplicated: input.deduplicated,
+    claimedExplanation: input.claimedExplanation ?? null,
     source: input.source,
   }
 }
@@ -119,6 +123,7 @@ export function checkForm(form: FormState): FormCheck {
       split: form.split,
       unseenIncluded: form.unseenIncluded,
       deduplicated: form.deduplicated,
+      claimedExplanation: form.claimedExplanation,
       source: form.source,
     },
     rows,

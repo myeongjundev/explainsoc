@@ -1,11 +1,12 @@
 import { Fragment } from 'react'
-import { EVIDENCE, XGB_RANDOM, XGB_UNSEEN } from '../data/paperEvidence'
+import { EVIDENCE, EXPLANATION_STABILITY, MODEL_TABLE, PERMUTATION, XGB_RANDOM, XGB_UNSEEN } from '../data/paperEvidence'
 import { MAX_BROCHURE_CHARS, type BrochureMark, type BrochureRead } from '../domain/brochure'
 import { formatCount, formatRatio, METRIC_LABEL } from '../domain/format'
 import type { Finding, Review } from '../domain/review'
 import type { RuleId } from '../domain/reviewRules'
 import type { MetricKind } from '../domain/types'
 import { LockIcon } from './icons'
+import type { LabSection } from './PaperLab'
 
 interface Props {
   text: string
@@ -15,6 +16,7 @@ interface Props {
   onUseExample: () => void
   onFinish: () => void
   onAnswerMissing: () => void
+  onOpenLab: (section: LabSection) => void
 }
 
 type Tone = 'claim' | 'condition'
@@ -25,6 +27,8 @@ interface Note {
   reading: string
   paper?: { text: string; verbatim: boolean; source: string }
   rules: RuleId[]
+  /** 논문 실험실에서 직접 볼 수 있는 실험 */
+  lab?: LabSection
 }
 
 const f = formatRatio
@@ -44,6 +48,9 @@ const RULES_BY_METRIC: Record<MetricKind, RuleId[]> = {
 }
 
 const RANDOM_HIGH = `논문에서 무작위 분할의 XGBoost는 시험 공격 ${formatCount(XGB_RANDOM.matrix.fn + XGB_RANDOM.matrix.tp)}건 가운데 ${formatCount(XGB_RANDOM.matrix.tp)}건을 탐지했습니다. 학습에서 본 공격이 섞인 시험의 높은 점수는 처음 보는 공격의 성능으로 넓혀 읽을 수 없습니다.`
+
+const XGB_UNSEEN_BLIND = MODEL_TABLE.find((r) => r.split === 'unseen' && r.model === 'XGBoost')!
+const XAI_STABLE_BUT_BLIND = `논문에서 처음 보는 공격 시험의 XGBoost는 세 번 학습해도 설명 상위 5개가 완전히 같았지만(Jaccard ${EXPLANATION_STABILITY.unseen.jaccard.toFixed(4)}), 공격 Recall은 ${f(XGB_UNSEEN_BLIND.attackRecall)}이었습니다. 상위 5개 특징을 지워도 예측은 ${Number((PERMUTATION.steps.unseen[5].flipRate * 100).toFixed(2))}%만 바뀌었습니다.`
 
 const UNSEEN_DROP = `논문에서는 학습에 없던 공격을 따로 시험하자 같은 모델의 Macro F1이 ${f(XGB_RANDOM.reported.macroF1)}에서 ${f(XGB_UNSEEN.reported.macroF1)}로 떨어졌고, 공격 ${formatCount(XGB_UNSEEN.matrix.fn + XGB_UNSEEN.matrix.tp)}건 가운데 ${formatCount(XGB_UNSEEN.matrix.tp)}건만 탐지했습니다.`
 
@@ -71,6 +78,7 @@ function noteFor(mark: BrochureMark, read: BrochureRead): Note {
         reading: '가장 좋은 모델이라는 주장입니다. 한 시험에서 고른 결과일 수 있습니다.',
         paper: { text: EVIDENCE.P04.quotes[0], verbatim: true, source: EVIDENCE.P04.section },
         rules: ['R05'],
+        lab: 'rank',
       }
     case 'unseenClaim': {
       const tested = read.marks.some((m) => m.kind === 'unseenTest')
@@ -100,6 +108,7 @@ function noteFor(mark: BrochureMark, read: BrochureRead): Note {
             reading: '무작위로 나눈 시험으로 읽었습니다. 학습에서 본 공격이 시험에도 섞여 있을 수 있습니다.',
             paper: { text: RANDOM_HIGH, verbatim: false, source: '원고 V-2' },
             rules: ['R01'],
+            lab: 'rank',
           }
         : {
             tone: 'condition',
@@ -107,6 +116,15 @@ function noteFor(mark: BrochureMark, read: BrochureRead): Note {
             reading: '무작위가 아닌 다른 기준으로 나눴다고 읽었습니다. 그 기준만으로는 학습과 시험의 관계를 알 수 없습니다.',
             rules: ['R13'],
           }
+    case 'xaiClaim':
+      return {
+        tone: 'claim',
+        label: '설명 가능 AI 주장',
+        reading: '탐지 근거를 설명해 준다는 주장입니다. 설명이 있다는 것과 공격을 잘 잡는다는 것은 다른 이야기입니다.',
+        paper: { text: XAI_STABLE_BUT_BLIND, verbatim: false, source: '원고 V-4 · V-5' },
+        rules: ['R15'],
+        lab: 'blind',
+      }
     case 'dedup':
       return {
         tone: 'condition',
@@ -118,7 +136,7 @@ function noteFor(mark: BrochureMark, read: BrochureRead): Note {
 }
 
 /** 화면 B′ — 받은 소개서 문장을 붙여 넣으면 그 문장 위에 판독 표시와 논문 근거를 붙인다(설계 31절). */
-export function BrochureReader({ text, onText, read, review, onUseExample, onFinish, onAnswerMissing }: Props) {
+export function BrochureReader({ text, onText, read, review, onUseExample, onFinish, onAnswerMissing, onOpenLab }: Props) {
   const findingById = new Map(review.findings.map((finding) => [finding.ruleId, finding]))
   const notes = read.marks.map((mark) => noteFor(mark, read))
   const linked = new Set(notes.flatMap((note) => note.rules))
@@ -205,6 +223,11 @@ export function BrochureReader({ text, onText, read, review, onUseExample, onFin
                       </p>
                     )}
                     <RuleQuestions ids={note.rules} findingById={findingById} />
+                    {note.lab && (
+                      <button type="button" className="link-button reader-note__lab" onClick={() => onOpenLab(note.lab!)}>
+                        논문 실험실에서 직접 보기 →
+                      </button>
+                    )}
                   </li>
                 ))}
               </ol>

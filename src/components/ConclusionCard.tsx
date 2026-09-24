@@ -3,6 +3,7 @@ import type { Conclusion } from '../domain/conclusion'
 interface Props {
   conclusion: Conclusion
   onShowQuestions: () => void
+  onOpenLab: (section: 'rank' | 'blind') => void
 }
 
 const TONE_LABEL = {
@@ -12,7 +13,7 @@ const TONE_LABEL = {
 } as const
 
 /** 결과 맨 위의 결론 · 왜? · 그래서? — 제품 판정이 아니라 광고 숫자를 믿을 근거가 있는지를 쉬운 말로 말한다. */
-export function ConclusionCard({ conclusion, onShowQuestions }: Props) {
+export function ConclusionCard({ conclusion, onShowQuestions, onOpenLab }: Props) {
   return (
     <section className={`conclusion conclusion--${conclusion.tone}`} aria-labelledby="conclusion-title">
       <p className="conclusion__eyebrow">
@@ -34,6 +35,15 @@ export function ConclusionCard({ conclusion, onShowQuestions }: Props) {
           </button>
         </div>
       </div>
+      {conclusion.lab.length > 0 && (
+        <ul className="conclusion__lab" aria-label="논문 실험실에서 직접 보기">
+          {conclusion.lab.map((link) => (
+            <li key={link.section}>
+              <button type="button" className="link-button" onClick={() => onOpenLab(link.section)}>{link.label}</button>
+            </li>
+          ))}
+        </ul>
+      )}
       <p className="conclusion__boundary">이 결론은 AI 제품이 좋다·나쁘다는 판정이 아닙니다. 광고 숫자만으로 믿을 근거가 있는지를 말합니다.</p>
     </section>
   )

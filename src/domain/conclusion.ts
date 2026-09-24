@@ -3,7 +3,7 @@
  *
  * - AI 제품을 좋다·나쁘다로 판정하지 않는다. 광고 숫자만으로 믿을 근거가 있는지(시험 조건)와,
  *   받은 숫자가 말하는 사실을 "100건으로 치면"으로 옮겨 보일 뿐이다. 점수·등급·합격선은 없다.
- * - 판독 규칙 R01~R14를 바꾸지 않는다. 같은 입력과 같은 판독 결과만 읽는다.
+ * - 판독 규칙 R01~R15를 바꾸지 않는다. 같은 입력과 같은 판독 결과만 읽는다.
  */
 
 import { XGB_RANDOM, XGB_UNSEEN } from '../data/paperEvidence'
@@ -25,6 +25,8 @@ export interface Conclusion {
   reasons: string[]
   /** "그래서?" */
   next: string
+  /** 이 입력의 주장을 논문 실험실에서 직접 볼 수 있는 곳 */
+  lab: { section: 'rank' | 'blind'; label: string }[]
 }
 
 const score = (v: number) => `${(v * 100).toFixed(1)}점`
@@ -88,5 +90,8 @@ export function buildConclusion(input: ReviewInput, review: Review): Conclusion 
   const next = count > 0
     ? `판매 업체에 아래 질문 ${count}개를 하세요. 답을 받으면 이 결론도 바뀝니다.`
     : '지금 입력에서 더 물을 질문은 없습니다. 받은 자료가 같은 시험에서 나왔는지만 확인하세요.'
-  return { tone, headline, reasons: [condition.text, numbers.text], next }
+  const lab: Conclusion['lab'] = []
+  if (input.claimedBest === 'yes' || input.split === 'random') lab.push({ section: 'rank', label: '실험 1 · 1위는 시험이 정합니다 — 세 모델의 순위가 시험마다 바뀌는 것을 직접 보기' })
+  if (input.claimedExplanation === 'yes') lab.push({ section: 'blind', label: '실험 4 · 설명이 안정적이라고 공격을 잘 잡는 것은 아닙니다 — 직접 보기' })
+  return { tone, headline, reasons: [condition.text, numbers.text], next, lab }
 }

@@ -40,7 +40,7 @@ const nonNegativeInteger = (value: unknown) => typeof value === 'number' && Numb
 const ratio = (value: unknown) => typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1
 
 function validInput(value: unknown): value is ReviewInput {
-  if (!isObject(value) || !hasOnlyKeys(value, ['claim', 'matrix', 'claimedBest', 'split', 'unseenIncluded', 'deduplicated', 'source'])) return false
+  if (!isObject(value) || !hasOnlyKeys(value, ['claim', 'matrix', 'claimedBest', 'split', 'unseenIncluded', 'deduplicated', 'claimedExplanation', 'source'])) return false
   if (!isObject(value.claim) || !hasOnlyKeys(value.claim, METRIC_KINDS)) return false
   for (const kind of Object.keys(value.claim) as MetricKind[]) if (!ratio(value.claim[kind])) return false
 
@@ -55,6 +55,8 @@ function validInput(value: unknown): value is ReviewInput {
     && nullableEnum(value.split, SPLITS)
     && nullableEnum(value.unseenIncluded, TRI)
     && nullableEnum(value.deduplicated, TRI)
+    // V9에 생긴 항목이라 이전 파일에는 없다
+    && (value.claimedExplanation === undefined || nullableEnum(value.claimedExplanation, TRI))
     && INPUT_SOURCES.includes(value.source as InputSource)
 }
 
@@ -129,6 +131,7 @@ export function combineRoundInput(previous: ReviewInput | null, received: Review
     split: received.split ?? previous.split,
     unseenIncluded: received.unseenIncluded ?? previous.unseenIncluded,
     deduplicated: received.deduplicated ?? previous.deduplicated,
+    claimedExplanation: received.claimedExplanation ?? previous.claimedExplanation ?? null,
     source: 'user',
   }
 }
