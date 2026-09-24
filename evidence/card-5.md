@@ -1,8 +1,32 @@
 # 카드 5 증거 — 포트폴리오와 제출
 
+## V9 소개서 판독·결론 카드·논문 실험실 제출본 — 2026-09-24
+
+> 이 섹션이 아래 V8 제출본의 실행 묶음과 검증 값을 대체한다.
+
+| 항목 | V9 제출본 |
+|---|---|
+| 기준 커밋 | `d14171e1cbe1493762d1476fabfdaea0ba298b68` (V9 구현 + 디자인 + README·증거 캡처) |
+| 배포 | GitHub Actions [run 35947858700](https://github.com/myeongjundev/explainsoc/actions/runs/35947858700) 검사·Pages 성공 |
+| 공개 주소 | https://myeongjundev.github.io/explainsoc/ |
+| 실행 묶음 | `explainsoc-d14171e.zip` · 190,431 bytes · 71개 파일 |
+| SHA-256 | `3ce9908d2d26d4d2a2c593f01903b8f07c69c8f8be8fccc0b14390b804479299` |
+| 재현 | 같은 커밋으로 두 번 생성한 SHA-256 일치 |
+| 빈 폴더 검증 | 저장소 밖 새 임시 폴더에서 `npm ci`(취약점 0), Vitest 141개, 프로덕션 빌드, 안전 검사 11개, Playwright 31개 통과(증거 캡처 22개 건너뜀) |
+| 공개본 검증 | JS `index-CFObKeM9.js`, CSS `index-D8QQMwkU.css` 로컬 빌드와 SHA-256 일치 · 공개 주소에서 브라우저 검사 31개 통과 |
+| 12번 카드 | `about` 커밋 `0f11a11` — 그림 `docs/assets/t13-conclusion-v9.png` 768×705, 검증 문장 141개·31개 |
+
+V9는 받은 소개서 문장을 그대로 붙여 넣어 그 위에서 판독하고(규칙, AI 호출 없음), 결과 맨 위에 결론 카드
+(결론 · 왜? · 그래서?)를 두고, 앱이 쓰지 않던 논문 뒤쪽 절반(원고 V-2~V-5)을 논문 실험실의 실험 네 개로
+직접 바꿔 보게 했다. 판독 규칙 R15(설명 가능한 AI 주장)를 더했다. 설계 근거는 `planning/DESIGN.md` 31절이다.
+
+V9 증거 화면은 `evidence/v9-brochure-reader-desktop.png`, `evidence/v9-conclusion-desktop.png`,
+`evidence/v9-conclusion-mobile.png`, `evidence/v9-paper-lab-desktop.png`, `evidence/v9-paper-lab-mobile.png`에 있다.
+`evidence/screenshots/`의 a·f 장면도 V9 화면으로 다시 찍었다.
+
 ## V8 밝은 문서형 화면 제출본 — 2026-09-23
 
-> 이 섹션이 아래 V7 제출본의 실행 묶음과 검증 값을 대체한다.
+> 이 섹션은 위 V9 제출본으로 대체됐다. 아래 V7 제출본의 실행 묶음과 검증 값을 대체했던 기록이다.
 
 | 항목 | V8 제출본 |
 |---|---|
