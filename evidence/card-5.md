@@ -1,8 +1,29 @@
 # 카드 5 증거 — 포트폴리오와 제출
 
+## V10 품질 개선판 제출본 — 2026-09-24
+
+> 이 섹션이 아래 V9 제출본의 실행 묶음과 검증 값을 대체한다.
+
+| 항목 | V10 제출본 |
+|---|---|
+| 기준 커밋 | `5690d621721909abcad7de92fd75de0234943e52` (V10 구현 `8a72fe2` + README·증거 캡처) |
+| 배포 | GitHub Actions [run 35969412385](https://github.com/myeongjundev/explainsoc/actions/runs/35969412385) 검사·Pages 성공 |
+| 공개 주소 | https://myeongjundev.github.io/explainsoc/ |
+| 실행 묶음 | `explainsoc-5690d62.zip` · 195,103 bytes · 71개 파일 |
+| SHA-256 | `bec1367329ca9fd3f8249d687c225075e6b95492bae590b28931e698c6b9d5ea` |
+| 재현 | 같은 커밋으로 두 번 생성한 SHA-256 일치 |
+| 빈 폴더 검증 | 저장소 밖 새 임시 폴더에서 `npm ci`(취약점 0), Vitest 146개, 프로덕션 빌드, 안전 검사 11개, Playwright 35개 통과(증거 캡처 26개 건너뜀) |
+| 공개본 검증 | JS `index-EYftpwNU.js`, CSS `index-DhJb78PJ.css` 로컬 빌드와 SHA-256 일치 · 공개 주소에서 브라우저 검사 35개 통과 |
+| 12번 카드 | `about` 커밋 `029b56c` — 그림 `docs/assets/t13-conclusion-v9.png` 그대로, 검증 문장 146개·35개 |
+
+V10은 기능을 늘리지 않고 이해 순서를 다듬었다. 노트북·휴대폰 첫 화면에 주 단추가 보이게 하고, `예시로 바로 보기`가
+첫 화면의 99.88% 이야기와 같은 예시를 열게 했다. 결론 카드 아래 요약은 한 줄로 줄였고, 질문마다 왜 묻는지를 붙였다.
+설계 근거는 `planning/DESIGN.md` 32절이다. V10 증거 화면은 `evidence/v10-first-screen-laptop.png`,
+`evidence/v10-first-screen-phone.png`, `evidence/v10-result-top-laptop.png`, `evidence/v10-questions-why.png`에 있다.
+
 ## V9 소개서 판독·결론 카드·논문 실험실 제출본 — 2026-09-24
 
-> 이 섹션이 아래 V8 제출본의 실행 묶음과 검증 값을 대체한다.
+> 이 섹션은 위 V10 제출본으로 대체됐다. 아래 V8 제출본의 실행 묶음과 검증 값을 대체했던 기록이다.
 
 | 항목 | V9 제출본 |
 |---|---|
