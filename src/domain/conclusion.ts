@@ -12,7 +12,8 @@ import type { Review } from './review'
 import type { ReviewInput } from './types'
 
 /**
- * - early: 처음 보는 공격으로 시험했다는 근거가 없다 — 광고 숫자만으로는 믿기 이르다
+ * - early: 처음 보는 공격으로 따로 시험했다는 근거가 없다 — 광고 숫자만으로는 믿기 이르다.
+ *   "시험에 새 공격이 들어 있었다"는 답만으로는 따로 시험한 근거가 되지 않는다(V10 독립 검토 후보 1).
  * - partial: 처음 보는 공격으로 시험했지만 공격을 몇 건 잡는지 알려 주는 숫자가 없다
  * - shown: 처음 보는 공격으로 시험했고, 공격을 잡은 비율을 알 수 있다 — 숫자를 직접 보고 판단한다
  */
@@ -96,8 +97,13 @@ function conditionReason(input: ReviewInput): { tested: boolean; text: string } 
   if (split === 'unseen' && unseen === 'no') {
     return { tested: false, text: '시험 조건의 두 답이 서로 다릅니다. 처음 보는 공격으로 시험했는지 먼저 확인해야 합니다.' }
   }
-  if (split === 'unseen' || unseen === 'yes') {
+  // "따로 시험"은 분할 답(unseen)만 말한다. 포함 답(unseenIncluded)이 예여도 그 공격만의 숫자인지는 모른다.
+  if (split === 'unseen') {
     return { tested: true, text: 'AI가 학습 때 보지 못한 종류의 공격으로 따로 시험한 숫자입니다. 처음 보는 공격을 잡는지 볼 수 있는 시험입니다.' }
+  }
+  if (unseen === 'yes') {
+    const includedOnly = '학습 때 없던 공격이 시험에 들어 있었다는 답은 있지만, 그 공격만의 성능을 따로 확인한 숫자인지는 알 수 없습니다.'
+    return { tested: false, text: split === 'random' ? `이 숫자는 학습과 시험 자료를 섞어서 나눈 시험에서 나왔습니다. ${includedOnly}` : includedOnly }
   }
   if (split === 'random') {
     return {

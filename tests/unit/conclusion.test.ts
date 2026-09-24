@@ -61,3 +61,77 @@ describe('결론 카드 — 판정이 아니라 믿을 근거와 숫자의 뜻',
     expect(per100(84_955, 85_175)).toBe('약 99.7건')
   })
 })
+
+describe('결론 카드 — 새 공격이 "들어 있었다"와 "따로 시험했다"를 가른다 (V10 독립 검토 후보 1)', () => {
+  const INCLUDED_ONLY = '학습 때 없던 공격이 시험에 들어 있었다는 답은 있지만, 그 공격만의 성능을 따로 확인한 숫자인지는 알 수 없습니다.'
+  const SEPARATE = 'AI가 학습 때 보지 못한 종류의 공격으로 따로 시험한 숫자입니다.'
+  const recall = { ...emptyForm(), metricRows: [{ id: 'a', kind: 'accuracy' as const, raw: '0.99' }, { id: 'r', kind: 'attackRecall' as const, raw: '0.9' }] }
+  const accuracyOnly = { ...emptyForm(), metricRows: [{ id: 'a', kind: 'accuracy' as const, raw: '0.99' }] }
+  const withMatrix = { ...emptyForm(), matrixOpen: true, matrix: { tn: '90', fp: '10', fn: '20', tp: '80' } }
+
+  it('무작위 분할 + 포함 예: 따로 시험했다고 말하지 않고, 받은 숫자는 그대로 둔다 (검토 문서의 재현 입력)', () => {
+    const input: ReviewInput = {
+      source: 'user',
+      claim: { accuracy: 0.99, attackRecall: 0.9 },
+      matrix: null,
+      split: 'random',
+      unseenIncluded: 'yes',
+      deduplicated: 'yes',
+      claimedBest: 'no',
+      claimedExplanation: 'no',
+    }
+    const c = conclude(input)
+    expect(c.tone).toBe('early')
+    expect(c.headline).toBe('광고 숫자만으로는 아직 믿기 이릅니다')
+    expect(c.headline).not.toContain('처음 보는 공격으로 시험')
+    expect(c.reasons[0]).toContain('섞어서 나눈 시험')
+    expect(c.reasons[0]).toContain(INCLUDED_ONLY)
+    expect(c.reasons[0]).not.toContain(SEPARATE)
+    expect(c.reasons[1]).toContain('공격 Recall)이 0.9')
+    expect(c.lab.map((l) => l.section)).toEqual(['rank'])
+  })
+
+  it('분할 모름·다른 방식 + 포함 예: 포함만으로 시험 분할을 정하지 않는다', () => {
+    for (const split of [null, 'unknown', 'other'] as const) {
+      const c = conclude(inputOf({ ...recall, split, unseenIncluded: 'yes' }))
+      expect(c.tone).toBe('early')
+      expect(c.reasons[0]).toBe(INCLUDED_ONLY)
+      expect(c.headline).not.toContain('처음 보는 공격으로 시험')
+    }
+  })
+
+  it('따로 시험했다는 분할 답은 포함 답이 예이든 모름이든 잃지 않는다', () => {
+    for (const unseenIncluded of ['yes', 'unknown', null] as const) {
+      const c = conclude(inputOf({ ...recall, split: 'unseen', unseenIncluded }))
+      expect(c.tone).toBe('shown')
+      expect(c.reasons[0]).toContain(SEPARATE)
+    }
+  })
+
+  it('따로 시험 + 포함 아니오는 여전히 확인할 모순으로 남긴다', () => {
+    const c = conclude(inputOf({ ...recall, split: 'unseen', unseenIncluded: 'no' }))
+    expect(c.tone).toBe('early')
+    expect(c.reasons[0]).toContain('두 답이 서로 다릅니다')
+  })
+
+  it('공격 Recall·혼동행렬이 있든 없든, 포함만 확인된 입력의 제목과 이유가 같은 근거 수준을 말한다', () => {
+    for (const form of [recall, accuracyOnly, withMatrix]) {
+      const c = conclude(inputOf({ ...form, split: 'unknown', unseenIncluded: 'yes' }))
+      expect(c.tone).toBe('early')
+      expect(c.headline).toBe('광고 숫자만으로는 아직 믿기 이릅니다')
+      expect(c.reasons[0]).toBe(INCLUDED_ONLY)
+      expect(c.figure?.title).toBe('논문에서 같은 AI, 두 번의 시험')
+    }
+    expect(conclude(inputOf({ ...withMatrix, split: 'unknown', unseenIncluded: 'yes' })).reasons[1]).toContain('공격 100건 중 80건')
+    for (const form of [recall, withMatrix]) {
+      expect(conclude(inputOf({ ...form, split: 'unseen', unseenIncluded: 'yes' })).tone).toBe('shown')
+    }
+    expect(conclude(inputOf({ ...accuracyOnly, split: 'unseen', unseenIncluded: 'yes' })).tone).toBe('partial')
+  })
+
+  it('포함 여부만 답한 입력의 판독 질문은 그대로다 — 규칙은 바꾸지 않는다', () => {
+    const review = buildReview(inputOf({ ...recall, split: 'unknown', unseenIncluded: 'yes' }))
+    expect(review.findings.map((f) => f.ruleId)).toContain('R02')
+    expect(review.findings.map((f) => f.ruleId)).not.toContain('R09')
+  })
+})
