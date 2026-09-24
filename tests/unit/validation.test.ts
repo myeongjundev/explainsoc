@@ -25,9 +25,15 @@ describe('비율 입력 (설계 10절)', () => {
     expect(parseRatio('-0.1')).toEqual({ kind: 'error', message: MESSAGES.ratioNegative })
   })
 
-  it('1을 넘으면 99%는 0.99라고 알려 준다', () => {
-    expect(parseRatio('99')).toEqual({ kind: 'error', message: MESSAGES.ratioAboveOne })
-    expect(parseRatio('99%')).toEqual({ kind: 'error', message: MESSAGES.ratioAboveOne })
+  it('1을 넘고 100 이하면 적은 값을 백분율로 보고 바꿀 값을 알려 준다', () => {
+    expect(parseRatio('99')).toEqual({ kind: 'error', message: '비율은 0부터 1 사이로 적어 주세요. 99%라면 0.99로 적습니다' })
+    expect(parseRatio('99.8%')).toEqual({ kind: 'error', message: '비율은 0부터 1 사이로 적어 주세요. 99.8%라면 0.998로 적습니다' })
+    expect(parseRatio('100')).toEqual({ kind: 'error', message: '비율은 0부터 1 사이로 적어 주세요. 100%라면 1로 적습니다' })
+  })
+
+  it('100을 넘거나 백분율 숫자를 읽을 수 없으면 일반 안내를 한다', () => {
+    expect(parseRatio('250')).toEqual({ kind: 'error', message: MESSAGES.ratioAboveOne })
+    expect(parseRatio('abc%')).toEqual({ kind: 'error', message: MESSAGES.ratioAboveOne })
     expect(MESSAGES.ratioAboveOne).toContain('99%는 0.99입니다')
   })
 

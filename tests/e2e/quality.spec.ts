@@ -41,6 +41,19 @@ test.describe('화면 폭 (375×812부터)', () => {
   }
 })
 
+test.describe('첫 화면의 첫 행동 (V10)', () => {
+  // 흔한 노트북·휴대폰 화면에서 스크롤 없이 주 단추가 보여야 한다. 1440×900은 지난 증거 화면 크기다.
+  for (const viewport of [{ width: 1280, height: 800 }, { width: 1440, height: 900 }, { width: 390, height: 844 }, { width: 375, height: 812 }]) {
+    test(`${viewport.width}×${viewport.height}에서 스크롤 없이 '예시로 바로 보기'가 보인다`, async ({ page }) => {
+      await page.setViewportSize(viewport)
+      await openHome(page)
+      const box = await page.getByRole('button', { name: '예시로 바로 보기' }).boundingBox()
+      expect(box).not.toBeNull()
+      expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height)
+    })
+  }
+})
+
 test.describe('키보드만으로 (BRB-C05)', () => {
   test('예시 실행 → 뒤집기 → 질문 복사까지 마우스 없이 끝난다', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
@@ -72,7 +85,7 @@ test.describe('키보드만으로 (BRB-C05)', () => {
 
     await tabTo('질문만 복사')
     await page.keyboard.press('Enter')
-    await expect(page.getByText(/질문 1개를 복사했습니다/)).toBeVisible()
+    await expect(page.getByText(/질문 2개를 복사했습니다/)).toBeVisible()
   })
 
   test('본문으로 바로 가기 링크가 첫 Tab에 나온다', async ({ page }) => {

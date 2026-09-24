@@ -1,5 +1,5 @@
 import { expect, test } from './fixtures'
-import { collectErrors, openChapter, openOwnForm, openHome, questionItems, startExample } from './helpers'
+import { collectErrors, openChapter, openOwnForm, openHome, questionItems, startExample, startExampleA } from './helpers'
 
 test.describe('논문 예시 60초 경로 (BRB-C02·C05)', () => {
   test('첫 화면에서 질문 복사까지 — 서명 장면이 모두 나온다', async ({ page, context }) => {
@@ -19,13 +19,17 @@ test.describe('논문 예시 60초 경로 (BRB-C02·C05)', () => {
     await page.getByRole('button', { name: '예시로 바로 보기' }).click()
     await expect(page.getByRole('heading', { level: 2, name: '3. 검토 결과' })).toBeFocused()
 
-    // V9 결론 카드: 결과 첫머리에서 결론 · 왜 · 그래서를 먼저 말한다
+    // V10: 첫 화면의 99.88% 이야기와 같은 예시로 연다. 결론 카드가 결론 · 왜 · 그래서를 먼저 말한다.
+    await expect(page.locator('.step-source')).toContainText('광고의 99.88%')
+    await expect(page.locator('.conclusion')).toContainText('광고 숫자만으로는 아직 믿기 이릅니다')
+    await expect(page.locator('.conclusion')).toContainText('99.8점이 38.7점이 됐습니다')
+    await expect(page.locator('.investigation-brief')).toContainText('다음 질문2')
+
+    // 같은 AI를 처음 보는 공격으로 시험한 예시로 바꿔, 좋아 보이는 숫자 뒤의 공격 개수를 본다
+    await page.getByRole('button', { name: '다른 예시: 같은 AI를 처음 보는 공격으로 시험한 결과 보기' }).click()
+    await expect(page.getByRole('heading', { level: 2, name: '3. 검토 결과' })).toBeFocused()
     await expect(page.locator('.conclusion')).toContainText('처음 보는 공격으로 시험한 숫자가 있습니다')
     await expect(page.locator('.conclusion')).toContainText('100건으로 치면 약 0.07건')
-
-    const briefing = page.locator('.investigation-brief')
-    await expect(briefing).toContainText('1개의 해석 주의를 먼저 읽어야 합니다')
-    await expect(briefing).toContainText('같은 시험에서 공격 Recall은 얼마입니까?')
 
     // V7 수사 보드: 세 장을 한 번에 쌓지 않고 한 장씩 읽는다
     await expect(page.locator('.board-column.is-active .board-column__head h3')).toHaveText('주장과 근거')
@@ -160,7 +164,7 @@ test.describe('PoC 검토 작업대 V2', () => {
 
   test('미팅 상태·메모를 포함한 검토표를 복사한다', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
-    await startExample(page)
+    await startExampleA(page)
     await openChapter(page, '다음 행동')
     await page.getByLabel('답변 상태').selectOption('requested')
     await page.getByLabel('답변 메모').fill('공격 유형별 표를 추가로 요청')
@@ -193,7 +197,7 @@ test.describe('회차별 로컬 PoC 사례 작업대 V4', () => {
   })
 
   test('공급자 답변으로 해결·추가 규칙을 비교하고 JSON을 다시 연다', async ({ page }) => {
-    await startExample(page)
+    await startExampleA(page)
     await expect(page.getByRole('navigation', { name: '결과 목차' })).toBeVisible()
     await openChapter(page, '다음 행동')
     await page.getByLabel('답변 상태').selectOption('requested')
@@ -267,7 +271,7 @@ test.describe('잘못된 입력에도 멈추지 않는다 (BRB-C05)', () => {
     for (const [raw, message] of [
       ['abc', '0부터 1 사이의 숫자로 적어 주세요'],
       ['-0.2', '비율은 0보다 작을 수 없습니다'],
-      ['99', '비율은 0부터 1 사이로 적어 주세요. 99%는 0.99입니다'],
+      ['99', '비율은 0부터 1 사이로 적어 주세요. 99%라면 0.99로 적습니다'],
       ['Infinity', 'Infinity나 NaN 대신 0부터 1 사이의 일반 숫자로 적어 주세요'],
     ] as const) {
       await value.fill(raw)

@@ -23,18 +23,30 @@ export const MESSAGES = {
 const DECIMAL = /^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?$/
 const NON_FINITE = /^[+-]?(infinity|nan)$/i
 
+/**
+ * V10: 1보다 크고 100 이하인 수는 백분율로 적었을 가능성이 크다. 적은 값 그대로 바꿀 값을 알려 준다.
+ * 예: "99.8" → "99.8%라면 0.998로 적습니다". 100을 넘으면 일반 안내로 돌아간다.
+ */
+export function aboveOneMessage(percent: number): string {
+  if (!(percent > 1 && percent <= 100)) return MESSAGES.ratioAboveOne
+  return `비율은 0부터 1 사이로 적어 주세요. ${percent}%라면 ${Number((percent / 100).toFixed(8))}로 적습니다`
+}
+
 /** 0부터 1 사이의 비율. 1과 0은 들어간다. */
 export function parseRatio(raw: string): Parsed<number> {
   const text = raw.trim()
   if (text === '') return { kind: 'empty' }
   if (NON_FINITE.test(text)) return { kind: 'error', message: MESSAGES.ratioNotFinite }
   // "99%"처럼 백분율로 적은 사람에게는 0.99로 적으라고 바로 알려 준다.
-  if (text.endsWith('%')) return { kind: 'error', message: MESSAGES.ratioAboveOne }
+  if (text.endsWith('%')) {
+    const body = text.slice(0, -1).trim()
+    return { kind: 'error', message: DECIMAL.test(body) ? aboveOneMessage(Number(body)) : MESSAGES.ratioAboveOne }
+  }
   if (!DECIMAL.test(text)) return { kind: 'error', message: MESSAGES.ratioNotNumber }
   const v = Number(text)
   if (!Number.isFinite(v)) return { kind: 'error', message: MESSAGES.ratioNotFinite }
   if (v < 0) return { kind: 'error', message: MESSAGES.ratioNegative }
-  if (v > 1) return { kind: 'error', message: MESSAGES.ratioAboveOne }
+  if (v > 1) return { kind: 'error', message: aboveOneMessage(v) }
   return { kind: 'ok', value: v === 0 ? 0 : v }
 }
 

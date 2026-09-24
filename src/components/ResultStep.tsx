@@ -52,14 +52,19 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onEditBroc
     setChapter(next)
     const target = next === 'evidence' ? 'evidence-column' : next === 'findings' ? 'findings-title' : 'questions-title'
     // scrollIntoView가 없는 환경(테스트 등)에서도 장 전환 자체는 이어진다.
-    window.requestAnimationFrame(() => document.getElementById(target)?.scrollIntoView?.({ block: 'start' }))
+    // V10: 화면만 내리지 않고 초점도 그 장의 제목으로 옮겨, 키보드·화면 낭독 사용자도 같은 곳에서 읽기 시작한다.
+    window.requestAnimationFrame(() => {
+      const heading = document.getElementById(target)
+      heading?.scrollIntoView?.({ block: 'start' })
+      heading?.focus({ preventScroll: true })
+    })
   }
   return (
     <div className="step-body result-step">
       <ConclusionCard conclusion={buildConclusion(input, review)} onShowQuestions={() => showChapter('output')} onOpenLab={onOpenLab} />
       <WorkbenchNav active={chapter} onSelect={setChapter} />
       {caseFileStatus && <p className="workbench-file-status" role="status">{caseFileStatus}</p>}
-      <InvestigationBrief review={review} roundNumber={rounds.length + 1} caseTitle={caseTitle} errorCount={check.errorCount} onShowQuestions={() => showChapter('output')} />
+      <InvestigationBrief review={review} roundNumber={rounds.length + 1} caseTitle={caseTitle} errorCount={check.errorCount} />
       <div className="result investigation-board">
         <div className={`result__evidence board-column${chapter === 'evidence' ? ' is-active' : ''}`} id="evidence-column">
           <header className="board-column__head">
@@ -90,7 +95,7 @@ export function ResultStep({ check, review, onEdit, onEditConditions, onEditBroc
           <header className="board-column__head">
             <span>3</span><div><h3>다음 행동</h3><p>공급자에게 물을 질문과 검토표</p></div>
           </header>
-          <QuestionList questions={review.questions} responses={responses} onResponse={onResponse} />
+          <QuestionList questions={review.questions} findings={review.findings} responses={responses} onResponse={onResponse} />
           <RequestPackage review={review} />
           <ReviewBrief check={check} review={review} responses={responses} caseTitle={caseTitle} rounds={rounds} current={{ id: `r${rounds.length + 1}`, ...roundMeta, input, responses: { ...responses } }} comparison={comparison} />
         </div>

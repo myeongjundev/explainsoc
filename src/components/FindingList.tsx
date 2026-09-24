@@ -15,7 +15,7 @@ interface Props {
 export function FindingList({ review, check }: Props) {
   return (
     <section className="panel findings" aria-labelledby="findings-title">
-      <h3 id="findings-title" className="panel__title">
+      <h3 id="findings-title" className="panel__title" tabIndex={-1}>
         숫자가 말하는 것과 말하지 않는 것
       </h3>
       <p className="findings__disclaimer">어느 상태도 모델이 좋다거나 나쁘다는 판정이 아닙니다.</p>

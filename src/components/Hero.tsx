@@ -16,12 +16,14 @@ interface Props {
  * 화면 A — 누구를 어떻게 돕는지 10초 안에 전달한다. 입력 폼과 긴 연구 한계는 아직 보이지 않는다.
  * V9: 비전공자도 알아듣게 시험 공부에 빗댄다. 첫 화면에는 분할·지표 같은 전문 용어를 두지 않고,
  * 점수는 논문 Macro F1을 100점 만점으로 옮긴 값임을 그림 아래에 밝힌다(설계 31절).
+ * V10: 문제(제목) → 비유 → 이 앱이 하는 일 한 문장 → 첫 행동 순서로 줄여, 노트북·휴대폰 첫 화면에
+ * 주 단추가 보이게 한다. 세 단계와 내 자료 입력은 그 아래 한 단계 작게 둔다(설계 32절).
  */
 export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStartExample, onStartOwn, onStartBrochure, onOpenLab, onOpenCase, caseFileStatus }, headingRef) {
   return (
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero__copy">
-        <p className="hero__kicker"><span>보안 AI 광고 숫자 확인</span> · 판매 업체에 물을 질문 만들기</p>
+        <p className="hero__kicker"><span>보안 AI 제품 검토</span> · 업체에 물을 질문 만들기</p>
         <h1 id="hero-title" className="hero__title" tabIndex={-1} ref={headingRef}>
           <span className="hero__title-line">보안 AI의 99점,</span>{' '}
           <span className="hero__title-line">처음 보는 공격에서도</span>{' '}
@@ -31,19 +33,19 @@ export const Hero = forwardRef<HTMLHeadingElement, Props>(function Hero({ onStar
           광고의 <strong>“정확도 99%”</strong>는 AI가 <strong>이미 배운 종류의 공격</strong>으로 치른 시험 점수일 수 있습니다.
           시험 공부로 치면 <strong>연습문제를 그대로 낸 시험</strong>입니다.
         </p>
-        <p className="hero__scenario"><strong>이 사이트가 하는 일.</strong> 받은 광고 숫자가 어떤 시험의 점수인지 확인하고,
-          판매 업체에 물어볼 질문을 만들어 줍니다. 회사에서 보안 AI 제품 자료를 받았을 때 씁니다.</p>
+        <p className="hero__scenario"><strong>이 사이트가 하는 일.</strong> 회사에서 침입 탐지 같은 보안 AI 제품의 소개서를
+          받았을 때, 그 숫자가 어떤 시험의 점수인지 확인하고 판매 업체에 물어볼 질문을 만들어 줍니다.</p>
+        <div className="hero__actions">
+          <button type="button" className="button button--primary button--large" onClick={onStartExample}>
+            예시로 바로 보기
+          </button>
+          <p className="hero__example-note">숫자를 준비하지 않아도 됩니다. 광고 속 99.88%가 어떤 시험의 점수였는지 논문 결과로 보여 줍니다.</p>
+        </div>
         <ol className="hero__story" aria-label="ExplainSOC가 하는 세 가지">
           <li><span>01</span><strong>받은 광고 문장이나 숫자를 넣고</strong></li>
           <li><span>02</span><strong>모르는 시험 조건에 답하면</strong></li>
           <li><span>03</span><strong>업체에 물을 질문이 완성됩니다</strong></li>
         </ol>
-        <div className="hero__actions">
-          <button type="button" className="button button--primary button--large" onClick={onStartExample}>
-            예시로 바로 보기
-          </button>
-        </div>
-        <p className="hero__example-note">숫자를 준비하지 않아도 됩니다. 논문 속 실제 시험 결과로 한 번 보여 줍니다.</p>
         <div className="hero__own">
           <span>내 자료로 해 보기</span>
           <button type="button" className="button button--quiet" onClick={onStartBrochure}>

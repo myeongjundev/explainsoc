@@ -1,10 +1,13 @@
 import { useRef, useState } from 'react'
-import { questionsToClipboardText } from '../domain/review'
+import { questionsToClipboardText, type Finding } from '../domain/review'
 import type { QuestionResponse, QuestionStatus } from '../domain/types'
 import { CopyIcon } from './icons'
+import { StatusBadge } from './StatusBadge'
 
 interface Props {
   questions: readonly string[]
+  /** 질문마다 처음 그 질문을 낸 판독 항목. 상태와 "왜 묻나요"를 붙인다. */
+  findings: readonly Finding[]
   responses: Readonly<Record<string, QuestionResponse>>
   onResponse: (question: string, response: QuestionResponse) => void
 }
@@ -22,7 +25,10 @@ const STATUS_OPTIONS: { value: QuestionStatus; label: string }[] = [
   { value: 'followup', label: '추가 확인' },
 ]
 
-export function QuestionList({ questions, responses, onResponse }: Props) {
+export function QuestionList({ questions, findings, responses, onResponse }: Props) {
+  // V10: 질문만 두면 왜 물어야 하는지 모른다. 판독 항목의 안내 문장(자료 요청서의 "이유"와 같다)을 붙인다.
+  const sourceOf = new Map<string, Finding>()
+  for (const finding of findings) if (finding.asked && !sourceOf.has(finding.question)) sourceOf.set(finding.question, finding)
   const [copy, setCopy] = useState<CopyState>({ kind: 'idle' })
   const listRef = useRef<HTMLOListElement>(null)
 
@@ -47,7 +53,7 @@ export function QuestionList({ questions, responses, onResponse }: Props) {
 
   return (
     <section className="panel questions" aria-labelledby="questions-title">
-      <h3 id="questions-title" className="panel__title">
+      <h3 id="questions-title" className="panel__title" tabIndex={-1}>
         공급자에게 물을 질문
       </h3>
       {questions.length > 0 ? (
@@ -60,7 +66,17 @@ export function QuestionList({ questions, responses, onResponse }: Props) {
               const noteId = `question-${index}-note`
               return (
                 <li key={q} className="question-card">
+                  {sourceOf.get(q) && (
+                    <p className="question-card__meta">
+                      {/* 입력한 근거는 질문의 상태가 아니다. 확인 필요·해석 주의만 붙인다. */}
+                      {sourceOf.get(q)!.status !== 'input' && <StatusBadge status={sourceOf.get(q)!.status} />}
+                      <span className="question-card__rule">{sourceOf.get(q)!.ruleId}</span>
+                    </p>
+                  )}
                   <p className="question-card__text">{q}</p>
+                  {sourceOf.get(q) && (
+                    <p className="question-card__why"><strong>왜 묻나요</strong> {sourceOf.get(q)!.guidance}</p>
+                  )}
                   <div className="question-card__fields">
                     <label htmlFor={statusId}>답변 상태</label>
                     <select

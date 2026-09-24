@@ -6,46 +6,29 @@ interface Props {
   caseTitle: string
   /** 계산에서 뺀 칸 수. 판독 장을 열지 않아도 이 사실을 먼저 알린다. */
   errorCount: number
-  onShowQuestions: () => void
 }
 
-/** 결과에 들어온 직후 긴 목록보다 먼저 읽는 현재 회차 브리핑. 점수나 합격 판정은 만들지 않는다. */
-export function InvestigationBrief({ review, roundNumber, caseTitle, errorCount, onShowQuestions }: Props) {
-  const checks = review.byStatus.check.length
-  const cautions = review.byStatus.caution.length
-  const questions = review.questions.length
-  const headline = checks > 0
-    ? `${checks}개의 평가 조건을 먼저 확인해야 합니다`
-    : cautions > 0
-      ? `${cautions}개의 해석 주의를 먼저 읽어야 합니다`
-      : questions > 0
-        ? `${questions}개의 질문을 다음 회의로 가져가세요`
-        : '받은 근거와 평가 조건을 한 장에 정리했습니다'
-
+/**
+ * 결과 목차 위의 검토 요약 한 줄. 점수나 합격 판정은 만들지 않는다.
+ * V10: 결론과 첫 질문은 결론 카드가 말하므로, 여기서는 회차와 판독 개수, 계산에서 뺀 칸만 알린다(설계 32절).
+ */
+export function InvestigationBrief({ review, roundNumber, caseTitle, errorCount }: Props) {
   return (
-    <section className="investigation-brief" aria-labelledby="investigation-brief-title">
-      <div className="investigation-brief__lead">
-        <p className="investigation-brief__eyebrow">검토 요약 · {roundNumber}회차</p>
-        <p className="investigation-brief__case">{caseTitle}</p>
-        <h3 id="investigation-brief-title">{headline}</h3>
-        <p>숫자의 좋고 나쁨을 판정하지 않고, 지금 받은 근거에서 다음에 확인할 일을 앞에 둡니다.</p>
-        {errorCount > 0 && (
-          <p className="investigation-brief__warn">
-            잘못 적은 칸 {errorCount}개는 계산에서 뺐습니다. 아래 ‘입력 수정’에서 고칠 수 있습니다.
-          </p>
-        )}
-      </div>
+    <section className="investigation-brief" aria-label="검토 요약">
+      <p className="investigation-brief__eyebrow">
+        검토 요약 · {roundNumber}회차 · <span className="investigation-brief__case">{caseTitle}</span>
+      </p>
       <dl className="investigation-brief__metrics" aria-label="현재 회차 판독 요약">
-        <div><dt>확인 필요</dt><dd>{checks}</dd></div>
-        <div><dt>해석 주의</dt><dd>{cautions}</dd></div>
-        <div><dt>다음 질문</dt><dd>{questions}</dd></div>
+        <div><dt>확인 필요</dt><dd>{review.byStatus.check.length}</dd></div>
+        <div><dt>해석 주의</dt><dd>{review.byStatus.caution.length}</dd></div>
+        <div><dt>다음 질문</dt><dd>{review.questions.length}</dd></div>
       </dl>
-      <div className="investigation-brief__next">
-        <span>가장 먼저 물을 질문</span>
-        <strong>{review.questions[0] ?? '현재 입력에서 추가로 물을 질문이 없습니다.'}</strong>
-        {questions > 0 && <button type="button" onClick={onShowQuestions}>질문과 답변으로 이동</button>}
-      </div>
       <span className="investigation-brief__boundary">판정 아님 · 근거 확인</span>
+      {errorCount > 0 && (
+        <p className="investigation-brief__warn">
+          잘못 적은 칸 {errorCount}개는 계산에서 뺐습니다. 아래 ‘입력 수정’에서 고칠 수 있습니다.
+        </p>
+      )}
     </section>
   )
 }

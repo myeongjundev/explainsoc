@@ -72,6 +72,9 @@ export const PaperLab = forwardRef<HTMLHeadingElement, Props>(function PaperLab(
         <p className="lab__lead">
           10번 논문의 실험 결과를 그대로 옮겼습니다. 새로 계산하거나 추정한 숫자는 없습니다. 각 실험 아래 ‘논문 근거 보기’에서 원문과 한계를 확인할 수 있습니다.
         </p>
+        <p className="lab__context">
+          <strong>CICIDS2017</strong>은 정상 흐름과 공격 흐름을 기록한 네트워크 침입 탐지(NIDS) 공개 데이터셋입니다. 실제 운영에서는 학습 때 보지 못한 공격이 들어올 수 있어, 논문은 그런 공격만 따로 둔 시험을 함께 치렀습니다.
+        </p>
         <nav aria-label="실험 목록">
           <ol className="lab__index">
             {INDEX.map((item) => (

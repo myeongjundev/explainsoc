@@ -2619,150 +2619,6 @@ a {
 
 /* ─── V8 · 결과 — 밝은 문서형 ─────────────────────────── */
 
-/* 결과에 들어오면 먼저 읽는 요약. 점수판이 아니라 문서 맨 위의 요지 한 단락처럼 둔다. */
-.investigation-brief {
-  position: relative;
-  display: grid;
-  gap: 18px;
-  margin: 18px 0 22px;
-  padding: clamp(22px, 3.2vw, 34px);
-  border: 1px solid var(--line);
-  border-top: 4px solid var(--accent);
-  border-radius: 18px;
-  background: var(--sheet);
-}
-
-.investigation-brief__lead {
-  min-width: 0;
-}
-
-.investigation-brief__eyebrow,
-.investigation-brief__next > span {
-  color: var(--accent);
-  font-size: 0.82rem;
-  font-weight: 800;
-}
-
-.investigation-brief__case {
-  margin-top: 8px;
-  color: var(--muted);
-  font-size: 0.88rem;
-  font-weight: 600;
-}
-
-.investigation-brief h3 {
-  max-width: 18em;
-  margin-top: 4px;
-  font-size: clamp(1.5rem, 1.2rem + 1.1vw, 2.1rem);
-  line-height: 1.22;
-  letter-spacing: -0.03em;
-}
-
-.investigation-brief__lead > h3 ~ p {
-  max-width: 48em;
-  margin-top: 10px;
-  color: var(--ink-2);
-  font-size: 0.95rem;
-}
-
-/* 잘못 적은 칸이 있다는 사실은 장을 옮기기 전에 이 자리에서 먼저 보인다. */
-.investigation-brief__lead > p.investigation-brief__warn {
-  display: inline-block;
-  padding: 8px 12px;
-  border: 1px solid var(--check-line);
-  border-radius: 10px;
-  background: var(--check-bg);
-  color: var(--check-ink);
-  font-weight: 700;
-}
-
-.investigation-brief__metrics {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0;
-  margin: 0;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.investigation-brief__metrics div {
-  display: grid;
-  gap: 2px;
-  padding: 12px 14px;
-  background: var(--sheet-2);
-}
-
-.investigation-brief__metrics div + div {
-  border-left: 1px solid var(--line);
-}
-
-.investigation-brief__metrics dt {
-  color: var(--muted);
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.investigation-brief__metrics dd {
-  margin: 0;
-  color: var(--ink);
-  font-size: 1.7rem;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.15;
-}
-
-.investigation-brief__next {
-  display: grid;
-  gap: 6px;
-  padding: 14px 16px;
-  border-left: 3px solid var(--accent);
-  border-radius: 0 12px 12px 0;
-  background: var(--accent-soft);
-}
-
-.investigation-brief__next strong {
-  font-size: 1.05rem;
-  line-height: 1.45;
-}
-
-.investigation-brief__next button {
-  justify-self: start;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--accent);
-  font-size: 0.88rem;
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  cursor: pointer;
-}
-
-.investigation-brief__boundary {
-  position: absolute;
-  top: 18px;
-  right: 20px;
-  padding: 4px 10px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--sheet);
-  color: var(--muted);
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-@media (min-width: 900px) {
-  .investigation-brief {
-    grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
-    align-items: center;
-  }
-
-  .investigation-brief__lead {
-    grid-row: 1 / 3;
-  }
-}
-
 /* 결과 목차 — 세 장을 오가는 밑줄 탭과, 회차 기록·검토표로 가는 링크. */
 .workbench-nav {
   position: sticky;
@@ -3034,29 +2890,6 @@ a {
 }
 
 @media (max-width: 700px) {
-  .investigation-brief {
-    margin-top: 14px;
-    padding: 20px;
-  }
-
-  .investigation-brief__boundary {
-    position: static;
-    justify-self: start;
-    grid-row: 1;
-  }
-
-  .investigation-brief__lead {
-    grid-row: 2;
-  }
-
-  .investigation-brief__metrics {
-    grid-row: 3;
-  }
-
-  .investigation-brief__next {
-    grid-row: 4;
-  }
-
   .workbench-nav {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -3675,18 +3508,6 @@ a {
 .result-step > .step-actions {
   width: 100%;
   max-width: none;
-}
-
-.investigation-brief__boundary {
-  position: static;
-  justify-self: start;
-}
-
-@media (min-width: 900px) {
-  .investigation-brief__boundary {
-    grid-column: 2;
-    justify-self: end;
-  }
 }
 
 .workbench > .stepper {
@@ -5255,4 +5076,218 @@ a {
   .reader-note {
     transition: none;
   }
+}
+
+/* ─── V10 · 첫 화면 계층 ─────────────────────────────────
+ * 문제(제목) → 비유 → 하는 일 한 문장 → 첫 행동. 노트북(1280×800)·휴대폰(390×844) 첫 화면에 주 단추가 보인다.
+ * 세 단계는 단추 아래 작은 칸으로, 논문 실험실은 밝은 테두리 카드로 한 단계 낮춘다.
+ */
+.hero {
+  padding-top: clamp(24px, 4vw, 48px);
+  padding-bottom: clamp(24px, 4vw, 48px);
+}
+
+.hero__title {
+  max-width: none;
+  margin-top: 14px;
+  font-size: clamp(1.9rem, 1.15rem + 2.3vw, 3.1rem);
+  line-height: 1.14;
+}
+
+.hero__help {
+  margin-top: 14px;
+  font-size: clamp(1rem, 0.95rem + 0.25vw, 1.1rem);
+}
+
+.hero__scenario {
+  margin-top: 12px;
+}
+
+.hero__actions {
+  align-items: center;
+  gap: 8px 16px;
+  margin-top: 20px;
+}
+
+.hero__actions .hero__example-note {
+  flex: 1 1 220px;
+  margin-top: 0;
+}
+
+.hero__story {
+  margin-top: 20px;
+  gap: 8px;
+  border-top: 0;
+}
+
+@media (min-width: 560px) {
+  .hero__story {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.hero__story li {
+  grid-template-columns: 22px 1fr;
+  gap: 8px;
+  align-items: start;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--sheet-2);
+}
+
+.hero__story span {
+  width: 22px;
+  height: 22px;
+  font-size: 0.68rem;
+}
+
+.hero__story strong {
+  color: var(--ink-2);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.hero__own {
+  margin-top: 16px;
+}
+
+.hero-lab {
+  border: 1.5px solid var(--accent);
+  background: var(--sheet);
+  color: var(--ink);
+}
+
+.hero-lab:hover {
+  box-shadow: 0 8px 22px rgb(36 80 199 / 14%);
+}
+
+.hero-lab__kicker {
+  color: var(--accent);
+}
+
+.hero-lab__line {
+  color: var(--ink-2);
+}
+
+.hero-lab__go {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* V10 · 결과 — 결론 카드가 결론을 말하므로 검토 요약은 한 줄로 낮춘다. */
+.investigation-brief {
+  width: min(960px, 100%);
+  margin: 12px auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--sheet);
+  font-size: 0.86rem;
+}
+
+.investigation-brief__eyebrow {
+  color: var(--ink-2);
+  font-weight: 700;
+}
+
+.investigation-brief__case {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.investigation-brief__metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0;
+}
+
+.investigation-brief__metrics div {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.investigation-brief__metrics dt {
+  color: var(--muted);
+}
+
+.investigation-brief__metrics dd {
+  margin: 0;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.investigation-brief__boundary {
+  margin-left: auto;
+  padding: 2px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.investigation-brief__warn {
+  flex-basis: 100%;
+  color: var(--check-ink);
+  font-weight: 700;
+}
+
+/* V10 · 질문 카드 — 상태, 규칙 번호, 왜 묻나요 한 줄 */
+.question-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.question-card__rule {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.76rem;
+}
+
+.question-card__why {
+  margin: 4px 0 10px;
+  font-weight: 500;
+  color: var(--ink-2);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.question-card__why strong {
+  margin-right: 6px;
+  color: var(--accent);
+  font-size: 0.8rem;
+}
+
+.panel__title:focus {
+  outline: none;
+}
+
+.step-source__switch {
+  justify-self: start;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.lab__head .lab__context {
+  max-width: 68ch;
+  padding: 10px 12px;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 10px;
+  background: rgb(255 255 255 / 5%);
+  color: #c9d3e3;
+  font-size: 0.88rem;
+}
+
+.lab__head .lab__context strong {
+  color: #fff;
 }

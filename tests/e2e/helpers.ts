@@ -31,6 +31,13 @@ export async function startExample(page: Page) {
   await expect(page.getByRole('heading', { level: 2, name: '3. 검토 결과' })).toBeFocused()
 }
 
+/** V10: 첫 화면 예시는 광고의 99.88%(예시 B)다. 처음 보는 공격으로 시험한 예시 A는 결과의 '다른 예시'로 연다. */
+export async function startExampleA(page: Page) {
+  await startExample(page)
+  await page.getByRole('button', { name: '다른 예시: 같은 AI를 처음 보는 공격으로 시험한 결과 보기' }).click()
+  await expect(page.locator('.step-source')).toContainText('처음 보는 공격으로 다시 시험한 결과')
+}
+
 /** V8: 처음 입력은 한 화면씩 묻는다. 여러 칸을 한꺼번에 채우는 시험은 한 장짜리 폼으로 연다. */
 export async function openOwnForm(page: Page) {
   await page.getByRole('button', { name: '숫자로 직접 입력' }).click()

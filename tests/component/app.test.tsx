@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { App } from '../../src/app/App'
 import { PAPER } from '../../src/data/paperEvidence'
@@ -10,12 +10,18 @@ function setup() {
   return { user }
 }
 
+/** V10: 첫 화면 예시는 광고의 99.88%(예시 B)다. 예시 A는 결과의 '다른 예시' 단추로 연다. */
+async function openExampleA(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
+  await user.click(screen.getByRole('button', { name: '다른 예시: 같은 AI를 처음 보는 공격으로 시험한 결과 보기' }))
+}
+
 describe('첫 화면 (BRB-C03)', () => {
   it('제목, 도움 한 문장, 축약하지 않은 논문 제목, 개인정보 안내가 있다', () => {
     setup()
     expect(screen.getByRole('heading', { level: 1, name: '보안 AI의 99점, 처음 보는 공격에서도 99점일까요?' })).toBeInTheDocument()
     expect(document.querySelector('.hero__help')).toHaveTextContent('연습문제를 그대로 낸 시험')
-    expect(screen.getByText(/회사에서 보안 AI 제품 자료를 받았을 때 씁니다/)).toBeInTheDocument()
+    expect(document.querySelector('.hero__scenario')).toHaveTextContent('회사에서 침입 탐지 같은 보안 AI 제품의 소개서를 받았을 때')
     expect(screen.getByText((_, el) => el?.tagName === 'P' && el.textContent === `반영한 논문 · ${PAPER.title}`)).toBeInTheDocument()
     expect(screen.getByText(/입력한 성능 자료는 브라우저 메모리에서만 계산됩니다/)).toBeInTheDocument()
     expect(screen.getByText(/숫자를 준비하지 않아도 됩니다/)).toBeInTheDocument()
@@ -43,26 +49,38 @@ describe('첫 화면 (BRB-C03)', () => {
 describe('예시로 바로 보기', () => {
   it('결과로 바로 가서 R04와 그 질문을 보여 준다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
+    await openExampleA(user)
     expect(screen.getByRole('heading', { level: 2, name: '3. 검토 결과' })).toHaveFocus()
-    expect(screen.getByText(/R04/)).toBeInTheDocument()
+    expect(screen.getAllByText(/R04/).length).toBeGreaterThan(0)
     const questions = screen.getByRole('region', { name: '공급자에게 물을 질문' })
     expect(within(questions).getByText('같은 시험에서 공격 Recall은 얼마입니까?')).toHaveClass('question-card__text')
     expect(document.querySelector('.baseline__delta')).toHaveTextContent('74건(탐지 160 − 오탐 86)')
   })
 
-  it('긴 판독 목록보다 먼저 현재 회차와 첫 질문을 한눈에 요약한다', async () => {
+  it('첫 화면의 99.88% 이야기와 같은 예시(무작위 분할)로 열고, 결과에서 다른 예시로 바꿀 수 있다', async () => {
     const { user } = setup()
     await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
-    const briefing = screen.getByRole('region', { name: '1개의 해석 주의를 먼저 읽어야 합니다' })
-    expect(within(briefing).getByText('논문 예시 검토')).toBeInTheDocument()
-    expect(within(briefing).getByText('같은 시험에서 공격 Recall은 얼마입니까?')).toBeInTheDocument()
-    expect(within(briefing).getByRole('button', { name: '질문과 답변으로 이동' })).toBeInTheDocument()
+    expect(document.querySelector('.step-source')).toHaveTextContent('광고의 99.88%')
+    expect(screen.getByRole('region', { name: '광고 숫자만으로는 아직 믿기 이릅니다' })).toHaveTextContent('99.8점')
+    await user.click(screen.getByRole('button', { name: '다른 예시: 같은 AI를 처음 보는 공격으로 시험한 결과 보기' }))
+    expect(screen.getByRole('heading', { level: 2, name: '3. 검토 결과' })).toHaveFocus()
+    expect(document.querySelector('.step-source')).toHaveTextContent('처음 보는 공격으로 다시 시험한 결과')
+    await user.click(screen.getByRole('button', { name: '다른 예시: 광고의 99.88% 결과 보기' }))
+    expect(document.querySelector('.step-source')).toHaveTextContent('광고의 99.88%')
+  })
+
+  it('결론 카드 아래 검토 요약은 회차와 판독 개수 한 줄이고, 결론을 되풀이하지 않는다', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
+    const summary = screen.getByRole('region', { name: '검토 요약' })
+    expect(summary).toHaveTextContent('검토 요약 · 1회차 · 논문 예시 검토')
+    expect(within(summary).getByLabelText('현재 회차 판독 요약')).toHaveTextContent('다음 질문2')
+    expect(within(summary).queryByRole('heading')).not.toBeInTheDocument()
   })
 
   it('정확한 P09 원수치와 두 주장 지표를 넣는다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
+    await openExampleA(user)
     await user.click(screen.getByRole('button', { name: '입력 수정' }))
     expect(screen.getByLabelText(/정상→정상 \(TN\)/)).toHaveValue('375432')
     expect(screen.getByLabelText(/정상→공격, 오탐 \(FP\)/)).toHaveValue('86')
@@ -76,7 +94,7 @@ describe('예시로 바로 보기', () => {
 
   it('뒤집으면 공격 개수가 보이고, 스크린 리더에도 알린다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
+    await openExampleA(user)
     const flip = screen.getByRole('button', { name: '공격 기준으로 뒤집기' })
     expect(flip).toHaveAttribute('aria-pressed', 'false')
     await user.click(flip)
@@ -100,7 +118,7 @@ describe('입력 검증 (BRB-C05)', () => {
     const value = screen.getByLabelText('값 (0부터 1 사이)')
     await user.type(value, '99')
     expect(value).toHaveAttribute('aria-invalid', 'true')
-    expect(value).toHaveAccessibleDescription(MESSAGES.ratioAboveOne)
+    expect(value).toHaveAccessibleDescription('비율은 0부터 1 사이로 적어 주세요. 99%라면 0.99로 적습니다')
   })
 
   it('잘못된 입력 하나가 다른 유효한 입력의 결과를 막지 않는다', async () => {
@@ -112,7 +130,7 @@ describe('입력 검증 (BRB-C05)', () => {
     await user.selectOptions(screen.getByLabelText('지표 2'), 'fpr')
     await user.type(screen.getAllByLabelText('값 (0부터 1 사이)')[1], '0.001')
     await user.click(screen.getByRole('button', { name: /검토 결과/ }))
-    expect(screen.getByText(/R04/)).toBeInTheDocument()
+    expect(screen.getAllByText(/R04/).length).toBeGreaterThan(0)
     expect(screen.queryByText(/R03/)).not.toBeInTheDocument()
     expect(screen.getByText('잘못 적은 칸 1개는 계산에서 뺐습니다. 입력 수정에서 고칠 수 있습니다.')).toBeInTheDocument()
   })
@@ -252,12 +270,20 @@ describe('결론 카드 (V9)', () => {
   it('결과 맨 위에서 결론·왜·그래서를 쉬운 말로 먼저 말하고, 판정이 아니라고 밝힌다', async () => {
     const { user } = setup()
     await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
-    const card = screen.getByRole('region', { name: /처음 보는 공격으로 시험한 숫자가 있습니다/ })
-    expect(card).toHaveTextContent('100건으로 치면 약 0.07건')
-    expect(card).toHaveTextContent('판매 업체에 아래 질문 1개를 하세요')
+    const card = screen.getByRole('region', { name: '광고 숫자만으로는 아직 믿기 이릅니다' })
+    expect(card).toHaveTextContent('99.8점이 38.7점이 됐습니다')
+    expect(card).toHaveTextContent('판매 업체에 아래 질문 2개를 하세요')
     expect(card).toHaveTextContent('AI 제품이 좋다·나쁘다는 판정이 아닙니다')
     await user.click(within(card).getByRole('button', { name: '업체에 물을 질문 보기' }))
     expect(screen.getByRole('region', { name: '공급자에게 물을 질문' })).toBeVisible()
+  })
+
+  it('처음 보는 공격으로 시험한 예시에서는 받은 숫자를 100건으로 옮겨 보인다', async () => {
+    const { user } = setup()
+    await openExampleA(user)
+    const card = screen.getByRole('region', { name: /처음 보는 공격으로 시험한 숫자가 있습니다/ })
+    expect(card).toHaveTextContent('100건으로 치면 약 0.07건')
+    expect(card).toHaveTextContent('판매 업체에 아래 질문 1개를 하세요')
   })
 })
 
@@ -344,7 +370,7 @@ describe('PoC 미팅 산출물', () => {
   it('질문 상태와 메모를 검토표에 포함해 복사한다', async () => {
     const { user } = setup()
     const writeText = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue()
-    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
+    await openExampleA(user)
     await user.selectOptions(screen.getByLabelText('답변 상태'), 'requested')
     await user.type(screen.getByLabelText('답변 메모'), '공격 유형별 Recall 표를 요청함')
     await user.click(screen.getByRole('button', { name: '검토표 전체 복사' }))
@@ -362,18 +388,18 @@ describe('PoC 미팅 산출물', () => {
 
   it('혼동행렬을 열고 닫아도 예시 출처를 보존한다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
+    await openExampleA(user)
     await user.click(screen.getByRole('button', { name: '입력 수정' }))
     await user.click(screen.getByRole('button', { name: '혼동행렬 닫기' }))
     await user.click(screen.getByRole('button', { name: '혼동행렬로 입력' }))
     await user.click(screen.getByRole('button', { name: /검토 결과/ }))
     expect(document.querySelector('.reveal__scope')).toHaveTextContent('CICIDS2017')
-    expect(document.querySelector('.step-source')).toHaveTextContent('논문 예시 A')
+    expect(document.querySelector('.step-source')).toHaveTextContent('같은 AI를 처음 보는 공격으로 다시 시험한 결과')
   })
 
   it('계속 남은 질문은 직전 상태·메모를 이어받되 이전 회차 기록은 바꾸지 않는다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
+    await openExampleA(user)
     await user.selectOptions(screen.getByLabelText('답변 상태'), 'requested')
     await user.type(screen.getByLabelText('답변 메모'), '1회차 요청 메모')
     await user.click(screen.getByText('회차 기록과 다음 답변 관리'))
@@ -416,7 +442,7 @@ describe('결과를 한 장씩 읽는 흐름 (V7)', () => {
 
   it('공격과 정상의 크기를 실제 비율 그대로 그리고, 보이지 않는 값은 글로 알린다', async () => {
     const { user } = setup()
-    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
+    await openExampleA(user)
 
     const attacks = screen.getByRole('img', { name: /공격 220,788건 가운데 탐지 160건, 0.072%. 미탐 220,628건./ })
     expect(attacks.querySelector('.scale-row__fill')).toHaveAttribute('width', (160 / 220788 * 100).toString())
@@ -434,3 +460,24 @@ describe('결과를 한 장씩 읽는 흐름 (V7)', () => {
     expect(document.querySelector('.investigation-brief__warn')).toHaveTextContent('잘못 적은 칸 1개는 계산에서 뺐습니다')
   })
 })
+
+describe('질문과 오류 안내 (V10)', () => {
+  it('업체에 물을 질문 보기를 누르면 질문 제목으로 초점이 옮겨 가고, 질문마다 상태와 왜 묻나요가 붙는다', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('button', { name: '예시로 바로 보기' }))
+    await user.click(screen.getByRole('button', { name: '업체에 물을 질문 보기' }))
+    await waitFor(() => expect(screen.getByRole('heading', { level: 3, name: '공급자에게 물을 질문' })).toHaveFocus())
+    const first = screen.getByRole('region', { name: '공급자에게 물을 질문' }).querySelector('.question-card')!
+    expect(first).toHaveTextContent('해석 주의')
+    expect(first.querySelector('.question-card__why')).toHaveTextContent(/^왜 묻나요 .+/)
+  })
+
+  it('열 수 없는 검토 파일이면 무엇이 틀렸는지와 어떤 파일을 고르면 되는지 함께 말한다', async () => {
+    setup()
+    const input = document.getElementById('case-file') as HTMLInputElement
+    fireEvent.change(input, { target: { files: [new File(['{ nope'], 'bad.json', { type: 'application/json' })] } })
+    await waitFor(() => expect(document.querySelector('.hero__file-status')).toHaveTextContent('JSON 형식의 ExplainSOC 사례 파일이 아닙니다.'))
+    expect(document.querySelector('.hero__file-status')).toHaveTextContent('‘사례 JSON 내려받기’로 저장한 .json 파일을 다시 골라 주세요.')
+  })
+})
+

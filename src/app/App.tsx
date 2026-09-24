@@ -24,9 +24,18 @@ const STEP_HEADINGS: Record<StepNumber, string> = {
   3: '3. 검토 결과',
 }
 
+/** V10: 사례 파일 오류 뒤에 붙이는 다음 행동. 무엇이 틀렸는지만 말하지 않는다. */
+const CASE_FILE_NEXT = '검토 결과의 ‘회차 기록’에서 ‘사례 JSON 내려받기’로 저장한 .json 파일을 다시 골라 주세요.'
+
+/** V10: 결과에서 다른 논문 예시로 바꾸는 단추. 첫 화면의 이야기(99.88%)가 기본이고, 예시 A는 여기서 연다. */
+const OTHER_EXAMPLE: Partial<Record<FormState['source'], { example: typeof EXAMPLE_A; label: string }>> = {
+  exampleB: { example: EXAMPLE_A, label: '다른 예시: 같은 AI를 처음 보는 공격으로 시험한 결과 보기' },
+  exampleA: { example: EXAMPLE_B, label: '다른 예시: 광고의 99.88% 결과 보기' },
+}
+
 const SOURCE_NOTE: Record<FormState['source'], string | null> = {
-  exampleA: '논문 예시 A — 숫자와 세 평가 조건을 논문 값으로 미리 채웠습니다. 숫자를 바꾸면 내 입력으로 바뀝니다.',
-  exampleB: '논문 예시 B — 숫자와 세 평가 조건을 논문 값으로 미리 채웠습니다. 숫자를 바꾸면 내 입력으로 바뀝니다.',
+  exampleA: '논문 예시 · 같은 AI를 처음 보는 공격으로 다시 시험한 결과 — 숫자와 세 평가 조건을 논문 값으로 채웠습니다. 숫자를 바꾸면 내 입력으로 바뀝니다.',
+  exampleB: '논문 예시 · 광고의 99.88% — 이미 배운 종류의 공격으로 치른 시험의 논문 값으로 채웠습니다. 숫자를 바꾸면 내 입력으로 바뀝니다.',
   user: null,
 }
 
@@ -88,6 +97,8 @@ export function App() {
     go('lab')
   }
   const focusAfterNavigate = useRef(false)
+  // 같은 화면 안에서 다시 이동해도(예: 결과에서 다른 예시로) 제목으로 초점을 옮기도록 이동마다 센다.
+  const [navCount, setNavCount] = useState(0)
 
   useEffect(() => {
     if (!focusAfterNavigate.current) return
@@ -97,7 +108,7 @@ export function App() {
     window.scrollTo({ top: 0 })
     ;(view === 'home' ? heroHeading.current : view === 'lab' ? labHeading.current : stepHeading.current)?.focus()
     if (view === 2 && inputMode === 'form') document.getElementById('form-section-2')?.scrollIntoView()
-  }, [view])
+  }, [view, navCount])
 
   // 처음 입력은 한 화면에 질문 하나씩, 결과를 본 뒤 고치거나 다음 회차를 적을 때는 한 장짜리 폼으로 연다.
   const editInForm = (step: 1 | 2) => {
@@ -107,6 +118,7 @@ export function App() {
 
   const go = (next: View) => {
     focusAfterNavigate.current = true
+    setNavCount((count) => count + 1)
     // 소개서 판독은 1단계 자리에만 있다. 평가 조건은 한 화면씩 묻는다.
     if (next === 2 && inputMode === 'brochure') setInputMode('guided')
     if (next === 1 || next === 2) setGuidedIndex(GUIDED_STEP_START[next])
@@ -130,6 +142,12 @@ export function App() {
     brochurePatch.current = next
     setForm((f) => applyBrochure(f, previous, next))
     setBrochureText(text)
+  }
+
+  const showExample = (example: typeof EXAMPLE_A) => {
+    resetCase(formFromExample(example))
+    setCaseTitle('논문 예시 검토')
+    go(3)
   }
 
   const resetCase = (nextForm: FormState = emptyForm()) => {
@@ -174,7 +192,7 @@ export function App() {
 
   const openCase = async (file: File) => {
     if (file.size > MAX_CASE_FILE_BYTES) {
-      setCaseFileStatus('사례 파일은 1 MiB 이하여야 합니다.')
+      setCaseFileStatus(`사례 파일은 1 MiB 이하여야 합니다. ${CASE_FILE_NEXT}`)
       return
     }
     let text: string
@@ -186,7 +204,7 @@ export function App() {
     }
     const parsed = parseCaseFileText(text)
     if (parsed.kind === 'error') {
-      setCaseFileStatus(parsed.message)
+      setCaseFileStatus(`${parsed.message} ${CASE_FILE_NEXT}`)
       return
     }
     const current = parsed.value.rounds.at(-1)!
@@ -215,11 +233,7 @@ export function App() {
         {view === 'home' ? (
           <Hero
             ref={heroHeading}
-            onStartExample={() => {
-              resetCase(formFromExample(EXAMPLE_A))
-              setCaseTitle('논문 예시 검토')
-              go(3)
-            }}
+            onStartExample={() => showExample(EXAMPLE_B)}
             onStartOwn={() => {
               resetCase()
               setInputMode('guided')
@@ -250,6 +264,11 @@ export function App() {
                       : '받은 숫자와 평가 조건을 적어 주세요'}
               </h2>
               {SOURCE_NOTE[form.source] && <p className="step-source">{SOURCE_NOTE[form.source]}</p>}
+              {view === 3 && OTHER_EXAMPLE[form.source] && (
+                <button type="button" className="link-button step-source__switch" onClick={() => showExample(OTHER_EXAMPLE[form.source]!.example)}>
+                  {OTHER_EXAMPLE[form.source]!.label}
+                </button>
+              )}
               {rounds.length > 0 && view !== 3 && (
                 <p className="followup-banner">
                   <strong>{rounds.length + 1}회차</strong> · 이번에 새로 받은 자료만 적으세요. 비운 칸은 이전 회차 값을 이어 씁니다.
