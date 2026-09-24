@@ -12,6 +12,7 @@ const DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence/scree
 const V5_DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence'
 const V7_DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence'
 const V8_DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence'
+const V9_DIR = process.env.LIVE_URL ? 'evidence/screenshots/live' : 'evidence'
 
 test('첫 화면 — 데스크톱 1440×900', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 })
@@ -144,4 +145,46 @@ test('V8 결과 1장 — 모바일', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await startExample(page)
   await page.screenshot({ path: `${V8_DIR}/v8-chapter-evidence-mobile.png`, fullPage: true })
+})
+
+async function readExampleBrochure(page: import('@playwright/test').Page) {
+  await openHome(page)
+  await page.getByRole('button', { name: '소개서 문장 붙여 넣기' }).click()
+  await page.getByRole('button', { name: '가상의 예시 소개서 넣기' }).first().click()
+  await expect(page.getByRole('article', { name: '표시를 붙인 소개서' })).toBeVisible()
+}
+
+test('V9 소개서 판독 — 가상 예시, 데스크톱', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await readExampleBrochure(page)
+  await page.locator('.reader-note').nth(5).hover()
+  await page.screenshot({ path: `${V9_DIR}/v9-brochure-reader-desktop.png`, fullPage: true })
+})
+
+test('V9 결론 카드 — 소개서 판독 뒤, 데스크톱', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await readExampleBrochure(page)
+  await page.getByRole('button', { name: /결과 보기 · 질문/ }).click()
+  await page.locator('.conclusion').screenshot({ path: `${V9_DIR}/v9-conclusion-desktop.png` })
+})
+
+test('V9 결론 카드 — 모바일', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await readExampleBrochure(page)
+  await page.getByRole('button', { name: /결과 보기 · 질문/ }).click()
+  await page.locator('.conclusion').screenshot({ path: `${V9_DIR}/v9-conclusion-mobile.png` })
+})
+
+test('V9 논문 실험실 — 데스크톱 전체', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await openHome(page)
+  await page.getByRole('button', { name: /논문 실험실/ }).click()
+  await page.screenshot({ path: `${V9_DIR}/v9-paper-lab-desktop.png`, fullPage: true })
+})
+
+test('V9 논문 실험실 — 모바일 첫머리', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await openHome(page)
+  await page.getByRole('button', { name: /논문 실험실/ }).click()
+  await page.screenshot({ path: `${V9_DIR}/v9-paper-lab-mobile.png` })
 })
